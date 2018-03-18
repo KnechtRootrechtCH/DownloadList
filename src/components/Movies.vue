@@ -1,21 +1,20 @@
 <template>
   <div>
-    <div class="dlst-input">
-      <input type="text" v-model="msg" placeholder="Search movie.."/>
-    </div>
-
-    <div>
-      {{msg}}
-    </div>
+    <movieSearch/>
   </div>
 </template>
 
 <script>
+import MovieSearch from './controls/MovieSearch'
+
 export default {
   name: 'Movies',
+  components: {
+    'movieSearch': MovieSearch
+  },
   data () {
     return {
-      msg: ''
+
     }
   }
 }
