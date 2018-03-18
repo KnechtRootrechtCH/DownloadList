@@ -17,3 +17,11 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+export const globalStore = new Vue({
+  data: {
+    // movieDbApiKey: '342d3061b70d2747a1e159ae9a7e9a36'
+    movieDbApiKey: '23703a8a857927f41414fb155404393d',
+    language: 'de'
+  }
+})
