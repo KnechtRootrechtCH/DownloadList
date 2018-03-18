@@ -1,6 +1,12 @@
 <template>
-  <div class="hello">
-    Series
+  <div>
+    <div class="dlst-input">
+      <input type="text" v-model="msg" placeholder="Search tv series.."/>
+    </div>
+
+    <div>
+      {{msg}}
+    </div>
   </div>
 </template>
 
@@ -9,7 +15,7 @@ export default {
   name: 'Series',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js Appsadfasdf'
+      msg: ''
     }
   }
 }

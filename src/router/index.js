@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
+import Information from '@/components/Information'
 import Movies from '@/components/Movies'
 import Series from '@/components/Series'
 
@@ -10,8 +10,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      name: 'Information',
+      component: Information
     },
     {
       path: '/movies',

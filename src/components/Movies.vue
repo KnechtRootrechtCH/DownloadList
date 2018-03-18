@@ -1,6 +1,12 @@
 <template>
-  <div class="hello">
-    Movies
+  <div>
+    <div class="dlst-input">
+      <input type="text" v-model="msg" placeholder="Search movie.."/>
+    </div>
+
+    <div>
+      {{msg}}
+    </div>
   </div>
 </template>
 
@@ -9,34 +15,12 @@ export default {
   name: 'Movies',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js Appsadfasdf'
+      msg: ''
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>
-<template>
-  <div class="hello">
-    Movies
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'Movies',
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js Appsadfasdf'
-    }
-  }
-}
-</script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 </style>
