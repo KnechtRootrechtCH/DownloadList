@@ -4,10 +4,16 @@ import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+import VueInstant from 'vue-instant'
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
+Vue.use(VueAxios, axios)
+Vue.use(VueInstant)
 Vue.use(BootstrapVue)
 
 /* eslint-disable no-new */
@@ -25,3 +31,11 @@ export const globalStore = new Vue({
     language: 'de'
   }
 })
+
+/*
+VueInstant.methods.isSimilar = function (o) {
+  if (o) {
+    return o[this.suggestionAttribute].toLowerCase().StartsWith(this.textVal.toLowerCase())
+  }
+}
+*/
