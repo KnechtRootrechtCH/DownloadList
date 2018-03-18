@@ -5,8 +5,6 @@ import Information from '@/components/Information'
 import Movies from '@/components/Movies'
 import Series from '@/components/Series'
 
-import 'vue-instant/dist/vue-instant.css'
-
 Vue.use(Router)
 
 export default new Router({

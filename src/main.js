@@ -6,10 +6,11 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import VueInstant from 'vue-instant'
+import VueInstant from '../static/vue-instant/dist/vue-instant.common.js'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'vue-instant/dist/vue-instant.css'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
@@ -33,9 +34,6 @@ export const globalStore = new Vue({
 })
 
 /*
-VueInstant.methods.isSimilar = function (o) {
-  if (o) {
-    return o[this.suggestionAttribute].toLowerCase().StartsWith(this.textVal.toLowerCase())
-  }
-}
+https://github.com/santiblanko/vue-instant
+https://www.npmjs.com/package/vue-axios
 */

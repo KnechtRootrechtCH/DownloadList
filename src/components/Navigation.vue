@@ -10,8 +10,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav">
-          <router-link class="nav-item nav-link" to="/movies">Movies</router-link>
-          <router-link class="nav-item nav-link" to="/series">Series</router-link>
+          <router-link class="nav-item nav-link" to="/movies">Filme</router-link>
+          <router-link class="nav-item nav-link" to="/series">Serien</router-link>
         </div>
       </div>
     </nav>

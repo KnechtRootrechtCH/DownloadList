@@ -79,7 +79,6 @@ export default {
   }
 }
 </script>
-  
 <style scoped>
   .movie-search {
     margin: 20px;
