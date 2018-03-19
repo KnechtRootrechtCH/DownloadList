@@ -10,8 +10,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav">
-          <router-link class="nav-item nav-link" to="/movies">Filme</router-link>
-          <router-link class="nav-item nav-link" to="/series">Serien</router-link>
+          <router-link class="nav-item nav-link" to="/movies">{{ $t("nav.movies") }}</router-link>
+          <router-link class="nav-item nav-link" to="/series">{{ $t("nav.tv") }}</router-link>
         </div>
       </div>
     </nav>
@@ -20,7 +20,23 @@
 
 <script>
 export default {
-  name: 'Navigation'
+  name: 'Navigation',
+  i18n: {
+    messages: {
+      de: {
+        nav: {
+          movies: 'Filme',
+          tv: 'Serien'
+        }
+      },
+      en: {
+        nav: {
+          movies: 'Movies',
+          tv: 'Series'
+        }
+      }
+    }
+  }
 }
 </script>
 

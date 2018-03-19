@@ -28,3 +28,4 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 * [Vue-Axios](https://www.npmjs.com/package/vue-axios)
 * [Vue-Logger](https://github.com/Lluvio/vue-logger/blob/HEAD/README_EN.md)
 * [Vue-Firebase Authentication Tutorial](https://medium.com/@anas.mammeri/vue-2-firebase-how-to-build-a-vue-app-with-firebase-authentication-system-in-15-minutes-fdce6f289c3c)
+* [Vue-I18n](http://kazupon.github.io/vue-i18n/en/)

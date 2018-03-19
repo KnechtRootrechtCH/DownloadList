@@ -16,6 +16,7 @@
     "firebase": "^4.11.0",
     "vue": "^2.5.2",
     "vue-axios": "^2.0.2",
+    "vue-i18n": "^7.6.0",
     "vue-instant": "^1.0.2",
     "vue-logger": "0.0.3",
     "vue-router": "^3.0.1"

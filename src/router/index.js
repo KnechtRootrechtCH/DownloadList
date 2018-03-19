@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Login from '@/components/Login'
-import Signup from '@/components/Signup'
+import SignUp from '@/components/SignUp'
 import Info from '@/components/Information'
 import Movies from '@/components/Movies'
 import Series from '@/components/Series'
@@ -29,7 +29,7 @@ let router = new Router({
     {
       path: '/signup',
       name: 'SignUp',
-      component: Signup
+      component: SignUp
     },
     {
       path: '/info',
