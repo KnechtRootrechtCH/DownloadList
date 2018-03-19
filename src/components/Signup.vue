@@ -67,15 +67,14 @@ export default {
         return
       }
 
-      var that = this
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-        function (user) {
+        (user) => {
           alert('Account successfully created.')
-          that.$router.replace('movies')
+          this.$router.replace('movies')
         },
-        function (err) {
-          that.emailMessage = err.message
-          that.hasEmailMessage = true
+        (err) => {
+          this.emailMessage = err.message
+          this.hasEmailMessage = true
         }
       )
     }

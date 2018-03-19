@@ -81,15 +81,25 @@
         </a>
       </li>
     </ul>
+    <button type="submit" v-on:click="signOut" class="btn btn-yellow">Sign Out</button>
   </div>
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   name: 'Information',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
+    }
+  },
+  methods: {
+    signOut: function () {
+      firebase.auth().signOut().then(() => {
+        this.$router.replace('authenticate')
+      })
     }
   }
 }

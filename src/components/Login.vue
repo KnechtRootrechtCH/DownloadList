@@ -31,16 +31,15 @@ export default {
   },
   methods: {
     signIn: function () {
-      var that = this
       firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
-        function (user) {
-          that.message = ''
-          that.hasMessage = false
-          that.$router.replace('info')
+        (user) => {
+          this.message = ''
+          this.hasMessage = false
+          this.$router.replace('info')
         },
-        function (err) {
-          that.message = err.message
-          that.hasMessage = true
+        (err) => {
+          this.message = err.message
+          this.hasMessage = true
         }
       )
     }
