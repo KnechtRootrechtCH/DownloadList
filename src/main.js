@@ -58,10 +58,3 @@ export const globalStore = new Vue({
     language: 'de'
   }
 })
-
-/*
-Components: https://github.com/vuejs/awesome-vue
-SAYT: https://github.com/santiblanko/vue-instant
-Promises: https://www.npmjs.com/package/vue-axios
-Logger: https://github.com/Lluvio/vue-logger/blob/HEAD/README_EN.md
-*/
