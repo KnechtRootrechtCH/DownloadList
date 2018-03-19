@@ -3,12 +3,12 @@
     <form>
       <div class="form-group">
         <label for="email">Mail</label>
-        <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
+        <input type="email" v-model="email" class="form-control" placeholder="name@example.com" v-on:keyup.enter="signIn">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasMessage }">{{ message }}</small>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" v-model="password" class="form-control">
+        <input type="password" v-model="password" class="form-control" v-on:keyup.enter="signIn">
       </div>
       <button type="submit" v-on:click="signIn" class="btn btn-yellow">Login</button>
     </form>

@@ -3,17 +3,17 @@
     <form>
       <div class="form-group">
         <label for="email">Mail</label>
-        <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
+        <input type="email" v-model="email" class="form-control" placeholder="name@example.com" v-on:keyup.enter="signUp">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasEmailMessage }">{{ emailMessage }}</small>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" v-model="password" class="form-control">
+        <input type="password" v-model="password" class="form-control" v-on:keyup.enter="signUp">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasPasswordMessage }">{{ passwordMessage }}</small>
       </div>
       <div class="form-group" v-bind:class="{ 'has-danger': hasPasswordRepeatMessage }">
         <label for="passwordRepeat">Password</label>
-        <input type="password" v-model="passwordRepeat" class="form-control">
+        <input type="password" v-model="passwordRepeat" class="form-control" v-on:keyup.enter="signUp">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasPasswordRepeatMessage }">{{ passwordRepeatMessage }}</small>
       </div>
       <button type="submit" v-on:click="signUp" class="btn btn-yellow">Signup</button>
