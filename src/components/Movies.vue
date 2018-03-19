@@ -1,16 +1,16 @@
 <template>
   <div>
-    <movieSearch/>
+    <mediaSearch mediaType="movie" suggestionField="title" inputPlaceholder="Film hinzufügen…"/>
   </div>
 </template>
 
 <script>
-import MovieSearch from './controls/MovieSearch'
+import MediaSearch from './MediaSearch'
 
 export default {
   name: 'Movies',
   components: {
-    'movieSearch': MovieSearch
+    'mediaSearch': MediaSearch
   },
   data () {
     return {

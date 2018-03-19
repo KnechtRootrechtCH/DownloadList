@@ -1,18 +1,17 @@
 <template>
   <div>
-    <div class="dlst-input">
-      <input type="text" v-model="msg" placeholder="Search tv series.."/>
-    </div>
-
-    <div>
-      {{msg}}
-    </div>
+    <mediaSearch mediaType="tv" suggestionField="name" inputPlaceholder="Serie hinzufügen…"/>
   </div>
 </template>
 
 <script>
+import MediaSearch from './MediaSearch'
+
 export default {
   name: 'Series',
+  components: {
+    'mediaSearch': MediaSearch
+  },
   data () {
     return {
       msg: ''

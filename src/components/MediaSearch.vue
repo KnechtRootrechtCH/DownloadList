@@ -17,7 +17,7 @@
         @clear="clear"
         @escape="escape"
         name="customName"
-        placeholder="Film suchen…"
+        v-bind:placeholder="inputPlaceholder"
         type="amazon">
       </vue-instant>
 
@@ -26,14 +26,15 @@
 </template>
 
 <script>
-import {globalStore} from '../../main.js'
+import {globalStore} from '../main.js'
 
 export default {
-  name: 'MovieSearch',
+  name: 'MediaSearch',
+  props: ['mediaType', 'suggestionField', 'inputPlaceholder'],
   data () {
     return {
       value: '',
-      suggestionAttribute: 'title',
+      suggestionAttribute: this.suggestionField,
       suggestions: [],
       selectedEvent: ''
     }
@@ -69,7 +70,7 @@ export default {
     changed: function () {
       var that = this
       this.suggestions = []
-      this.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + globalStore.movieDbApiKey + '&language=de&query=' + this.value)
+      this.axios.get('https://api.themoviedb.org/3/search/' + this.mediaType + '?api_key=' + globalStore.movieDbApiKey + '&language=de&query=' + this.value)
         .then(function (response) {
           response.data.results.forEach(function (a) {
             that.suggestions.push(a)
