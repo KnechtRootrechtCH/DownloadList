@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <navigation/>
-    <router-view/>
+    <div class="app-content">
+      <router-view/>
+    </div>
     <dlst-footer/>
   </div>
 </template>
@@ -20,6 +22,10 @@ export default {
 </script>
 
 <style>
+body {
+  background: #2c3e50;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,16 +33,13 @@ export default {
   text-align: center;
   color: #ddd;
 }
-body {
-  background: #2c3e50;
-}
-a {
+.app-content a {
   color: #ffbf58;
 }
-a:hover {
+.app-content a:hover {
   color: #ffbf58;
 }
-.btn-yellow {
+.app-content .btn-yellow {
   background-color: #ffbf58;
   border-color: #ffbf58;
 }
