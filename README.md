@@ -21,6 +21,8 @@ npm run build --report
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 ## Links
+* [Webpack](https://github.com/vuejs-templates/webpack)
+* [Firebase](https://github.com/vuejs-templates/webpack)
 * [Awesome-Vue Components](https://github.com/vuejs/awesome-vue)
 * [Vue-Instant](https://github.com/santiblanko/vue-instant)
 * [Vue-Axios](https://www.npmjs.com/package/vue-axios)
