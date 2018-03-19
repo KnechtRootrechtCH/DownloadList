@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import firebase from 'firebase'
+import vueLogger from 'vue-logger'
 
 import BootstrapVue from 'bootstrap-vue'
 import VueAxios from 'vue-axios'
@@ -62,4 +63,5 @@ export const globalStore = new Vue({
 Components: https://github.com/vuejs/awesome-vue
 SAYT: https://github.com/santiblanko/vue-instant
 Promises: https://www.npmjs.com/package/vue-axios
+Logger: https://github.com/Lluvio/vue-logger/blob/HEAD/README_EN.md
 */
