@@ -11,6 +11,9 @@
 <script>
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'vue-instant/dist/vue-instant.css'
 
 export default {
   name: 'App',

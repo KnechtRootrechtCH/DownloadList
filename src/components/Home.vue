@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <img class="app_logo" src="../assets/logo.png"/>
+    <!--<img class="app_logo" src="../assets/logo.png"/>-->
     <h2>Essential Links</h2>
     <ul>
       <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
@@ -17,6 +17,11 @@
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
     </ul>
+    <h2>References</h2>
+      <ul>
+        <li><a href="https://bootstrap-vue.js.org/docs/" target="_blank">Bootstrap Vue</a></li>
+        <li><a href="https://developers.themoviedb.org/3" target="_blank">The Movie Database API</a></li>
+      </ul>
     <button type="submit" v-on:click="signOut" class="btn btn-yellow">Sign Out</button>
   </div>
 </template>
@@ -25,7 +30,7 @@
 import firebase from 'firebase'
 
 export default {
-  name: 'Information',
+  name: 'Home',
   data () {
     return {
     }

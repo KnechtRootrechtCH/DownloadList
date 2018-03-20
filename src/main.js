@@ -2,7 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 
-import App from './App'
 import router from './router'
 import axios from 'axios'
 import firebase from 'firebase'
@@ -13,16 +12,14 @@ import VueAxios from 'vue-axios'
 import VueI18n from 'vue-I18n'
 import VueInstant from '../static/vue-instant/dist/vue-instant.common.js'
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import 'vue-instant/dist/vue-instant.css'
+import App from './App'
 
 Vue.config.productionTip = false
 
+Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
 Vue.use(VueI18n)
 Vue.use(VueInstant)
-Vue.use(BootstrapVue)
 Vue.use(firebase)
 Vue.use(vueLogger, {
   prefix: () => new Date(),

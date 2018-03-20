@@ -1,20 +1,19 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-      <router-link class="navbar-brand" to="/">
-        <img src="../assets/jdl.png" width="30" height="30" class="d-inline-block align-top" alt="">
-        Download List
-      </router-link>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarNav" aria-expanded="false" aria-label="Navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav">
-          <router-link class="nav-item nav-link" to="/movies">{{ $t("nav.movies") }}</router-link>
-          <router-link class="nav-item nav-link" to="/series">{{ $t("nav.tv") }}</router-link>
-        </div>
-      </div>
-    </nav>
+    <b-navbar variant="dark" type="dark" toggleable="sm">
+      <b-navbar-brand to="/">
+        <img src="../assets/logo.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
+        Nix
+      </b-navbar-brand>
+      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+      <b-collapse is-nav id="nav_collapse">
+        <b-navbar-nav>
+          <b-nav-item to="/movies">{{ $t("nav.movies") }}</b-nav-item>
+          <b-nav-item to="/series">{{ $t("nav.tv") }}</b-nav-item>
+          <b-nav-item to="/list">{{ $t("nav.myList") }}</b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
   </div>
 </template>
 
@@ -25,14 +24,18 @@ export default {
     messages: {
       de: {
         nav: {
+          home: 'Startseite',
           movies: 'Filme',
-          tv: 'Serien'
+          tv: 'Serien',
+          myList: 'Meine Liste'
         }
       },
       en: {
         nav: {
+          home: 'Home',
           movies: 'Movies',
-          tv: 'Series'
+          tv: 'Series',
+          myList: 'My List'
         }
       }
     }

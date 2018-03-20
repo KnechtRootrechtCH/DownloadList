@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
-import Info from '@/components/Information'
+import Home from '@/components/Home'
 import Movies from '@/components/Movies'
 import Series from '@/components/Series'
 
@@ -15,11 +15,11 @@ let router = new Router({
   routes: [
     {
       path: '*',
-      redirect: '/info'
+      redirect: '/home'
     },
     {
       path: '/',
-      redirect: '/info'
+      redirect: '/home'
     },
     {
       path: '/authenticate',
@@ -32,9 +32,9 @@ let router = new Router({
       component: SignUp
     },
     {
-      path: '/info',
-      name: 'Info',
-      component: Info,
+      path: '/home',
+      name: 'Home',
+      component: Home,
       meta: {
         requiresAuth: true
       }
