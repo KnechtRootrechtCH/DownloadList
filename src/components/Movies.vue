@@ -71,8 +71,7 @@ export default {
       }
     },
     getInfoUrl (id) {
-      if (id)
-      {
+      if (id) {
         return 'https://www.themoviedb.org/movie/' + id
       } else {
         return 'https://www.themoviedb.org/movie/'
