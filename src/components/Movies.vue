@@ -20,13 +20,13 @@ export default {
   i18n: {
     messages: {
       de: {
-        movies:  {
-          inputPlaceholder: 'Film hinzufügen…',
+        movies: {
+          inputPlaceholder: 'Film hinzufügen…'
         }
       },
       en: {
-        movies:  {
-          inputPlaceholder: 'Add movie…',
+        movies: {
+          inputPlaceholder: 'Add movie…'
         }
       }
     }

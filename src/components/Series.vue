@@ -20,13 +20,13 @@ export default {
   i18n: {
     messages: {
       de: {
-        series:  {
-          inputPlaceholder: 'Serie hinzufügen…',
+        series: {
+          inputPlaceholder: 'Serie hinzufügen…'
         }
       },
       en: {
-        series:  {
-          inputPlaceholder: 'Add show…',
+        series: {
+          inputPlaceholder: 'Add show…'
         }
       }
     }
