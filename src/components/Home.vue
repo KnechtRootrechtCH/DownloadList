@@ -21,6 +21,7 @@
       <ul>
         <li><a href="https://bootstrap-vue.js.org/docs/" target="_blank">Bootstrap Vue</a></li>
         <li><a href="https://developers.themoviedb.org/3" target="_blank">The Movie Database API</a></li>
+        <li><a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a></li>
       </ul>
     <button type="submit" v-on:click="signOut" class="btn btn-yellow">Sign Out</button>
   </div>
@@ -47,6 +48,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.hello {
+    text-align: center;
+}
 h1, h2 {
   font-weight: normal;
 }

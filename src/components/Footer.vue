@@ -29,7 +29,8 @@ body {
   height: 60px; /* Set the fixed height of the footer here */
   line-height: 60px; /* Vertically center the text there */
   background-color: #d5d5d5;
-  color: #555
+  color: #555;
+  text-align: center;
 }
 
 .container {

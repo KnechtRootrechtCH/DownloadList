@@ -49,12 +49,13 @@ export default {
 
 <style scoped>
 .login {
-  margin-top: 40px
+  margin-top: 40px;
+  text-align: center;
 }
 input {
-  margin-top: 5px;
   margin-left: 25%;
   margin-right: 25%;
+  margin-bottom: 10px;
   width: 50%;
 }
 #signup {

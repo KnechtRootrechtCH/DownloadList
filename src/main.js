@@ -7,19 +7,21 @@ import axios from 'axios'
 import firebase from 'firebase'
 import vueLogger from 'vue-logger'
 
+import lodash from 'lodash'
+import VueLodash from 'vue-lodash'
+
 import BootstrapVue from 'bootstrap-vue'
 import VueAxios from 'vue-axios'
 import VueI18n from 'vue-I18n'
-import VueInstant from '../static/vue-instant/dist/vue-instant.common.js'
 
 import App from './App'
 
 Vue.config.productionTip = false
 
+Vue.use(VueLodash, lodash)
 Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
 Vue.use(VueI18n)
-Vue.use(VueInstant)
 Vue.use(firebase)
 Vue.use(vueLogger, {
   prefix: () => new Date(),
@@ -50,7 +52,7 @@ export default i18n
 export const globalStore = new Vue({
   data: {
     movieDbApiKey: '23703a8a857927f41414fb155404393d',
-    language: 'de'
+    language: locale
   }
 })
 
