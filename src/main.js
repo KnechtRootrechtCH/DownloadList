@@ -1,28 +1,30 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-
 import router from './router'
+import { store } from './store'
+
 import axios from 'axios'
+import VueAxios from 'vue-axios'
 import firebase from 'firebase'
-import vueLogger from 'vue-logger'
 
 import lodash from 'lodash'
 import VueLodash from 'vue-lodash'
 
 import BootstrapVue from 'bootstrap-vue'
-import VueAxios from 'vue-axios'
+
 import VueI18n from 'vue-I18n'
+import vueLogger from 'vue-logger'
 
 import App from './App'
 
 Vue.config.productionTip = false
 
+Vue.use(VueAxios, axios)
+Vue.use(firebase)
 Vue.use(VueLodash, lodash)
 Vue.use(BootstrapVue)
-Vue.use(VueAxios, axios)
 Vue.use(VueI18n)
-Vue.use(firebase)
 Vue.use(vueLogger, {
   prefix: () => new Date(),
   dev: true,
@@ -41,6 +43,7 @@ let config = {
 }
 
 const locale = navigator.language.trim().substring(0, 2)
+store.state.language = locale
 const messages = {}
 const i18n = new VueI18n({
   locale,
@@ -49,13 +52,6 @@ const i18n = new VueI18n({
 })
 export default i18n
 
-export const globalStore = new Vue({
-  data: {
-    movieDbApiKey: '23703a8a857927f41414fb155404393d',
-    language: locale
-  }
-})
-
 firebase.initializeApp(config)
 firebase.auth().onAuthStateChanged(function (user) {
   if (!app) {
@@ -63,6 +59,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     app = new Vue({
       el: '#app',
       router,
+      store,
       i18n,
       components: { App },
       template: '<App/>'

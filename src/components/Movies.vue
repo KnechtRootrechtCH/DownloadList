@@ -12,11 +12,14 @@
     <div class="suggestion-list">
       <div class="card-columns">
         <div class="card bg-dark text-white suggestion-card"
-          v-for="(result) in results" :key="result.id">
-          <img class="card-img" v-bind:src="result.backdrop" onerror="this.onerror=null;this.src='http://image.tmdb.org/t/p/w500/mX7mlE1kaGohnSVDMSTlrvisYf7.jpg'" alt="">
-          <div class="card-img-overlay">
-            <h5 class="card-title">{{ result.title }}</h5>
-            <font-awesome-icon :icon="plusIcon" class="add-icon"/>
+          v-for="(item, index) in items" :key="item.id">
+          <img class="card-img" v-bind:src="getBackdrop(item.backdrop_path)" onerror="this.onerror=null;this.src='http://image.tmdb.org/t/p/w500/mX7mlE1kaGohnSVDMSTlrvisYf7.jpg'" alt="">
+          <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
+            <h5 class="card-title">{{ item.title }}</h5>
+            <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
+            <a v-bind:href="getInfoUrl(item.id)" target="_blank"><font-awesome-icon :icon="infoIcon" class="info-icon"/></a>
+            <font-awesome-icon v-if="isSelected(item.id)" :icon="checkIcon" class="toggle-icon check-icon"/>
+            <font-awesome-icon v-if="!isSelected(item.id)" :icon="plusIcon" class="toggle-icon add-icon"/>
           </div>
         </div>
       </div>
@@ -30,8 +33,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
 import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
-
-import {globalStore} from '../main.js'
+import faInfo from '@fortawesome/fontawesome-free-solid/faInfo'
 
 export default {
   name: 'Movies',
@@ -40,7 +42,7 @@ export default {
       count: 0,
       pages: 0,
       searchString: '',
-      results: []
+      items: []
     }
   },
   components: {
@@ -55,9 +57,47 @@ export default {
     },
     checkIcon () {
       return faCheckCircle
+    },
+    infoIcon () {
+      return faInfo
     }
   },
   methods: {
+    getBackdrop (path) {
+      if (path) {
+        return 'http://image.tmdb.org/t/p/w500' + path
+      } else {
+        return 'http://image.tmdb.org/t/p/w500/w300/njv65RTipNSTozFLuF85jL0bcQe.jpg'
+      }
+    },
+    getInfoUrl (id) {
+      if (id)
+      {
+        return 'https://www.themoviedb.org/movie/' + id
+      } else {
+        return 'https://www.themoviedb.org/movie/'
+      }
+    },
+    getReleaseYear (date) {
+      if (date) {
+        return date.substring(0, 4)
+      } else {
+        return ''
+      }
+    },
+    toggleItem (index, id) {
+      var item = this.$store.state.movies.find(i => i.id === id)
+      if (item) {
+        this.$store.state.movies = this.$store.state.movies.filter(i => i.id !== item.id)
+      } else {
+        item = this.items[index]
+        this.$store.state.movies.push(item)
+      }
+    },
+    isSelected (id) {
+      var item = this.$store.state.movies.find(i => i.id === id)
+      return item
+    },
     updateSearch () {
       if (this.searchString === null || this.searchString.length < 3) {
         this.count = 0
@@ -67,18 +107,13 @@ export default {
       }
       this._.debounce(() => {
         this.$debug('calling themoviedb api', this.searchString)
-        axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + globalStore.movieDbApiKey + '&language=' + globalStore.language + '&query=' + this.searchString).then(
+        axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.state.movieDbApiKey + '&language=' + this.$store.state.language + '&query=' + this.searchString).then(
           (response) => {
             this.count = response.data.total_results
             this.pages = response.data.total_pages
-            this.results = []
+            this.items = []
             response.data.results.forEach(element => {
-              if (element.backdrop_path) {
-                element.backdrop = 'http://image.tmdb.org/t/p/w500' + element.backdrop_path
-              } else {
-                element.backdrop = 'http://image.tmdb.org/t/p/w500/w300/njv65RTipNSTozFLuF85jL0bcQe.jpg'
-              }
-              this.results.push(element)
+              this.items.push(element)
             })
           })
       }, 1000)()
@@ -94,13 +129,15 @@ export default {
       de: {
         movies: {
           header: 'Filme',
-          inputPlaceholder: 'Film suchen…'
+          inputPlaceholder: 'Film suchen…',
+          released: 'Veröffentlicht'
         }
       },
       en: {
         movies: {
           header: 'Movies',
-          inputPlaceholder: 'Search movie…'
+          inputPlaceholder: 'Search movie…',
+          released: 'Released'
         }
       }
     }
@@ -118,13 +155,33 @@ export default {
 .suggestion-card {
   background-color: #343a40;
 }
-.suggestion-input{
+.suggestion-input {
   max-width: 300px;
 }
-.add-icon{
+.suggestion-card {
+  cursor: pointer;
+}
+h5.card-title {
+  margin-bottom: 4px;
+}
+.info-icon{
+  color: white;
   position: absolute;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
+  left: 15px;
+  bottom: 15px;
+}
+.add-icon {
+  color: white;
+}
+.check-icon {
+  color: limegreen;
+}
+.toggle-icon{
+  position: absolute;
+  width: 30px;
+  height: 30px;
   right: 15px;
   bottom: 15px;
 }

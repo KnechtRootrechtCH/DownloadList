@@ -36,6 +36,8 @@ export default {
     return {
     }
   },
+  computed: {
+  },
   methods: {
     signOut: function () {
       firebase.auth().signOut().then(() => {
