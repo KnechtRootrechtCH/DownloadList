@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mediaSearch mediaType="tv" suggestionField="name" inputPlaceholder="Serie hinzufügen…"/>
+    <mediaSearch mediaType="tv" suggestionField="name" v-bind:inputPlaceholder="$t('series.inputPlaceholder')"/>
   </div>
 </template>
 
@@ -15,6 +15,20 @@ export default {
   data () {
     return {
       msg: ''
+    }
+  },
+  i18n: {
+    messages: {
+      de: {
+        series:  {
+          inputPlaceholder: 'Serie hinzufügen…',
+        }
+      },
+      en: {
+        series:  {
+          inputPlaceholder: 'Add show…',
+        }
+      }
     }
   }
 }
