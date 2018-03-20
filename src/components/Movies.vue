@@ -14,7 +14,6 @@ export default {
   },
   data () {
     return {
-
     }
   },
   i18n: {
