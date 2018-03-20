@@ -71,15 +71,15 @@ export default {
           (response) => {
             this.count = response.data.total_results
             this.pages = response.data.total_pages
-            this.results = [];
+            this.results = []
             response.data.results.forEach(element => {
-              if(element.backdrop_path) {
+              if (element.backdrop_path) {
                 element.backdrop = 'http://image.tmdb.org/t/p/w500' + element.backdrop_path
               } else {
                 element.backdrop = 'http://image.tmdb.org/t/p/w500/w300/njv65RTipNSTozFLuF85jL0bcQe.jpg'
               }
               this.results.push(element)
-            });
+            })
           })
       }, 1000)()
     }
