@@ -26,8 +26,6 @@
 </template>
 
 <script>
-import {globalStore} from '../main.js'
-
 export default {
   name: 'MediaSearch',
   props: ['mediaType', 'suggestionField', 'inputPlaceholder'],
@@ -68,14 +66,7 @@ export default {
       this.selectedEvent = 'escape'
     },
     changed: function () {
-      var that = this
-      this.suggestions = []
-      this.axios.get('https://api.themoviedb.org/3/search/' + this.mediaType + '?api_key=' + globalStore.movieDbApiKey + '&language=de&query=' + this.value)
-        .then(function (response) {
-          response.data.results.forEach(function (a) {
-            that.suggestions.push(a)
-          })
-        })
+      this.selectedEvent = 'changed'
     }
   }
 }
