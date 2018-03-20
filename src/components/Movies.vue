@@ -17,9 +17,19 @@
           <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
-            <a v-bind:href="getInfoUrl(item.id)" target="_blank"><font-awesome-icon :icon="infoIcon" class="info-icon"/></a>
-            <font-awesome-icon v-if="isSelected(item.id)" :icon="checkIcon" class="toggle-icon check-icon"/>
-            <font-awesome-icon v-if="!isSelected(item.id)" :icon="plusIcon" class="toggle-icon add-icon"/>
+            <div class="info-icons">
+              <font-awesome-icon :icon="infoIcon" class="info-icon" v-on:click.stop="openInformationUrl(item.id)"/>
+            </div>
+            <div class="toggle-icons" v-if="isSelected(item.id)">
+              <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 5) }" v-on:click.stop="setPriority(item.id, 5)"/>
+              <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 4) }" v-on:click.stop="setPriority(item.id, 4)"/>
+              <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
+              <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
+              <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
+            </div>
+            <div class="toggle-icons" v-if="!isSelected(item.id)">
+              <font-awesome-icon :icon="plusIcon" class="toggle-icon add-icon"/>
+            </div>
           </div>
         </div>
       </div>
@@ -34,6 +44,7 @@ import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
 import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import faInfo from '@fortawesome/fontawesome-free-solid/faInfo'
+import faStar from '@fortawesome/fontawesome-free-solid/faStar'
 
 export default {
   name: 'Movies',
@@ -60,9 +71,17 @@ export default {
     },
     infoIcon () {
       return faInfo
+    },
+    starIcon () {
+      return faStar
     }
   },
   methods: {
+    openInformationUrl (id) {
+      var url = this.getInfoUrl(id)
+      var win = window.open(url, '_blank')
+      win.focus()
+    },
     getBackdrop (path) {
       if (path) {
         return 'http://image.tmdb.org/t/p/w500' + path
@@ -85,17 +104,41 @@ export default {
       }
     },
     toggleItem (index, id) {
-      var item = this.$store.state.movies.find(i => i.id === id)
+      var item = this.$store.getters.getMovie(id)
       if (item) {
-        this.$store.state.movies = this.$store.state.movies.filter(i => i.id !== item.id)
+        this.$store.commit('removeMovie', item.id)
       } else {
         item = this.items[index]
-        this.$store.state.movies.push(item)
+        item.priority = 6
+        this.$store.commit('addMovie', item)
       }
     },
     isSelected (id) {
-      var item = this.$store.state.movies.find(i => i.id === id)
+      var item = this.$store.getters.getMovie(id)
       return item
+    },
+    hasPriority (id, priority) {
+      var item = this.$store.getters.getMovie(id)
+      if (item) {
+        return item.priority <= priority
+      }
+      return false
+    },
+    setPriority (id, p) {
+      var item = this.$store.getters.getMovie(id)
+      var priority = p
+      if (item) {
+        if (item.priority === priority) {
+          priority++
+        }
+
+        if (priority >= 6) {
+          this.$store.commit('removeMovie', item.id)
+        } else {
+          this.$store.commit('setMoviePriority', {id: item.id, priority: priority})
+          this.$forceUpdate() // since we're not watching the item in the store, we need to trigger an update manualy
+        }
+      }
     },
     updateSearch () {
       if (this.searchString === null || this.searchString.length < 3) {
@@ -163,13 +206,22 @@ export default {
 h5.card-title {
   margin-bottom: 4px;
 }
-.info-icon{
-  color: white;
+div.toggle-icons {
   position: absolute;
-  width: 30px;
+  height: 30px;
+  right: 15px;
+  bottom: 15px;
+}
+div.info-icons {
+  position: absolute;
   height: 30px;
   left: 15px;
   bottom: 15px;
+}
+.info-icon {
+  color: white;
+  width: 30px;
+  height: 30px;
 }
 .add-icon {
   color: white;
@@ -177,13 +229,26 @@ h5.card-title {
 .check-icon {
   color: limegreen;
 }
-.toggle-icon{
-  position: absolute;
+.toggle-icon {
   width: 30px;
   height: 30px;
-  right: 15px;
-  bottom: 15px;
 }
+.priority-icon {
+    color: darkgrey;
+}
+/*
+.priority-icon:hover {
+    color: white;
+}
+*/
+.priority-icon-active {
+    color: yellow;
+}
+/*
+.priority-icon-active:hover {
+    color: grey;
+}
+*/
 
 @media (min-width: 350px) {
     .card-columns {

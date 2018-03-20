@@ -35,7 +35,7 @@ export default {
         (user) => {
           this.message = ''
           this.hasMessage = false
-          this.$router.replace('info')
+          this.$router.replace('movies')
         },
         (err) => {
           this.message = err.message
