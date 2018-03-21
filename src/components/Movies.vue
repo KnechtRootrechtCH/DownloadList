@@ -76,12 +76,6 @@ export default {
     },
     fallbackBackdrop () {
       return this.$store.getters.fallbackMovieBackdrop
-    },
-    backdropFallbackJs () {
-      let backdrop = this.$store.getters.fallbackMovieBackdrop
-      let js = 'this.onerror=null;this.src=\'' + backdrop + '\''
-      console.log(backdrop, js)
-      return js
     }
   },
   methods: {
@@ -114,11 +108,11 @@ export default {
     toggleItem (index, id) {
       var item = this.$store.getters.movie(id)
       if (item) {
-        this.$store.commit('removeMovie', item.id)
+        this.$store.dispatch('removeMovie', item.id)
       } else {
         item = this.items[index]
         item.priority = 6
-        this.$store.commit('addMovie', item)
+        this.$store.dispatch('addMovie', item)
       }
     },
     isSelected (id) {
@@ -141,10 +135,11 @@ export default {
         }
 
         if (priority >= 6) {
-          this.$store.commit('removeMovie', item.id)
+          this.$store.dispatch('removeMovie', item.id)
         } else {
-          this.$store.commit('setMoviePriority', {id: item.id, priority: priority})
-          this.$forceUpdate() // since we're not watching the item in the store, we need to trigger an update manualy
+          this.$store.dispatch('setMoviePriority', {
+            id: item.id,
+            priority: priority})
         }
       }
     },
@@ -257,7 +252,6 @@ div.info-icons {
     color: grey;
 }
 */
-
 .card-img-overlay {
   z-index: 10;
 }

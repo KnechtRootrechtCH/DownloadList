@@ -26,6 +26,9 @@ Vue.use(VueProgressiveImage)
 let app
 
 firebase.authentication.onAuthStateChanged(function (user) {
+  store.commit('setUser')
+  store.commit('setLocale')
+
   if (!app) {
     /* eslint-disable no-new */
     app = new Vue({
@@ -41,6 +44,3 @@ firebase.authentication.onAuthStateChanged(function (user) {
     })
   }
 })
-
-store.commit('setUser')
-store.commit('setLocale')

@@ -18,8 +18,8 @@ export const store = new Vuex.Store({
     _locale: 'en',
     _user: null,
 
-    _movies: [],
-    _shows: []
+    _movies: null,
+    _shows: null
   },
   mutations: {
     setMovieDbApiKey: (state, payload) => { state._movieDbApiKey = payload },
@@ -27,32 +27,38 @@ export const store = new Vuex.Store({
     setFallbackTvBackdrop: (state, payload) => { state._fallbackTvBackdrop = payload },
 
     setLocale: state => { state._locale = navigator.language.trim().substring(0, 2) },
-    setUser: state => { state._user = firebase.authentication.currentUser },
-
-    setMovies (state, movies) { state._movies = movies },
-    removeMovie (state, id) {
-      state._movies = state._movies.filter(i => i.id !== id)
+    setUser: state => {
+      state._user = firebase.authentication.currentUser
     },
-    addMovie (state, item) {
-      state._movies = state._movies.filter(i => i.id !== item.id)
-      state._movies.push(item)
-    },
-    setMoviePriority (state, payload) {
-      var id = payload.id
-      var priority = payload.priority
-      var item = state._movies.find(i => i.id === id)
-      item.priority = priority
-    }
+    setMovies (state, movies) { state._movies = movies }
   },
   actions: {
+    addMovie: (context, item) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + item.id).set(item)
+    },
+    removeMovie: (context, id) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + id).set(null)
+    },
+    setMoviePriority: (context, payload) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + payload.id).update({
+        'priority': payload.priority
+      })
+    },
     getFirebaseData: (context) => {
+      let uid = context.getters.user.uid
       firebase.database.ref('settings/movieDbApiKey').on('value', (snapshot) => {
         context.commit('setMovieDbApiKey', snapshot.val())
       })
       firebase.database.ref('settings/fallbackMovieBackdrop').on('value', (snapshot) => {
-        console.log(snapshot.val())
         context.commit('setFallbackMovieBackdrop', snapshot.val())
       })
+      firebase.database.ref('data/' + uid + '/movies/').on('value', (snapshot) => {
+        context.commit('setMovies', snapshot.val())
+      })
+      firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
     },
 
     getInitiatlState: context => {
@@ -64,7 +70,7 @@ export const store = new Vuex.Store({
     test: (state) => { return state._test },
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
-    movie: (state) => (id) => { return state._movies.find(i => i.id === id) },
+    movie: (state) => (id) => { return state._movies[id] },
     movies: (state) => { return state._movies },
     shows: (state) => { return state._shows },
     locale: (state) => { return state._locale },
