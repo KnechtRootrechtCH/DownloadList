@@ -33,9 +33,9 @@ export default {
         (user) => {
           this.message = ''
           this.hasMessage = false
-          this.$router.replace('movies')
           this.$store.commit('setUser')
           this.$store.dispatch('getFirebaseData')
+          this.$router.replace('list')
         },
         (err) => {
           this.message = err.message

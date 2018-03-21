@@ -70,9 +70,9 @@ export default {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
         (user) => {
           alert('Account successfully created.')
-          this.$router.replace('movies')
           this.$store.commit('setUser')
           this.$store.dispatch('getFirebaseData')
+          this.$router.replace('list')
         },
         (err) => {
           this.emailMessage = err.message

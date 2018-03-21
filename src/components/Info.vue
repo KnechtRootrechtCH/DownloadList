@@ -1,6 +1,10 @@
 <template>
-  <div class="hello">
+  <div class="info">
     <!--<img class="app_logo" src="../assets/logo.png"/>-->
+    <h2>Project Information</h2>
+    <ul>
+      <li><a href="https://github.com/KnechtRootrechtCH/DownloadList" target="_blank">Git Hub Project Page</a></li>
+    </ul>
     <h2>Essential Links</h2>
     <ul>
       <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
@@ -23,7 +27,6 @@
         <li><a href="https://developers.themoviedb.org/3" target="_blank">The Movie Database API</a></li>
         <li><a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a></li>
       </ul>
-    <button type="submit" v-on:click="signOut" class="btn btn-yellow">Sign Out</button>
   </div>
 </template>
 
@@ -31,27 +34,21 @@
 import firebase from 'firebase'
 
 export default {
-  name: 'Home',
+  name: 'Information',
   data () {
     return {
     }
   },
   computed: {
-  },
-  methods: {
-    signOut: function () {
-      firebase.auth().signOut().then(() => {
-        this.$router.replace('authenticate')
-      })
-    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.hello {
+.info {
     text-align: center;
+    margin: 10px 30px;
 }
 h1, h2 {
   font-weight: normal;
