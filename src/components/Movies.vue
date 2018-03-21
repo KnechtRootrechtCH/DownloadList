@@ -13,7 +13,7 @@
       <div class="card-columns">
         <div class="card bg-dark text-white suggestion-card"
           v-for="(item, index) in items" :key="item.id">
-          <img class="card-img" v-bind:src="getBackdrop(item.backdrop_path)" v-bind:onerror="backdropFallbackJs" alt="">
+          <progressive-img v-bind:src="getBackdrop(item.backdrop_path)"></progressive-img>
           <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
@@ -74,6 +74,9 @@ export default {
     starIcon () {
       return faStar
     },
+    fallbackBackdrop () {
+      return this.$store.getters.fallbackMovieBackdrop
+    },
     backdropFallbackJs () {
       let backdrop = this.$store.getters.fallbackMovieBackdrop
       let js = 'this.onerror=null;this.src=\'' + backdrop + '\''
@@ -91,7 +94,7 @@ export default {
       if (path) {
         return 'http://image.tmdb.org/t/p/w500' + path
       } else {
-        return 'http://image.tmdb.org/t/p/w500/w300/njv65RTipNSTozFLuF85jL0bcQe.jpg'
+        return this.$store.getters.fallbackMovieBackdrop
       }
     },
     getInfoUrl (id) {
@@ -254,6 +257,10 @@ div.info-icons {
     color: grey;
 }
 */
+
+.card-img-overlay {
+  z-index: 10;
+}
 
 @media (min-width: 350px) {
     .card-columns {

@@ -12,6 +12,7 @@ import VueAxios from 'vue-axios'
 import lodash from 'lodash'
 import VueLodash from 'vue-lodash'
 import BootstrapVue from 'bootstrap-vue'
+import VueProgressiveImage from 'vue-progressive-image'
 
 import App from './App'
 
@@ -20,6 +21,7 @@ Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
 Vue.use(VueLodash, lodash)
 Vue.use(BootstrapVue)
+Vue.use(VueProgressiveImage)
 
 let app
 
