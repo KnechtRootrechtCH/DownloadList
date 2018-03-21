@@ -24,16 +24,9 @@
 
 <script>
 import firebase from 'firebase'
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 
 export default {
   name: 'Navigation',
-  computed: {
-    userIcon () {
-      return faUser
-    },
-  },
   methods: {
     signOut () {
       firebase.auth().signOut().then(() => {
