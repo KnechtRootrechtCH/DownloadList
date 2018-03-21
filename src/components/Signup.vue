@@ -71,6 +71,8 @@ export default {
         (user) => {
           alert('Account successfully created.')
           this.$router.replace('movies')
+          this.$store.commit('setUser')
+          this.$store.dispatch('getFirebaseData')
         },
         (err) => {
           this.emailMessage = err.message

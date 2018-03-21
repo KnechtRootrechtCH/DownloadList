@@ -1,17 +1,15 @@
 <template>
   <div class="login">
-    <form>
-      <div class="form-group">
-        <label for="email">Mail</label>
-        <input type="email" v-model="email" class="form-control" placeholder="name@example.com" v-on:submit.prevent="signIn">
-        <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasMessage }">{{ message }}</small>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" v-model="password" class="form-control" v-on:submit.prevent="signIn">
-      </div>
-      <button type="submit" v-on:click="signIn" class="btn btn-yellow">Login</button>
-    </form>
+    <div class="form-group">
+      <label for="email">Mail</label>
+      <input type="email" v-model="email" class="form-control" placeholder="name@example.com" v-on:submit.prevent="signIn">
+      <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasMessage }">{{ message }}</small>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" v-model="password" class="form-control" v-on:submit.prevent="signIn">
+    </div>
+    <button type="submit" v-on:click="signIn" class="btn btn-yellow">Login</button>
     <small id="signup" class="form-text">Don't have an account? Signup <router-link to="/signup">here</router-link>.</small>
   </div>
 </template>
@@ -36,6 +34,8 @@ export default {
           this.message = ''
           this.hasMessage = false
           this.$router.replace('movies')
+          this.$store.commit('setUser')
+          this.$store.dispatch('getFirebaseData')
         },
         (err) => {
           this.message = err.message
