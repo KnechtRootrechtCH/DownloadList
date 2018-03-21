@@ -12,14 +12,14 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    _movieDbApiKey: '',
+    _movieDbApiKey: '23703a8a857927f41414fb155404393d',
     _fallbackMovieBackdrop: '',
     _fallbackTvBackdrop: '',
     _locale: 'en',
     _user: null,
 
-    _movies: null,
-    _shows: null
+    _movies: {},
+    _shows: {}
   },
   mutations: {
     setMovieDbApiKey: (state, payload) => { state._movieDbApiKey = payload },
@@ -70,8 +70,8 @@ export const store = new Vuex.Store({
     test: (state) => { return state._test },
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
-    movie: (state) => (id) => { return state._movies[id] },
     movies: (state) => { return state._movies },
+    movie: (state) => (id) => { return state._movies !== null ? state._movies[id] : null },
     shows: (state) => { return state._shows },
     locale: (state) => { return state._locale },
     movieDbApiKey: (state) => { return state._movieDbApiKey },

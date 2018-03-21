@@ -151,7 +151,6 @@ export default {
         return
       }
       this._.debounce(() => {
-        this.$debug('calling themoviedb api', this.searchString)
         this.$root.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale + '&query=' + this.searchString).then(
           (response) => {
             this.count = response.data.total_results
@@ -163,6 +162,18 @@ export default {
           })
       }, 1000)()
     }
+  },
+  created: function () {
+    this.$root.axios.get('https://api.themoviedb.org/3/movie/popular?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale).then(
+      (response) => {
+        this.count = response.data.total_results
+        this.pages = response.data.total_pages
+        this.items = []
+        response.data.results.forEach(element => {
+          this.items.push(element)
+        })
+        console.log(this.items)
+      })
   },
   watch: {
     searchString: function (val, oldVal) {
