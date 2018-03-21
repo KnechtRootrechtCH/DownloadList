@@ -3,29 +3,24 @@
     <!--<img class="app_logo" src="../assets/logo.png"/>-->
     <h2>Project Information</h2>
     <ul>
-      <li><a href="https://github.com/KnechtRootrechtCH/DownloadList" target="_blank">Git Hub Project Page</a></li>
+      <li><a href="https://github.com/KnechtRootrechtCH/DownloadList" target="_blank">git hub project page</a></li>
     </ul>
     <h2>Essential Links</h2>
     <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
+      <li><a href="https://vuejs.org" target="_blank">core docs</a></li>
+      <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank">template</a></li>
       <br>
-      <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank">Docs for This Template</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
       <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
       <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
+      <li><a href="https://bootstrap-vue.js.org/docs/" target="_blank">bootstrap-vue</a></li>
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
+      <li><a href="https://fontawesome.com/icons" target="_blank">fontawesome</a></li>
     </ul>
     <h2>References</h2>
       <ul>
-        <li><a href="https://bootstrap-vue.js.org/docs/" target="_blank">Bootstrap Vue</a></li>
-        <li><a href="https://developers.themoviedb.org/3" target="_blank">The Movie Database API</a></li>
-        <li><a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a></li>
+        <li><a href="https://developers.themoviedb.org/3" target="_blank">firebase</a></li>
+        <li><a href="https://developers.themoviedb.org/3" target="_blank">the movie database</a></li>
+        <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
       </ul>
   </div>
 </template>

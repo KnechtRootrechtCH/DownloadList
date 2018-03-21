@@ -12,7 +12,8 @@
     <div class="suggestion-list">
       <div class="card-columns">
         <div class="card bg-dark text-white suggestion-card"
-          v-for="(item, index) in items" :key="item.id">
+          v-for="(item, index) in items" :key="item.id"
+          v-bind:class="{ 'suggestion-card-active': !isDownloaded(item.id) }">
           <progressive-img v-bind:src="getBackdrop(item.backdrop_path)"></progressive-img>
           <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
@@ -20,14 +21,17 @@
             <div class="info-icons">
               <font-awesome-icon :icon="infoIcon" class="info-icon" v-on:click.stop="openInformationUrl(item.id)"/>
             </div>
-            <div class="toggle-icons" v-if="isSelected(item.id)">
+            <div class="toggle-icons" v-if="isDownloaded(item.id)">
+              <font-awesome-icon :icon="checkIcon" class="toggle-icon check-icon"/>
+            </div>
+            <div class="toggle-icons" v-if="!isDownloaded(item.id) && isSelected(item.id)">
               <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 5) }" v-on:click.stop="setPriority(item.id, 5)"/>
               <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 4) }" v-on:click.stop="setPriority(item.id, 4)"/>
               <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
               <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
               <font-awesome-icon :icon="starIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
             </div>
-            <div class="toggle-icons" v-if="!isSelected(item.id)">
+            <div class="toggle-icons" v-if="!isDownloaded(item.id) && !isSelected(item.id)">
               <font-awesome-icon :icon="plusIcon" class="toggle-icon add-icon"/>
             </div>
           </div>
@@ -108,6 +112,9 @@ export default {
     toggleItem (index, id) {
       var item = this.$store.getters.movie(id)
       if (item) {
+        if (item.downloaded) {
+          return
+        }
         this.$store.dispatch('removeMovie', item.id)
       } else {
         item = this.items[index]
@@ -118,6 +125,13 @@ export default {
     isSelected (id) {
       var item = this.$store.getters.movie(id)
       return item
+    },
+    isDownloaded (id) {
+      var item = this.$store.getters.movie(id)
+      if (item) {
+        return item.downloaded
+      }
+      return false
     },
     hasPriority (id, priority) {
       var item = this.$store.getters.movie(id)
@@ -172,7 +186,6 @@ export default {
         response.data.results.forEach(element => {
           this.items.push(element)
         })
-        console.log(this.items)
       })
   },
   watch: {
@@ -214,7 +227,7 @@ export default {
 .suggestion-input {
   max-width: 300px;
 }
-.suggestion-card {
+.suggestion-card-active {
   cursor: pointer;
 }
 h5.card-title {
@@ -236,6 +249,7 @@ div.info-icons {
   color: white;
   width: 30px;
   height: 30px;
+  cursor: pointer;
 }
 .add-icon {
   color: white;
@@ -248,7 +262,7 @@ div.info-icons {
   height: 30px;
 }
 .priority-icon {
-    color: darkgrey;
+  color: darkgrey;
 }
 /*
 .priority-icon:hover {

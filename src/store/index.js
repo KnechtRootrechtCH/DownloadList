@@ -48,23 +48,20 @@ export const store = new Vuex.Store({
       })
     },
     getFirebaseData: (context) => {
-      let uid = context.getters.user.uid
       firebase.database.ref('settings/movieDbApiKey').on('value', (snapshot) => {
         context.commit('setMovieDbApiKey', snapshot.val())
       })
       firebase.database.ref('settings/fallbackMovieBackdrop').on('value', (snapshot) => {
         context.commit('setFallbackMovieBackdrop', snapshot.val())
       })
+    },
+    getFirebaseUserData: (context) => {
+      let uid = context.getters.user.uid
       firebase.database.ref('data/' + uid + '/movies/').on('value', (snapshot) => {
         context.commit('setMovies', snapshot.val())
       })
       firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
-    },
-
-    getInitiatlState: context => {
-      console.log('test')
-    },
-    loadMovies: context => { context.commit('setMovies') }
+    }
   },
   getters: {
     test: (state) => { return state._test },

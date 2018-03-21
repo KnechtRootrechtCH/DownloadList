@@ -34,7 +34,7 @@ export default {
           this.message = ''
           this.hasMessage = false
           this.$store.commit('setUser')
-          this.$store.dispatch('getFirebaseData')
+          this.$store.dispatch('getFirebaseUserData')
           this.$router.replace('list')
         },
         (err) => {

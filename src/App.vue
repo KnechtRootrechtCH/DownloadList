@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 import Navigation from './components/Navigation'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -26,6 +28,10 @@ export default {
   },
   created: function () {
     this.$store.dispatch('getFirebaseData')
+    let currentUser = firebase.auth().currentUser
+    if (currentUser) {
+      this.$store.dispatch('getFirebaseUserData')
+    }
   }
 }
 </script>

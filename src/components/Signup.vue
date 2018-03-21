@@ -71,7 +71,7 @@ export default {
         (user) => {
           alert('Account successfully created.')
           this.$store.commit('setUser')
-          this.$store.dispatch('getFirebaseData')
+          this.$store.dispatch('getFirebaseUserData')
           this.$router.replace('list')
         },
         (err) => {
