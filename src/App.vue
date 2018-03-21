@@ -23,6 +23,9 @@ export default {
       movies: [],
       shows: []
     }
+  },
+  created: function () {
+    this.$store.dispatch('getFirebaseData')
   }
 }
 </script>

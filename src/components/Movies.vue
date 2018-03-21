@@ -13,7 +13,7 @@
       <div class="card-columns">
         <div class="card bg-dark text-white suggestion-card"
           v-for="(item, index) in items" :key="item.id">
-          <img class="card-img" v-bind:src="getBackdrop(item.backdrop_path)" onerror="this.onerror=null;this.src='http://image.tmdb.org/t/p/w500/mX7mlE1kaGohnSVDMSTlrvisYf7.jpg'" alt="">
+          <img class="card-img" v-bind:src="getBackdrop(item.backdrop_path)" v-bind:onerror="backdropFallbackJs" alt="">
           <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
@@ -73,6 +73,12 @@ export default {
     },
     starIcon () {
       return faStar
+    },
+    backdropFallbackJs () {
+      let backdrop = this.$store.getters.fallbackMovieBackdrop
+      let js = 'this.onerror=null;this.src=\'' + backdrop + '\''
+      console.log(backdrop, js)
+      return js
     }
   },
   methods: {
@@ -103,7 +109,7 @@ export default {
       }
     },
     toggleItem (index, id) {
-      var item = this.$store.getters.getMovie(id)
+      var item = this.$store.getters.movie(id)
       if (item) {
         this.$store.commit('removeMovie', item.id)
       } else {
@@ -113,18 +119,18 @@ export default {
       }
     },
     isSelected (id) {
-      var item = this.$store.getters.getMovie(id)
+      var item = this.$store.getters.movie(id)
       return item
     },
     hasPriority (id, priority) {
-      var item = this.$store.getters.getMovie(id)
+      var item = this.$store.getters.movie(id)
       if (item) {
         return item.priority <= priority
       }
       return false
     },
     setPriority (id, p) {
-      var item = this.$store.getters.getMovie(id)
+      var item = this.$store.getters.movie(id)
       var priority = p
       if (item) {
         if (item.priority === priority) {
@@ -148,7 +154,7 @@ export default {
       }
       this._.debounce(() => {
         this.$debug('calling themoviedb api', this.searchString)
-        this.$root.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.getMovieDbApiKey + '&language=' + this.$store.getters.getLocale + '&query=' + this.searchString).then(
+        this.$root.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale + '&query=' + this.searchString).then(
           (response) => {
             this.count = response.data.total_results
             this.pages = response.data.total_pages
