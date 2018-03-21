@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
@@ -149,7 +148,7 @@ export default {
       }
       this._.debounce(() => {
         this.$debug('calling themoviedb api', this.searchString)
-        axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.state.movieDbApiKey + '&language=' + this.$store.state.language + '&query=' + this.searchString).then(
+        this.$root.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.getMovieDbApiKey + '&language=' + this.$store.getters.getLocale + '&query=' + this.searchString).then(
           (response) => {
             this.count = response.data.total_results
             this.pages = response.data.total_pages
