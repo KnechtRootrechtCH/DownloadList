@@ -13,6 +13,7 @@ import lodash from 'lodash'
 import VueLodash from 'vue-lodash'
 import BootstrapVue from 'bootstrap-vue'
 import VueProgressiveImage from 'vue-progressive-image'
+import { VueMasonryPlugin } from 'vue-masonry'
 
 import App from './App'
 
@@ -22,6 +23,7 @@ Vue.use(VueAxios, axios)
 Vue.use(VueLodash, lodash)
 Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
+Vue.use(VueMasonryPlugin)
 
 let app
 

@@ -10,12 +10,13 @@
       </b-input-group>
     </div>
     <div class="suggestion-list">
-      <div class="card-columns">
-        <div class="card bg-dark text-white suggestion-card"
+      <div v-masonry transition-duration="0.3s" item-selector=".masonry-item">
+        <div v-masonry-tile class="masonry-item"
           v-for="(item, index) in items" :key="item.id"
           v-bind:class="{ 'suggestion-card-active': !isDownloaded(item.id) }">
-          <progressive-img v-bind:src="getBackdrop(item.backdrop_path)"></progressive-img>
-          <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
+          <div class="card bg-dark text-white suggestion-card">
+            <progressive-img v-bind:src="getBackdrop(item.backdrop_path)"></progressive-img>
+            <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
             <div class="info-icons">
@@ -35,6 +36,7 @@
               <font-awesome-icon :icon="plusIcon" class="toggle-icon add-icon"/>
             </div>
           </div>
+          </div>
         </div>
       </div>
     </div>
@@ -42,7 +44,6 @@
 </template>
 
 <script>
-import InfiniteLoading from 'vue-infinite-loading'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
@@ -63,7 +64,6 @@ export default {
     }
   },
   components: {
-    InfiniteLoading,
     FontAwesomeIcon
   },
   computed: {
@@ -162,19 +162,21 @@ export default {
       }
     },
     updateSearch () {
-      this.queryType = 'search'
-      if (this.searchString === null || this.searchString.length < 3) {
-        return
-      }
-
       this._.debounce(() => {
-        this.queryType = 'search'
-        this.page = 0
-        this.count = 0
-        this.pages = 0
-        this.items = []
-        this.loadItems()
-      }, 1000)()
+        if (this.searchString === null || (this.searchString.length === 0 && this.queryType === 'search')) {
+          this.queryType = 'popular'
+          this.page = 0
+          this.count = 0
+          this.pages = 0
+          this.loadItems()
+        } else if (this.searchString.length > 2) {
+          this.queryType = 'search'
+          this.page = 0
+          this.count = 0
+          this.pages = 0
+          this.loadItems()
+        }
+      }, 2000)()
     },
     getQueryString () {
       let query = null
@@ -190,14 +192,15 @@ export default {
     },
     loadItems () {
       let query = this.getQueryString()
-      console.log(this.queryType, this.page, this.pages, query)
 
       this.$root.axios.get(query).then(
         (response) => {
           this.count = response.data.total_results
           this.pages = response.data.total_pages
           this.page = response.data.page
-
+          if (this.page <= 1) {
+            this.items = []
+          }
           response.data.results.forEach(element => {
             this.items.push(element)
           })
@@ -227,7 +230,6 @@ export default {
     this.page = 0
     this.count = 0
     this.pages = 0
-    this.items = []
     this.loadItems()
   },
   beforeDestroy () {
@@ -266,11 +268,12 @@ export default {
 .suggestion-list {
   margin-top: 20px;
 }
-.suggestion-card {
-  background-color: #343a40;
-}
 .suggestion-input {
   max-width: 300px;
+}
+.suggestion-card {
+  background-color: #343a40;
+  margin: 0 10px 10px 0
 }
 .suggestion-card-active {
   cursor: pointer;
@@ -327,6 +330,9 @@ div.info-icons {
 }
 
 @media (min-width: 350px) {
+    .masonry-item {
+      width: 100%;
+    }
     .card-columns {
         -webkit-column-count: 1;
         -moz-column-count: 1;
@@ -335,6 +341,9 @@ div.info-icons {
 }
 
 @media (min-width: 700px) {
+  .masonry-item {
+      width: 50%;
+    }
     .card-columns {
         -webkit-column-count: 2;
         -moz-column-count: 2;
@@ -343,6 +352,9 @@ div.info-icons {
 }
 
 @media (min-width: 1050px) {
+    .masonry-item {
+      width: 33.3%;
+    }
     .card-columns {
         -webkit-column-count: 3;
         -moz-column-count: 3;
@@ -351,6 +363,9 @@ div.info-icons {
 }
 
 @media (min-width: 1400px) {
+    .masonry-item {
+      width: 25%;
+    }
     .card-columns {
         -webkit-column-count: 4;
         -moz-column-count: 4;
@@ -358,10 +373,8 @@ div.info-icons {
     }
 }
 @media (min-width: 1750px) {
-    .card-columns {
-        -webkit-column-count: 5;
-        -moz-column-count: 5;
-        column-count: 5;
+    .masonry-item {
+      width: 20%;
     }
 }
 </style>
