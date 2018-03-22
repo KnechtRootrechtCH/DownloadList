@@ -15,7 +15,7 @@
           v-for="(item, index) in items" :key="item.id"
           v-bind:class="{ 'suggestion-card-active': !isDownloaded(item.id) }">
           <div class="card bg-dark text-white suggestion-card">
-            <progressive-img v-bind:src="getBackdrop(item.backdrop_path)"></progressive-img>
+            <progressive-img v-bind:src="getBackdrop(item.backdrop_path)" v-bind:placeholder="backdropPlaceholder"></progressive-img>
             <div class="card-img-overlay" v-on:click.stop="toggleItem(index, item.id)">
             <h5 class="card-title">{{ item.title }}</h5>
             <p class="card-text">{{ getReleaseYear(item.release_date) }}</p>
@@ -82,7 +82,7 @@ export default {
     starIcon () {
       return faStar
     },
-    fallbackBackdrop () {
+    backdropPlaceholder () {
       return this.$store.getters.fallbackMovieBackdrop
     }
   },
