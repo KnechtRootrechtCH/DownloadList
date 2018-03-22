@@ -1,8 +1,16 @@
 <template>
   <div class="list">
     <h2>{{ $t("list.header") }}</h2>
-    <h3>Work in progress&trade;</h3>
-    <p>Patience you must have, my young padawan &mdash; Yoda </p>
+    <div v-if="!items" class="download-item-info-section">
+        {{ $t("list.noItems") }}
+    </div>
+    <div class="menu-bar">
+      <b-dropdown id="sort-dropdown" v-bind:text="sortButtonText" class="m-2 menu-bar-button">
+        <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
+        <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
+        <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
+      </b-dropdown>
+    </div>
     <div class="download-list">
       <div class="download-item"
         v-for="(item) in items" :key="item.id">
@@ -48,8 +56,9 @@
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faStar from '@fortawesome/fontawesome-free-solid/faStar'
-import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
+import faTrash from '@fortawesome/fontawesome-free-solid/faTrash'
 import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+// import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 
 export default {
   name: 'List',
@@ -58,12 +67,15 @@ export default {
   },
   data () {
     return {
-      overviewMaxChars: 250
+      overviewMaxChars: 250,
+      sort: 'priority'
     }
   },
   computed: {
     items () {
-      return this.$store.getters.movies
+      let items = this.$store.getters.movies
+      items = this.sortItems(items, this.sort)
+      return items
     },
     checkIcon () {
       return faCheckCircle
@@ -72,7 +84,10 @@ export default {
       return faStar
     },
     removeIcon () {
-      return faMinusCircle
+      return faTrash
+    },
+    sortButtonText () {
+      return this.$i18n.t('list.buttons.sort') + ': ' + this.$i18n.t('list.sort.' + this.sort)
     }
   },
   methods: {
@@ -111,6 +126,12 @@ export default {
       }
       return false
     },
+    removeItem (id) {
+      var item = this.$store.getters.movie(id)
+      if (item) {
+        this.$store.dispatch('removeMovie', item.id)
+      }
+    },
     setPriority (id, p) {
       var item = this.$store.getters.movie(id)
       var priority = p
@@ -123,6 +144,39 @@ export default {
           id: item.id,
           priority: priority})
       }
+    },
+    changeSortMethod (method) {
+      this.sort = method
+    },
+    sortItems (items, sort) {
+      let array = []
+      for (let id in items) {
+        let item = this.$store.getters.movie(id)
+        array.push(item)
+      }
+
+      // title sort as default
+      array.sort((a, b) => {
+        return a.title > b.title
+      })
+
+      switch (sort) {
+        case 'priority':
+          console.log('prio sort')
+          array.sort((a, b) => {
+            if (a.downloaded) return true
+            if (b.downloaded) return false
+            return a.priority > b.priority
+          })
+          break
+        case 'release':
+          array.sort((a, b) => {
+            return a.release_date > b.release_date
+          })
+
+          break
+      }
+      return array
     }
   },
   i18n: {
@@ -130,24 +184,42 @@ export default {
       de: {
         list: {
           header: 'Meine Liste',
+          noItems: 'Du hast noch keine Downloads ausgewählt.',
           item: {
             overview: 'Übersicht',
             actions: 'Aktionen',
             download: 'Download',
             successfull: 'Erfolgreich',
             priority: 'Priorität'
+          },
+          buttons: {
+            sort: 'Sortierung'
+          },
+          sort: {
+            priority: 'Download Priorität',
+            title: 'Titel',
+            release: 'Veröffentlichung'
           }
         }
       },
       en: {
         list: {
           header: 'My list',
+          noItems: 'There are no downloads on your list. Add some Movies or TV Series to fill your download list',
           item: {
             overview: 'Overview',
             actions: 'Actions',
             download: 'Download',
             successfull: 'Success',
-            priority: 'priority'
+            priority: 'Priorität'
+          },
+          buttons: {
+            sort: 'Sorting'
+          },
+          sort: {
+            priority: 'Download Priority',
+            title: 'Title',
+            release: 'Release date'
           }
         }
       }
@@ -160,6 +232,12 @@ export default {
 <style scoped>
 .list {
   margin: 10px 30px;
+}
+.menu-bar {
+  margin: 0 0 20px 0;
+}
+.menu-bar .menu-bar-button {
+  margin: 0 20px 0 0 !important;
 }
 .download-item {
   margin-bottom: 15px;
@@ -213,6 +291,9 @@ export default {
   color: green;
 }
 .remove-icon {
+  margin-right: 5px;
+}
+.remove-icon:hover {
   color: red;
   cursor: pointer;
 }
