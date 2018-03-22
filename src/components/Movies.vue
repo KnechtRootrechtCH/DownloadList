@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import InfiniteLoading from 'vue-infinite-loading'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
@@ -53,13 +54,16 @@ export default {
   name: 'Movies',
   data () {
     return {
+      queryType: 'popular',
       count: 0,
       pages: 0,
+      page: 0,
       searchString: '',
       items: []
     }
   },
   components: {
+    InfiniteLoading,
     FontAwesomeIcon
   },
   computed: {
@@ -158,35 +162,76 @@ export default {
       }
     },
     updateSearch () {
+      this.queryType = 'search'
       if (this.searchString === null || this.searchString.length < 3) {
-        this.count = 0
-        this.pages = 0
-        this.suggestions = []
         return
       }
+
       this._.debounce(() => {
-        this.$root.axios.get('https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale + '&query=' + this.searchString).then(
-          (response) => {
-            this.count = response.data.total_results
-            this.pages = response.data.total_pages
-            this.items = []
-            response.data.results.forEach(element => {
-              this.items.push(element)
-            })
-          })
+        this.queryType = 'search'
+        this.page = 0
+        this.count = 0
+        this.pages = 0
+        this.items = []
+        this.loadItems()
       }, 1000)()
+    },
+    getQueryString () {
+      let query = null
+      switch (this.queryType) {
+        case 'search':
+          query = 'https://api.themoviedb.org/3/search/movie?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale + '&page=' + (this.page + 1) + '&query=' + this.searchString
+          break
+        case 'popular':
+          query = 'https://api.themoviedb.org/3/movie/popular?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale + '&page=' + (this.page + 1)
+          break
+      }
+      return query
+    },
+    loadItems () {
+      let query = this.getQueryString()
+      console.log(this.queryType, this.page, this.pages, query)
+
+      this.$root.axios.get(query).then(
+        (response) => {
+          this.count = response.data.total_results
+          this.pages = response.data.total_pages
+          this.page = response.data.page
+
+          response.data.results.forEach(element => {
+            this.items.push(element)
+          })
+        })
+    },
+    handleScroll () {
+      var d = document.documentElement
+      var offset = d.scrollTop + window.innerHeight
+      var height = d.offsetHeight
+
+      if (offset === height) {
+        this.infiniteScroll()
+      }
+    },
+    infiniteScroll () {
+      if (this.pages !== 0 && this.page === this.pages) {
+        console.log('reached the end of the world')
+        return
+      }
+      this.loadItems()
     }
   },
-  created: function () {
-    this.$root.axios.get('https://api.themoviedb.org/3/movie/popular?api_key=' + this.$store.getters.movieDbApiKey + '&language=' + this.$store.getters.locale).then(
-      (response) => {
-        this.count = response.data.total_results
-        this.pages = response.data.total_pages
-        this.items = []
-        response.data.results.forEach(element => {
-          this.items.push(element)
-        })
-      })
+  created () {
+    window.addEventListener('scroll', this.handleScroll)
+
+    this.queryType = 'popular'
+    this.page = 0
+    this.count = 0
+    this.pages = 0
+    this.items = []
+    this.loadItems()
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   },
   watch: {
     searchString: function (val, oldVal) {

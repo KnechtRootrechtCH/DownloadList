@@ -42,7 +42,7 @@ export default {
     }
   },
   methods: {
-      getPoster (path) {
+    getPoster (path) {
       if (path) {
         return 'http://image.tmdb.org/t/p/w200' + path
       } else {
@@ -101,7 +101,7 @@ export default {
   width: 100%;
   margin: 0;
   padding: 0;
- 
+
 }
 /*
 .download-item-media {
