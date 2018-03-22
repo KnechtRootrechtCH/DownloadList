@@ -5,7 +5,7 @@
         {{ $t("list.noItems") }}
     </div>
     <div class="menu-bar">
-      <b-dropdown id="sort-dropdown" v-bind:text="sortButtonText" class="m-2 menu-bar-button">
+      <b-dropdown id="sort-dropdown" v-bind:text="sortButtonText" class="m-md-2 menu-bar-button" variant="dark">
         <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
@@ -157,7 +157,9 @@ export default {
 
       // title sort as default
       array.sort((a, b) => {
-        return a.title > b.title
+        if (a.title > b.title) return 1
+        if (a.title < b.title) return -1
+        return 0
       })
 
       switch (sort) {
@@ -166,12 +168,16 @@ export default {
           array.sort((a, b) => {
             if (a.downloaded) return true
             if (b.downloaded) return false
-            return a.priority > b.priority
+            if (a.priority < b.priority) return -1
+            if (a.priority > b.priority) return 1
+            return 0
           })
           break
         case 'release':
           array.sort((a, b) => {
-            return a.release_date > b.release_date
+            if (a.release_date > b.release_date) return -1
+            if (a.release_date < b.release_date) return 1
+            return 0
           })
 
           break
