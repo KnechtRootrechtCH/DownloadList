@@ -201,7 +201,7 @@ export default {
             sort: 'Sortierung'
           },
           sort: {
-            priority: 'Download Priorität',
+            priority: 'Priorität',
             title: 'Titel',
             release: 'Veröffentlichung'
           }
