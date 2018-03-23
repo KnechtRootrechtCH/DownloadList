@@ -164,7 +164,6 @@ export default {
 
       switch (sort) {
         case 'priority':
-          console.log('prio sort')
           array.sort((a, b) => {
             if (a.downloaded) return true
             if (b.downloaded) return false

@@ -10,7 +10,7 @@
       </b-input-group>
     </div>
     <div class="suggestion-list">
-      <div v-masonry transition-duration="0.3s" item-selector=".masonry-item">
+      <div v-masonry transition-duration="0" item-selector=".masonry-item" percent-position="true" horizontal-order="true">
         <div v-masonry-tile class="masonry-item"
           v-for="(item, index) in items" :key="item.id"
           v-bind:class="{ 'suggestion-card-active': !isDownloaded(item.id) }">
@@ -56,6 +56,7 @@ export default {
   data () {
     return {
       queryType: 'popular',
+      loading: false,
       count: 0,
       pages: 0,
       page: 0,
@@ -94,7 +95,7 @@ export default {
     },
     getBackdrop (path) {
       if (path) {
-        return 'http://image.tmdb.org/t/p/w500' + path
+        return 'https://image.tmdb.org/t/p/w500' + path
       } else {
         return this.$store.getters.fallbackMovieBackdrop
       }
@@ -176,7 +177,7 @@ export default {
           this.pages = 0
           this.loadItems()
         }
-      }, 2000)()
+      }, 1000)()
     },
     getQueryString () {
       let query = null
@@ -192,9 +193,10 @@ export default {
     },
     loadItems () {
       let query = this.getQueryString()
-
+      this.loading = true
       this.$root.axios.get(query).then(
         (response) => {
+          this.loading = false
           this.count = response.data.total_results
           this.pages = response.data.total_pages
           this.page = response.data.page
@@ -217,7 +219,6 @@ export default {
     },
     infiniteScroll () {
       if (this.pages !== 0 && this.page === this.pages) {
-        console.log('reached the end of the world')
         return
       }
       this.loadItems()
