@@ -1,21 +1,21 @@
 <template>
-  <div class="card border-dark suggestion-card" v-bind:class="{ 'suggestion-card-active': !isDownloaded(id), 'bg-light text-dark': isSelected(id), 'bg-dark text-light': !isSelected(id) }" v-on:click.stop="toggleItem(index, id)">
+  <div class="card border-dark suggestion-card" v-bind:class="{ 'suggestion-card-active': !isDownloaded(), 'bg-light text-dark': isSelected(), 'bg-dark text-light': !isSelected() }" v-on:click.stop="toggleItem()">
     <div class="card-image-top">
-      <progressive-img v-bind:src="getBackdrop(backdrop)" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+      <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
     </div>
     <div class="card-body">
       <div class="card-title col-xs-6">{{ title }}</div>
-      <div class="card-release col-xs-2">{{ getReleaseDate(releaseDate) }}</div>
+      <div class="card-release col-xs-2">{{ releaseDate }}</div>
       <div class="card-icons container-fluid">
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-           <font-awesome-icon v-b-tooltip :icon="infoIcon" class="card-icon" @click.stop="openInformationUrl(id)" v-bind:title="$t('suggestionCard.tooltip.info')"/>
+           <font-awesome-icon v-b-tooltip :icon="infoIcon" class="card-icon" @click.stop="openInformationUrl()" v-bind:title="$t('suggestionCard.tooltip.info')"/>
           </div>
           <div class='col-xs-6'>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded(id)" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(id, 3) }" @click.stop="setPriority(index, id, 3)" v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded(id)" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(id, 2) }" @click.stop="setPriority(index, id, 2)" v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded(id)" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(id, 1) }" @click.stop="setPriority(index, id, 1)" v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
-            <font-awesome-icon v-b-tooltip v-if="isDownloaded(id)" :icon="downloadedIcon" class="card-icon check-icon" v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
+            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(3) }" @click.stop="setPriority(3)" v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
+            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(2) }" @click.stop="setPriority(2)" v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
+            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(1) }" @click.stop="setPriority(1)" v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
+            <font-awesome-icon v-b-tooltip v-if="isDownloaded()" :icon="downloadedIcon" class="card-icon check-icon" v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@ import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 
 export default {
   name: 'SuggestionItem',
-  props: ['suggestionType', 'index', 'id', 'title', 'releaseDate', 'backdrop'],
+  props: ['item'],
   data () {
     return {
       lowestPriority: 3
@@ -44,6 +44,39 @@ export default {
     FontAwesomeIcon
   },
   computed: {
+    title () {
+      if (this.item.mediaType === 'movie') {
+        return this.item.title
+      } else if (this.item.mediaType === 'tv') {
+        return this.item.name
+      }
+    },
+    releaseDate () {
+      let date = null
+      if (this.item.mediaType === 'movie') {
+        date = this.item.release_date
+      } else if (this.item.mediaType === 'tv') {
+        date = this.item.first_air_date
+      }
+
+      if (!date) {
+        return this.$i18n.t('suggestionCard.' + this.item.mediaType + '.dateNotFound')
+      }
+      let moment = this.$moment(date)
+      let formated = moment.format('YYYY')
+      if (formated) {
+        return formated
+      } else {
+        return this.$i18n.t('suggestionCard.' + this.item.mediaType + '.dateNotFound')
+      }
+    },
+    backdrop () {
+      if (this.item.backdrop_path) {
+        return 'https://image.tmdb.org/t/p/w500' + this.item.backdrop_path
+      } else {
+        return ''
+      }
+    },
     addIcon () {
       return addIcon
     },
@@ -60,133 +93,70 @@ export default {
       return priorityIcon
     },
     backdropPlaceholder () {
-      if (this.suggestionType === 'movie') {
+      if (this.item.mediaType === 'movie') {
         return this.$store.getters.fallbackMovieBackdrop
-      } else if (this.suggestionType === 'tv') {
+      } else if (this.item.mediaType === 'tv') {
         return this.$store.getters.fallbackTvBackdrop
       }
     }
   },
   methods: {
-    openInformationUrl (id) {
+    openInformationUrl () {
       this.destroyTooltips()
-      var url = this.getInfoUrl(id)
+      var url = 'https://www.themoviedb.org/' + this.item.mediaType + '/' + this.item.id
       var win = window.open(url, '_blank')
       win.focus()
     },
-    getBackdrop (path) {
-      if (path) {
-        return 'https://image.tmdb.org/t/p/w500' + path
-      } else {
-        return ''
-      }
-    },
-    getInfoUrl (id) {
-      if (id) {
-        return 'https://www.themoviedb.org/' + this.suggestionType + '/' + id
-      } else {
-        return 'https://www.themoviedb.org/' + this.suggestionType + '/'
-      }
-    },
-    getReleaseDate (date) {
-      if (!date) {
-        return this.$i18n.t('suggestionCard.' + this.suggestionType + '.dateNotFound')
-      }
-      let moment = this.$moment(date)
-      let formated = moment.format('YYYY')
-      if (formated) {
-        return formated
-      } else {
-        return this.$i18n.t('suggestionCard.' + this.suggestionType + '.dateNotFound')
-      }
-    },
-    toggleItem (index, id, event) {
+    toggleItem () {
       this.destroyTooltips()
 
-      if (this.suggestionType === 'movie') {
-        this.toggleMovie(index, id)
-      } else if (this.suggestionType === 'tv') {
-        this.toggleTv(index, id)
-      }
-    },
-    toggleMovie (index, id) {
-      var item = this.getItem(id)
-      if (item) {
-        if (item.downloaded) {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        if (selectedItem.downloaded) {
           return
         }
-        this.$store.dispatch('removeMovie', item.id)
+        this.$store.dispatch('removeItem', selectedItem.key)
       } else {
-        item = this.$store.getters.movieSuggestions[index]
-        item.priority = this.lowestPriority
-        this.$store.dispatch('addMovie', item)
+        this.item.priority = this.lowestPriority
+        this.$store.dispatch('addItem', this.item)
       }
     },
-    toggleTv (index, id) {
-      var item = this.getItem(id)
-      if (item) {
-        if (item.downloaded) {
-          return
-        }
-        this.$store.dispatch('removeTv', item.id)
-      } else {
-        item = this.$store.getters.tvSuggestions[index]
-        item.priority = this.lowestPriority
-        this.$store.dispatch('addTv', item)
-      }
+    isSelected () {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      return selectedItem
     },
-    getItem (id) {
-      if (this.suggestionType === 'movie') {
-        return this.$store.getters.movie(id)
-      } else if (this.suggestionType === 'tv') {
-        return this.$store.getters.tv(id)
-      }
-    },
-    isSelected (id) {
-      var item = this.getItem(id)
-      return item
-    },
-    isDownloaded (id) {
-      var item = this.getItem(id)
-      if (item) {
-        return item.downloaded
+    isDownloaded () {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        return selectedItem.downloaded
       }
       return false
     },
-    hasPriority (id, priority) {
-      var item = this.getItem(id)
-      if (item) {
-        return item.priority <= priority
+    hasPriority (priority) {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        return selectedItem.priority <= priority
       }
       return false
     },
-    setPriority (index, id, priority, event) {
+    setPriority (priority) {
       this.destroyTooltips()
 
-      var item = this.getItem(id)
-      if (item) {
-        if (item.priority === priority) {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        if (selectedItem.priority === priority) {
           priority++
         }
         if (priority > this.lowestPriority) {
-          this.toggleItem(index, id)
-        } else if (this.suggestionType === 'movie') {
-          this.$store.dispatch('setMoviePriority', {
-            id: item.id,
-            priority: priority})
-        } else if (this.suggestionType === 'tv') {
-          this.$store.dispatch('setTvPriority', {
-            id: item.id,
+          this.$store.dispatch('removeItem', selectedItem.key)
+        } else {
+          this.$store.dispatch('setItemPriority', {
+            key: selectedItem.key,
             priority: priority})
         }
       } else {
-        item = this.$store.getters.movieSuggestions[index]
-        item.priority = priority
-        if (this.suggestionType === 'movie') {
-          this.$store.dispatch('addMovie', item)
-        } else if (this.suggestionType === 'tv') {
-          this.$store.dispatch('addTv', item)
-        }
+        this.item.priority = priority
+        this.$store.dispatch('addItem', this.item)
       }
     },
     destroyTooltips () {

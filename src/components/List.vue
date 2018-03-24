@@ -11,9 +11,10 @@
         <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
       </b-dropdown>
     </div>
-    <div class="download-list container">
+    <div class="download-list container-fluid">
       <div class="download-item row"
-        v-for="(item) in items" :key="item.id">
+        v-for="(item) in items"
+        :key="item.id">
           <div class="col-sm-2 hidden-md-down download-item-media">
             <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
           </div>
@@ -70,7 +71,7 @@ export default {
   },
   computed: {
     items () {
-      let items = this.$store.getters.movies
+      let items = this.$store.getters.items
       items = this.sortItems(items, this.sort)
       return items
     },
@@ -113,27 +114,27 @@ export default {
       return item.overview
     },
     isDownloaded (id) {
-      var item = this.$store.getters.movie(id)
+      var item = this.$store.getters.item(id)
       if (item) {
         return item.downloaded
       }
       return false
     },
     hasPriority (id, priority) {
-      var item = this.$store.getters.movie(id)
+      var item = this.$store.getters.item(id)
       if (item) {
         return item.priority <= priority
       }
       return false
     },
     removeItem (id) {
-      var item = this.$store.getters.movie(id)
+      var item = this.$store.getters.item(id)
       if (item) {
         this.$store.dispatch('removeMovie', item.id)
       }
     },
     setPriority (id, p) {
-      var item = this.$store.getters.movie(id)
+      var item = this.$store.getters.item(id)
       var priority = p
       if (item) {
         if (item.priority === priority) {
@@ -151,7 +152,7 @@ export default {
     sortItems (items, sort) {
       let array = []
       for (let id in items) {
-        let item = this.$store.getters.movie(id)
+        let item = this.$store.getters.item(id)
         array.push(item)
       }
 
