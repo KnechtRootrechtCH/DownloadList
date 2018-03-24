@@ -9,16 +9,14 @@
         </b-input-group-text>
       </b-input-group>
     </div>
-    <div class="mansonry-container">
-      <div v-masonry transition-duration="0" item-selector=".masonry-item" percent-position="true" horizontal-order="true">
-        <div v-masonry-tile
-          class="masonry-item"
-          v-for="(item, index) in suggestions" :key="item.id"
-          >
+    <b-container fluid class="suggestion-items">
+      <b-row>
+        <div v-for="(item, index) in suggestions" :key="item.id"
+        class="suggestion-item col-xs-12 col-sm-12 col-md-6 col-lg-3 col-xlg-2">
           <suggestionItem v-bind:suggestionType="suggestionType" v-bind:index="index" v-bind:id="item.id" v-bind:title="item.title" v-bind:release-date="item.release_date" v-bind:backdrop="item.backdrop_path"></suggestionItem>
         </div>
-      </div>
-    </div>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -34,13 +32,8 @@ export default {
     return {
       suggestionType: 'movie',
       queryType: 'popular',
-      loading: false,
-      count: 0,
-      pages: 0,
-      page: 0,
       searchString: '',
-      previousSearchString: '',
-      items: []
+      previousSearchString: ''
     }
   },
   components: {
@@ -57,7 +50,11 @@ export default {
   },
   methods: {
     updateSearch () {
+      if (this.searchString === this.previousSearchString) {
+        return
+      }
       this.previousSearchString = this.searchString
+
       if (this.searchString === null || (this.searchString.length === 0 && this.queryType === 'search')) {
         this.queryType = 'popular'
         this.$store.commit('resetMovieSuggestions')
@@ -84,9 +81,6 @@ export default {
       }
     },
     infiniteScroll () {
-      if (this.pages !== 0 && this.page === this.pages) {
-        return
-      }
       this.$store.dispatch('getMovieSuggestions', {
         'queryType': this.queryType,
         'searchString': this.searchString
@@ -136,8 +130,11 @@ export default {
 .suggestion-input {
   max-width: 300px;
 }
-.mansonry-container {
+.suggestion-items {
   margin-top: 20px;
+}
+.suggestion-item {
+  padding: 0;
 }
 
 @media (min-width: 350px) {

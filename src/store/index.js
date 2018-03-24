@@ -3,15 +3,9 @@ import Vuex from 'vuex'
 import firebase from '../firebase'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-// import { firebaseMutations } from 'vuexfire'
 
 Vue.use(Vuex)
 Vue.use(VueAxios, axios)
-
-// var moviesRef = db.ref('movies')
-// var showsRef = db.ref('shows')
-// console.log('ref', moviesRef)
-// console.log('ref', showsRef)
 
 export const store = new Vuex.Store({
   state: {
@@ -27,7 +21,11 @@ export const store = new Vuex.Store({
     _movieSuggestionsPages: 0,
     _movieSuggestionsCount: 0,
 
-    _shows: {}
+    _tv: {},
+    _tvSuggestions: [],
+    _tvSuggestionsPage: 0,
+    _tvSuggestionsPages: 0,
+    _tvSuggestionsCount: 0
   },
   mutations: {
     setMovieDbApiKey: (state, payload) => { state._movieDbApiKey = payload },
@@ -56,23 +54,28 @@ export const store = new Vuex.Store({
       payload.items.forEach(element => {
         state._movieSuggestions.push(element)
       })
+    },
+
+    setTv (state, tv) { state._tv = tv },
+    resetTvSuggestions (state) {
+      state._tvSuggestionsCount = 0
+      state._tvSuggestionsPage = 0
+      state._tvSuggestionsPages = 0
+      state._tvSuggestions = []
+    },
+    setTvSuggestions (state, payload) {
+      state._tvSuggestionsCount = payload.count
+      state._tvSuggestionsPage = payload.page
+      state._tvSuggestionsPages = payload.pages
+      if (payload.page <= 1) {
+        state._tvSuggestions = []
+      }
+      payload.items.forEach(element => {
+        state._tvSuggestions.push(element)
+      })
     }
   },
   actions: {
-    addMovie: (context, item) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/movies/' + item.id).set(item)
-    },
-    removeMovie: (context, id) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/movies/' + id).set(null)
-    },
-    setMoviePriority: (context, payload) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/movies/' + payload.id).update({
-        'priority': payload.priority
-      })
-    },
     getFirebaseData: (context) => {
       firebase.database.ref('settings/movieDbApiKey').on('value', (snapshot) => {
         context.commit('setMovieDbApiKey', snapshot.val())
@@ -90,8 +93,29 @@ export const store = new Vuex.Store({
       firebase.database.ref('data/' + uid + '/movies/').on('value', (snapshot) => {
         context.commit('setMovies', snapshot.val())
       })
+      firebase.database.ref('data/' + uid + '/tv/').on('value', (snapshot) => {
+        context.commit('setTv', snapshot.val())
+      })
+    },
+    addMovie: (context, item) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + item.id).set(item)
+    },
+    removeMovie: (context, id) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + id).set(null)
+    },
+    setMoviePriority: (context, payload) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/movies/' + payload.id).update({
+        'priority': payload.priority
+      })
     },
     getMovieSuggestions: (context, parameters) => {
+      if (context.state._movieSuggestionsPage !== 0 && context.state._movieSuggestionsPage === context.state._movieSuggestionsPages) {
+        return
+      }
+
       let query = null
       switch (parameters.queryType) {
         case 'search':
@@ -111,6 +135,46 @@ export const store = new Vuex.Store({
             'items': response.data.results
           })
         })
+    },
+
+    addTv: (context, item) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/tv/' + item.id).set(item)
+    },
+    removeTv: (context, id) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/tv/' + id).set(null)
+    },
+    setTvPriority: (context, payload) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/tv/' + payload.id).update({
+        'priority': payload.priority
+      })
+    },
+    getTvSuggestions: (context, parameters) => {
+      if (context.state._tvSuggestionsPage !== 0 && context.state._tvSuggestionsPage === context.state._tvSuggestionsPages) {
+        return
+      }
+
+      let query = null
+      switch (parameters.queryType) {
+        case 'search':
+          query = 'https://api.themoviedb.org/3/search/tv?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._tvSuggestionsPage + 1) + '&query=' + parameters.searchString
+          break
+        case 'popular':
+          query = 'https://api.themoviedb.org/3/tv/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._tvSuggestionsPage + 1)
+          break
+      }
+
+      axios.get(query).then(
+        (response) => {
+          context.commit('setTvSuggestions', {
+            'count': response.data.total_results,
+            'pages': response.data.total_pages,
+            'page': response.data.page,
+            'items': response.data.results
+          })
+        })
     }
   },
   getters: {
@@ -120,7 +184,9 @@ export const store = new Vuex.Store({
     movies: (state) => { return state._movies },
     movie: (state) => (id) => { return state._movies !== null ? state._movies[id] : null },
     movieSuggestions: (state) => { return state._movieSuggestions },
-    shows: (state) => { return state._shows },
+    tvs: (state) => { return state._tv },
+    tv: (state) => (id) => { return state._tv !== null ? state._tv[id] : null },
+    tvSuggestions: (state) => { return state._tvSuggestions },
     locale: (state) => { return state._locale },
     movieDbApiKey: (state) => { return state._movieDbApiKey },
     fallbackMovieBackdrop: (state) => { return state._fallbackMovieBackdrop },

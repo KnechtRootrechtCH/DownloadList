@@ -10,7 +10,6 @@ import { store } from './store'
 import underscore from 'vue-underscore'
 import BootstrapVue from 'bootstrap-vue'
 import VueProgressiveImage from 'vue-progressive-image'
-import { VueMasonryPlugin } from 'vue-masonry'
 
 import App from './App'
 
@@ -19,7 +18,6 @@ Vue.config.productionTip = false
 Vue.use(underscore)
 Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
-Vue.use(VueMasonryPlugin)
 
 let app
 

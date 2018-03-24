@@ -1,18 +1,107 @@
 <template>
-  <div class="tv">
+  <div class="suggestion-list">
     <h2>{{ $t("tv.header") }}</h2>
-    <h3>Comming soon&trade;</h3>
-    <p>Patience you must have, my young padawan &mdash; Yoda </p>
+    <div>
+      <b-input-group>
+        <b-form-input class="suggestion-input" v-model="searchString" v-bind:placeholder="$t('tv.inputPlaceholder')"></b-form-input>
+        <b-input-group-text slot="append">
+          <font-awesome-icon :icon="searchIcon" />
+        </b-input-group-text>
+      </b-input-group>
+    </div>
+    <b-container fluid class="suggestion-items">
+      <b-row>
+        <div v-for="(item, index) in suggestions" :key="item.id"
+        class="suggestion-item col-xs-12 col-sm-12 col-md-6 col-lg-3 col-xlg-2">
+          <suggestionItem v-bind:suggestionType="suggestionType" v-bind:index="index" v-bind:id="item.id" v-bind:title="item.name" v-bind:release-date="item.first_air_date" v-bind:backdrop="item.backdrop_path"></suggestionItem>
+        </div>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
 <script>
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+
+import SuggestionItem from './SuggestionItem'
+
 export default {
   name: 'Series',
-  components: {
-  },
   data () {
     return {
+      suggestionType: 'tv',
+      queryType: 'popular',
+      searchString: '',
+      previousSearchString: ''
+    }
+  },
+  components: {
+    FontAwesomeIcon,
+    'suggestionItem': SuggestionItem
+  },
+  computed: {
+    suggestions () {
+      return this.$store.getters.tvSuggestions
+    },
+    searchIcon () {
+      return faSearch
+    }
+  },
+  methods: {
+    updateSearch () {
+      if (this.searchString === this.previousSearchString) {
+        return
+      }
+      this.previousSearchString = this.searchString
+
+      if (this.searchString === null || (this.searchString.length === 0 && this.queryType === 'search')) {
+        this.queryType = 'popular'
+        this.$store.commit('resetTvSuggestions')
+        this.$store.dispatch('getTvSuggestions', {
+          'queryType': this.queryType,
+          'searchString': this.searchString
+        })
+      } else if (this.searchString.length > 2) {
+        this.queryType = 'search'
+        this.$store.commit('resetTvSuggestions')
+        this.$store.dispatch('getTvSuggestions', {
+          'queryType': this.queryType,
+          'searchString': this.searchString
+        })
+      }
+    },
+    handleScroll () {
+      var d = document.documentElement
+      var offset = d.scrollTop + window.innerHeight
+      var height = d.offsetHeight
+
+      if (offset === height) {
+        this.infiniteScroll()
+      }
+    },
+    infiniteScroll () {
+      this.$store.dispatch('getTvSuggestions', {
+        'queryType': this.queryType,
+        'searchString': this.searchString
+      })
+    }
+  },
+  created () {
+    window.addEventListener('scroll', this.handleScroll)
+    this.queryType = 'popular'
+    this.$store.commit('resetTvSuggestions')
+    this.$store.dispatch('getTvSuggestions', {
+      'queryType': this.queryType,
+      'searchString': this.searchString
+    })
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
+  watch: {
+    searchString: function (val, oldVal) {
+      this.$_.debounce(this.updateSearch, 1000)()
     }
   },
   i18n: {
@@ -20,15 +109,13 @@ export default {
       de: {
         tv: {
           header: 'Serien',
-          inputPlaceholder: 'Serie suchen…',
-          released: 'Veröffentlicht'
+          inputPlaceholder: 'Serie suchen…'
         }
       },
       en: {
         tv: {
-          header: 'TV Shows',
-          inputPlaceholder: 'Search tv show…',
-          released: 'Released'
+          header: 'Series',
+          inputPlaceholder: 'Search series…'
         }
       }
     }
@@ -36,74 +123,24 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.tv {
-  margin: 10px 30px;
-}
 .suggestion-list {
-  margin-top: 20px;
-}
-.suggestion-card {
-  background-color: #343a40;
+  margin: 10px 30px;
 }
 .suggestion-input {
   max-width: 300px;
 }
-.suggestion-card {
-  cursor: pointer;
+.suggestion-items {
+  margin-top: 20px;
 }
-h5.card-title {
-  margin-bottom: 4px;
-}
-div.toggle-icons {
-  position: absolute;
-  height: 30px;
-  right: 15px;
-  bottom: 15px;
-}
-div.info-icons {
-  position: absolute;
-  height: 30px;
-  left: 15px;
-  bottom: 15px;
-}
-.info-icon {
-  color: white;
-  width: 30px;
-  height: 30px;
-}
-.add-icon {
-  color: white;
-}
-.check-icon {
-  color: limegreen;
-}
-.toggle-icon {
-  width: 30px;
-  height: 30px;
-}
-.priority-icon {
-    color: darkgrey;
-}
-/*
-.priority-icon:hover {
-    color: white;
-}
-*/
-.priority-icon-active {
-    color: yellow;
-}
-/*
-.priority-icon-active:hover {
-    color: grey;
-}
-*/
-.card-img-overlay {
-  z-index: 10;
+.suggestion-item {
+  padding: 0;
 }
 
 @media (min-width: 350px) {
+    .masonry-item {
+      width: 100%;
+    }
     .card-columns {
         -webkit-column-count: 1;
         -moz-column-count: 1;
@@ -112,6 +149,9 @@ div.info-icons {
 }
 
 @media (min-width: 700px) {
+  .masonry-item {
+      width: 50%;
+    }
     .card-columns {
         -webkit-column-count: 2;
         -moz-column-count: 2;
@@ -120,6 +160,9 @@ div.info-icons {
 }
 
 @media (min-width: 1050px) {
+    .masonry-item {
+      width: 33.3%;
+    }
     .card-columns {
         -webkit-column-count: 3;
         -moz-column-count: 3;
@@ -128,6 +171,9 @@ div.info-icons {
 }
 
 @media (min-width: 1400px) {
+    .masonry-item {
+      width: 25%;
+    }
     .card-columns {
         -webkit-column-count: 4;
         -moz-column-count: 4;
@@ -135,10 +181,8 @@ div.info-icons {
     }
 }
 @media (min-width: 1750px) {
-    .card-columns {
-        -webkit-column-count: 5;
-        -moz-column-count: 5;
-        column-count: 5;
+    .masonry-item {
+      width: 20%;
     }
 }
 </style>

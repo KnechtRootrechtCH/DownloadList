@@ -1,6 +1,6 @@
 <template>
   <div class="card bg-dark text-white suggestion-card" v-bind:class="{ 'suggestion-card-active': !isDownloaded(id) }">
-    <progressive-img v-bind:src="getBackdrop(backdrop)" v-bind:placeholder="backdropPlaceholder"></progressive-img>
+    <progressive-img v-bind:src="getBackdrop(backdrop)" v-bind:placeholder="backdropPlaceholder" :blur="10"></progressive-img>
     <div class="card-img-overlay" v-on:click.stop="toggleItem(index, id)">
       <h5 class="card-title">{{ title }}</h5>
       <p class="card-text">{{ getReleaseYear(releaseDate) }}</p>
@@ -214,7 +214,12 @@ export default {
 <style scoped>
 .suggestion-card {
   background-color: #343a40;
-  margin: 0 10px 10px 0
+  margin: 0 10px 10px 0;
+  transition: transform .5s; /* Animation */
+}
+.suggestion-card:hover {
+  z-index: 100;
+  transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 .suggestion-card-active {
   cursor: pointer;
@@ -251,23 +256,12 @@ div.info-icons {
   height: 30px;
 }
 .priority-icon {
-  /* color: grey; */
   opacity: 0.4;
 }
-/*
-.priority-icon:hover {
-    color: white;
-}
-*/
 .priority-icon-active {
     opacity: 1;
     color: white;
 }
-/*
-.priority-icon-active:hover {
-    color: grey;
-}
-*/
 .card-img-overlay {
   z-index: 10;
   padding: 15px;
