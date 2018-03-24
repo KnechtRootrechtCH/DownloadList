@@ -7,8 +7,7 @@ import i18n from './i18n'
 import logger from './logger'
 import { store } from './store'
 
-import lodash from 'lodash'
-import VueLodash from 'vue-lodash'
+import underscore from 'vue-underscore'
 import BootstrapVue from 'bootstrap-vue'
 import VueProgressiveImage from 'vue-progressive-image'
 import { VueMasonryPlugin } from 'vue-masonry'
@@ -17,7 +16,7 @@ import App from './App'
 
 Vue.config.productionTip = false
 
-Vue.use(VueLodash, lodash)
+Vue.use(underscore)
 Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
 Vue.use(VueMasonryPlugin)
@@ -35,7 +34,6 @@ firebase.authentication.onAuthStateChanged(function (user) {
       router,
       store,
       logger,
-      lodash,
       i18n,
       components: { App },
       template: '<App/>'
