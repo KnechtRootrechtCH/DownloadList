@@ -3,17 +3,20 @@
     <h2>{{ $t("movies.header") }}</h2>
     <div>
       <b-input-group>
-        <b-form-input class="suggestion-input" v-model="searchString" v-bind:placeholder="$t('movies.inputPlaceholder')"></b-form-input>
-        <b-input-group-text slot="append">
+        <b-input-group-prepend is-text>
           <font-awesome-icon :icon="searchIcon" />
-        </b-input-group-text>
+        </b-input-group-prepend>
+        <b-form-input class="suggestion-input" v-model="searchString" v-bind:placeholder="$t('movies.inputPlaceholder')"></b-form-input>
+        <b-input-group-append is-text v-on:click="clearSearch">
+          <font-awesome-icon :icon="timesIcon" class="suggestion-input-clear"/>
+        </b-input-group-append>
       </b-input-group>
     </div>
     <b-container fluid class="suggestion-items">
       <b-row>
         <div v-for="(item, index) in suggestions" :key="item.id"
-        class="suggestion-item col-xs-12 col-sm-12 col-md-6 col-lg-3 col-xlg-2">
-          <suggestionItem v-bind:suggestionType="suggestionType" v-bind:index="index" v-bind:id="item.id" v-bind:title="item.title" v-bind:release-date="item.release_date" v-bind:backdrop="item.backdrop_path"></suggestionItem>
+        class="suggestion-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
+          <suggestionCard v-bind:suggestionType="suggestionType" v-bind:index="index" v-bind:id="item.id" v-bind:title="item.title" v-bind:release-date="item.release_date" v-bind:backdrop="item.backdrop_path"></suggestionCard>
         </div>
       </b-row>
     </b-container>
@@ -23,8 +26,9 @@
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
-import SuggestionItem from './SuggestionItem'
+import SuggestionCard from './SuggestionCard'
 
 export default {
   name: 'Movies',
@@ -38,7 +42,7 @@ export default {
   },
   components: {
     FontAwesomeIcon,
-    'suggestionItem': SuggestionItem
+    'suggestionCard': SuggestionCard
   },
   computed: {
     suggestions () {
@@ -46,9 +50,15 @@ export default {
     },
     searchIcon () {
       return faSearch
+    },
+    timesIcon () {
+      return faTimes
     }
   },
   methods: {
+    clearSearch () {
+      this.searchString = ''
+    },
     updateSearch () {
       if (this.searchString === this.previousSearchString) {
         return
@@ -129,6 +139,9 @@ export default {
 }
 .suggestion-input {
   max-width: 300px;
+}
+.suggestion-input-clear:hover {
+  color: black;
 }
 .suggestion-items {
   margin-top: 20px;

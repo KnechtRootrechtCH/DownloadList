@@ -99,6 +99,7 @@ export const store = new Vuex.Store({
     },
     addMovie: (context, item) => {
       let uid = context.getters.user.uid
+      item.type = 'movie'
       firebase.database.ref('data/' + uid + '/movies/' + item.id).set(item)
     },
     removeMovie: (context, id) => {
@@ -139,6 +140,7 @@ export const store = new Vuex.Store({
 
     addTv: (context, item) => {
       let uid = context.getters.user.uid
+      item.type = 'tv'
       firebase.database.ref('data/' + uid + '/tv/' + item.id).set(item)
     },
     removeTv: (context, id) => {
