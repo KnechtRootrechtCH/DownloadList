@@ -7,8 +7,6 @@ import i18n from './i18n'
 import logger from './logger'
 import { store } from './store'
 
-import axios from 'axios'
-import VueAxios from 'vue-axios'
 import lodash from 'lodash'
 import VueLodash from 'vue-lodash'
 import BootstrapVue from 'bootstrap-vue'
@@ -19,7 +17,6 @@ import App from './App'
 
 Vue.config.productionTip = false
 
-Vue.use(VueAxios, axios)
 Vue.use(VueLodash, lodash)
 Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
@@ -40,7 +37,6 @@ firebase.authentication.onAuthStateChanged(function (user) {
       logger,
       lodash,
       i18n,
-      axios,
       components: { App },
       template: '<App/>'
     })

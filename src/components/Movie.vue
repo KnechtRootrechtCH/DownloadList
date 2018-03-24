@@ -1,0 +1,218 @@
+<template>
+  <div class="card bg-dark text-white suggestion-card" v-bind:class="{ 'suggestion-card-active': !isDownloaded(id) }">
+    <progressive-img v-bind:src="getBackdrop(backdrop)" v-bind:placeholder="backdropPlaceholder"></progressive-img>
+    <div class="card-img-overlay" v-on:click.stop="toggleItem(index, id)">
+      <h5 class="card-title">{{ title }}</h5>
+      <p class="card-text">{{ getReleaseYear(releaseDate) }}</p>
+      <div class="info-icons">
+        <font-awesome-icon :icon="infoIcon" class="info-icon" v-on:click.stop="openInformationUrl(id)"/>
+      </div>
+      <div class="toggle-icons" v-if="isDownloaded(id)">
+        <font-awesome-icon :icon="checkIcon" class="toggle-icon check-icon"/>
+      </div>
+      <div class="toggle-icons" v-if="!isDownloaded(id) && isSelected(id)">
+        <font-awesome-icon :icon="minusIcon" class="toggle-icon priority-icon-active" v-on:click.stop="toggleItem(index, id)"/>
+        <font-awesome-icon :icon="exclamationIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(id, 3) }" v-on:click.stop="setPriority(id, 3)"/>
+        <font-awesome-icon :icon="exclamationIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(id, 2) }" v-on:click.stop="setPriority(id, 2)"/>
+        <font-awesome-icon :icon="exclamationIcon" class="toggle-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(id, 1) }" v-on:click.stop="setPriority(id, 1)"/>
+      </div>
+      <div class="toggle-icons" v-if="!isDownloaded(id) && !isSelected(id)">
+        <font-awesome-icon :icon="plusIcon" class="toggle-icon add-icon"/>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
+import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
+import faPlusCircle from '@fortawesome/fontawesome-free-solid/faPlusCircle'
+import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import faInfoCircle from '@fortawesome/fontawesome-free-solid/faInfoCircle'
+
+export default {
+  name: 'Movie',
+  props: ['index', 'id', 'title', 'releaseDate', 'backdrop'],
+  data () {
+    return {
+    }
+  },
+  components: {
+    FontAwesomeIcon
+  },
+  computed: {
+    minusIcon () {
+      return faMinusCircle
+    },
+    plusIcon () {
+      return faPlusCircle
+    },
+    exclamationIcon () {
+      return faExclamationCircle
+    },
+    checkIcon () {
+      return faCheckCircle
+    },
+    infoIcon () {
+      return faInfoCircle
+    },
+    backdropPlaceholder () {
+      return this.$store.getters.fallbackMovieBackdrop
+    }
+  },
+  methods: {
+    openInformationUrl (id) {
+      var url = this.getInfoUrl(id)
+      var win = window.open(url, '_blank')
+      win.focus()
+    },
+    getBackdrop (path) {
+      if (path) {
+        return 'https://image.tmdb.org/t/p/w500' + path
+      } else {
+        return this.$store.getters.fallbackMovieBackdrop
+      }
+    },
+    getInfoUrl (id) {
+      if (id) {
+        return 'https://www.themoviedb.org/movie/' + id
+      } else {
+        return 'https://www.themoviedb.org/movie/'
+      }
+    },
+    getReleaseYear (date) {
+      if (date) {
+        return date.substring(0, 4)
+      } else {
+        return ''
+      }
+    },
+    toggleItem (index, id) {
+      var item = this.$store.getters.movie(id)
+      if (item) {
+        if (item.downloaded) {
+          return
+        }
+        this.$store.dispatch('removeMovie', item.id)
+      } else {
+        item = this.$store.getters.movieSuggestions[index]
+        item.priority = 4
+        this.$store.dispatch('addMovie', item)
+      }
+    },
+    isSelected (id) {
+      var item = this.$store.getters.movie(id)
+      return item
+    },
+    isDownloaded (id) {
+      var item = this.$store.getters.movie(id)
+      if (item) {
+        return item.downloaded
+      }
+      return false
+    },
+    hasPriority (id, priority) {
+      var item = this.$store.getters.movie(id)
+      if (item) {
+        return item.priority <= priority
+      }
+      return false
+    },
+    setPriority (id, p) {
+      var item = this.$store.getters.movie(id)
+      var priority = p
+      if (item) {
+        if (item.priority === priority) {
+          priority++
+        }
+
+        if (priority >= 5) {
+          this.$store.dispatch('removeMovie', item.id)
+        } else {
+          this.$store.dispatch('setMoviePriority', {
+            id: item.id,
+            priority: priority})
+        }
+      }
+    }
+  },
+  i18n: {
+    messages: {
+      de: {
+        movies: {
+          released: 'Veröffentlicht'
+        }
+      },
+      en: {
+        movies: {
+          released: 'Released'
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.suggestion-card {
+  background-color: #343a40;
+  margin: 0 10px 10px 0
+}
+.suggestion-card-active {
+  cursor: pointer;
+}
+h5.card-title {
+  margin-bottom: 4px;
+}
+div.toggle-icons {
+  position: absolute;
+  height: 30px;
+  right: 15px;
+  bottom: 15px;
+}
+div.info-icons {
+  position: absolute;
+  height: 30px;
+  left: 15px;
+  bottom: 15px;
+}
+.info-icon {
+  color: white;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.add-icon {
+  color: white;
+}
+.check-icon {
+  color: limegreen;
+}
+.toggle-icon {
+  width: 30px;
+  height: 30px;
+}
+.priority-icon {
+  /* color: grey; */
+  opacity: 0.4;
+}
+/*
+.priority-icon:hover {
+    color: white;
+}
+*/
+.priority-icon-active {
+    opacity: 1;
+    color: white;
+}
+/*
+.priority-icon-active:hover {
+    color: grey;
+}
+*/
+.card-img-overlay {
+  z-index: 10;
+  padding: 15px;
+}
+</style>

@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from '../firebase'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 // import { firebaseMutations } from 'vuexfire'
 
 Vue.use(Vuex)
+Vue.use(VueAxios, axios)
 
 // var moviesRef = db.ref('movies')
 // var showsRef = db.ref('shows')
@@ -19,6 +22,11 @@ export const store = new Vuex.Store({
     _user: null,
 
     _movies: {},
+    _movieSuggestions: [],
+    _movieSuggestionsPage: 0,
+    _movieSuggestionsPages: 0,
+    _movieSuggestionsCount: 0,
+
     _shows: {}
   },
   mutations: {
@@ -30,7 +38,25 @@ export const store = new Vuex.Store({
     setUser: state => {
       state._user = firebase.authentication.currentUser
     },
-    setMovies (state, movies) { state._movies = movies }
+
+    setMovies (state, movies) { state._movies = movies },
+    resetMovieSuggestions (state) {
+      state._movieSuggestionsCount = 0
+      state._movieSuggestionsPage = 0
+      state._movieSuggestionsPages = 0
+      state._movieSuggestions = []
+    },
+    setMovieSuggestions (state, payload) {
+      state._movieSuggestionsCount = payload.count
+      state._movieSuggestionsPage = payload.page
+      state._movieSuggestionsPages = payload.pages
+      if (payload.page <= 1) {
+        state._movieSuggestions = []
+      }
+      payload.items.forEach(element => {
+        state._movieSuggestions.push(element)
+      })
+    }
   },
   actions: {
     addMovie: (context, item) => {
@@ -57,10 +83,32 @@ export const store = new Vuex.Store({
     },
     getFirebaseUserData: (context) => {
       let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
       firebase.database.ref('data/' + uid + '/movies/').on('value', (snapshot) => {
         context.commit('setMovies', snapshot.val())
       })
-      firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
+    },
+    getMovieSuggestions: (context, parameters) => {
+      let query = null
+      switch (parameters.queryType) {
+        case 'search':
+          query = 'https://api.themoviedb.org/3/search/movie?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._movieSuggestionsPage + 1) + '&query=' + parameters.searchString
+          break
+        case 'popular':
+          query = 'https://api.themoviedb.org/3/movie/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._movieSuggestionsPage + 1)
+          break
+      }
+      console.log(query, parameters, context.state)
+
+      axios.get(query).then(
+        (response) => {
+          context.commit('setMovieSuggestions', {
+            'count': response.data.total_results,
+            'pages': response.data.total_pages,
+            'page': response.data.page,
+            'items': response.data.results
+          })
+        })
     }
   },
   getters: {
@@ -69,6 +117,7 @@ export const store = new Vuex.Store({
     user: (state) => { return state._user },
     movies: (state) => { return state._movies },
     movie: (state) => (id) => { return state._movies !== null ? state._movies[id] : null },
+    movieSuggestions: (state) => { return state._movieSuggestions },
     shows: (state) => { return state._shows },
     locale: (state) => { return state._locale },
     movieDbApiKey: (state) => { return state._movieDbApiKey },

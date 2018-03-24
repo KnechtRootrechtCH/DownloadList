@@ -11,41 +11,37 @@
         <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
       </b-dropdown>
     </div>
-    <div class="download-list">
-      <div class="download-item"
+    <div class="download-list container">
+      <div class="download-item row"
         v-for="(item) in items" :key="item.id">
-          <div class="container">
-            <div class="row">
-              <div class="col-sm-2 hidden-md-down download-item-media">
-                <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
+          <div class="col-sm-2 hidden-md-down download-item-media">
+            <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
+          </div>
+          <div class="col-sm-8 download-item-info">
+            <div>
+              <span class="download-item-title">{{ item.title }}</span> <span class="download-item-release">({{ getReleaseYear(item.release_date) }})</span>
+            </div>
+            <div v-if="isDownloaded(item.id)" class="download-item-info-section">
+              <div class="download-item-icon-group">
+                <div class="download-item-header">{{ $t("list.item.download") }}</div>
+                <font-awesome-icon :icon="checkIcon" class="download-item-icon downloaded-icon"/>
+                {{ $t("list.item.successfull") }}
               </div>
-              <div class="col-sm-8 download-item-info">
-                <div>
-                  <span class="download-item-title">{{ item.title }}</span> <span class="download-item-release">({{ getReleaseYear(item.release_date) }})</span>
-                </div>
-                <div v-if="isDownloaded(item.id)" class="download-item-info-section">
-                  <div class="download-item-icon-group">
-                    <div class="download-item-header">{{ $t("list.item.download") }}</div>
-                    <font-awesome-icon :icon="checkIcon" class="download-item-icon downloaded-icon"/>
-                    {{ $t("list.item.successfull") }}
-                  </div>
-                  </div>
-                <div v-if="!isDownloaded(item.id)" class="download-item-info-section">
-                  <div class="download-item-icon-group">
-                    <div class="download-item-header">{{ $t("list.item.priority") }}</div>
-                    <font-awesome-icon :icon="removeIcon" class="download-item-icon remove-icon" v-on:click.stop="removeItem(item.id)"/>
-                    <font-awesome-icon :icon="starIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 5) }" v-on:click.stop="setPriority(item.id, 5)"/>
-                    <font-awesome-icon :icon="starIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 4) }" v-on:click.stop="setPriority(item.id, 4)"/>
-                    <font-awesome-icon :icon="starIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
-                    <font-awesome-icon :icon="starIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
-                    <font-awesome-icon :icon="starIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
-                  </div>
-                </div>
-                <div class="download-item-info-section">
-                  <div class="download-item-header">{{ $t("list.item.overview") }}</div>
-                  <p class="download-item-content">{{ item.overview }}</p>
-                </div>
               </div>
+            <div v-if="!isDownloaded(item.id)" class="download-item-info-section">
+              <div class="download-item-icon-group">
+                <div class="download-item-header">{{ $t("list.item.priority") }}</div>
+                <font-awesome-icon :icon="removeIcon" class="download-item-icon remove-icon" v-on:click.stop="removeItem(item.id)"/>
+                <!--<font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 5) }" v-on:click.stop="setPriority(item.id, 5)"/>
+                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 4) }" v-on:click.stop="setPriority(item.id, 4)"/>-->
+                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
+                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
+                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
+              </div>
+            </div>
+            <div class="download-item-info-section">
+              <div class="download-item-header">{{ $t("list.item.overview") }}</div>
+              <p class="download-item-content">{{ item.overview }}</p>
             </div>
           </div>
       </div>
@@ -58,6 +54,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faStar from '@fortawesome/fontawesome-free-solid/faStar'
 import faTrash from '@fortawesome/fontawesome-free-solid/faTrash'
 import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 // import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 
 export default {
@@ -79,6 +76,9 @@ export default {
     },
     checkIcon () {
       return faCheckCircle
+    },
+    exclamationIcon () {
+      return faExclamationCircle
     },
     starIcon () {
       return faStar
@@ -247,12 +247,12 @@ export default {
 .download-item {
   margin-bottom: 15px;
 }
-.download-item .container {
+.download-list {
   width: 100%;
   margin: 0;
   padding: 0;
 }
-.download-item .row {
+.download-list .row {
   margin: 0;
   padding: 0;
 }
@@ -303,12 +303,12 @@ export default {
   cursor: pointer;
 }
 .priority-icon {
-  color: darkgrey;
   cursor: pointer;
+  opacity: 0.4;
 }
 .priority-icon-active {
-    color: yellow;
     cursor: pointer;
+    opacity: 1;
 }
 @media (min-width: 0px) {
   .hidden-sm-down {
