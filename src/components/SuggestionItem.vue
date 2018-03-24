@@ -32,8 +32,8 @@ import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import faInfoCircle from '@fortawesome/fontawesome-free-solid/faInfoCircle'
 
 export default {
-  name: 'Movie',
-  props: ['index', 'id', 'title', 'releaseDate', 'backdrop'],
+  name: 'SuggestionItem',
+  props: ['suggestionType', 'index', 'id', 'title', 'releaseDate', 'backdrop'],
   data () {
     return {
     }
@@ -58,7 +58,11 @@ export default {
       return faInfoCircle
     },
     backdropPlaceholder () {
-      return this.$store.getters.fallbackMovieBackdrop
+      if (this.suggestionType === 'movie') {
+        return this.$store.getters.fallbackMovieBackdrop
+      } else if (this.suggestionType === 'tv') {
+        return this.$store.getters.fallbackTvBackdrop
+      }
     }
   },
   methods: {
@@ -70,15 +74,17 @@ export default {
     getBackdrop (path) {
       if (path) {
         return 'https://image.tmdb.org/t/p/w500' + path
-      } else {
+      } else if (this.suggestionItem === 'movie') {
         return this.$store.getters.fallbackMovieBackdrop
+      } else if (this.suggestionType === 'tv') {
+        return this.$store.getters.fallbackTvBackdrop
       }
     },
     getInfoUrl (id) {
       if (id) {
-        return 'https://www.themoviedb.org/movie/' + id
+        return 'https://www.themoviedb.org/' + this.suggestionType + '/' + id
       } else {
-        return 'https://www.themoviedb.org/movie/'
+        return 'https://www.themoviedb.org/' + this.suggestionType + '/'
       }
     },
     getReleaseYear (date) {
@@ -89,7 +95,14 @@ export default {
       }
     },
     toggleItem (index, id) {
-      var item = this.$store.getters.movie(id)
+      if (this.suggestionType === 'movie') {
+        this.toggleMovie(index, id)
+      } else if (this.suggestionType === 'tv') {
+        this.toggleTv(index, id)
+      }
+    },
+    toggleMovie (index, id) {
+      var item = this.getItem(id)
       if (item) {
         if (item.downloaded) {
           return
@@ -101,26 +114,53 @@ export default {
         this.$store.dispatch('addMovie', item)
       }
     },
+    toggleTv (index, id) {
+      var item = this.getItem(id)
+      if (item) {
+        if (item.downloaded) {
+          return
+        }
+        this.$store.dispatch('removeTv', item.id)
+      } else {
+        item = this.$store.getters.tvSuggestions[index]
+        item.priority = 4
+        this.$store.dispatch('addTv', item)
+      }
+    },
+    getItem (id) {
+      if (this.suggestionType === 'movie') {
+        return this.$store.getters.movie(id)
+      } else if (this.suggestionType === 'tv') {
+        return this.$store.getters.tv(id)
+      }
+    },
     isSelected (id) {
-      var item = this.$store.getters.movie(id)
+      var item = this.getItem(id)
       return item
     },
     isDownloaded (id) {
-      var item = this.$store.getters.movie(id)
+      var item = this.getItem(id)
       if (item) {
         return item.downloaded
       }
       return false
     },
     hasPriority (id, priority) {
-      var item = this.$store.getters.movie(id)
+      var item = this.getItem(id)
       if (item) {
         return item.priority <= priority
       }
       return false
     },
     setPriority (id, p) {
-      var item = this.$store.getters.movie(id)
+      if (this.suggestionType === 'movie') {
+        this.setMoviePriority(id, p)
+      } else if (this.suggestionType === 'tv') {
+        this.setTvPriority(id, p)
+      }
+    },
+    setMoviePriority (id, p) {
+      var item = this.getItem(id)
       var priority = p
       if (item) {
         if (item.priority === priority) {
@@ -135,17 +175,34 @@ export default {
             priority: priority})
         }
       }
+    },
+    setTvPriority (id, p) {
+      var item = this.getItem(id)
+      var priority = p
+      if (item) {
+        if (item.priority === priority) {
+          priority++
+        }
+
+        if (priority >= 5) {
+          this.$store.dispatch('removeTv', item.id)
+        } else {
+          this.$store.dispatch('setTvPriority', {
+            id: item.id,
+            priority: priority})
+        }
+      }
     }
   },
   i18n: {
     messages: {
       de: {
-        movies: {
+        suggestionItem: {
           released: 'Veröffentlicht'
         }
       },
       en: {
-        movies: {
+        suggestionItem: {
           released: 'Released'
         }
       }

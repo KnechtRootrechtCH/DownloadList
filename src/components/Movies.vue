@@ -3,7 +3,7 @@
     <h2>{{ $t("movies.header") }}</h2>
     <div>
       <b-input-group>
-        <b-form-input class="suggestion-input" v-model="searchString" @keyup="updateSearch" v-bind:placeholder="$t('movies.inputPlaceholder')"></b-form-input>
+        <b-form-input class="suggestion-input" v-model="searchString" v-bind:placeholder="$t('movies.inputPlaceholder')"></b-form-input>
         <b-input-group-text slot="append">
           <font-awesome-icon :icon="searchIcon" />
         </b-input-group-text>
@@ -15,7 +15,7 @@
           class="masonry-item"
           v-for="(item, index) in suggestions" :key="item.id"
           >
-          <movie v-bind:index="index" v-bind:id="item.id" v-bind:title="item.title" v-bind:release-date="item.release_date" v-bind:backdrop="item.backdrop_path"></movie>
+          <suggestionItem v-bind:suggestionType="suggestionType" v-bind:index="index" v-bind:id="item.id" v-bind:title="item.title" v-bind:release-date="item.release_date" v-bind:backdrop="item.backdrop_path"></suggestionItem>
         </div>
       </div>
     </div>
@@ -26,24 +26,26 @@
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 
-import Movie from './Movie'
+import SuggestionItem from './SuggestionItem'
 
 export default {
   name: 'Movies',
   data () {
     return {
+      suggestionType: 'movie',
       queryType: 'popular',
       loading: false,
       count: 0,
       pages: 0,
       page: 0,
       searchString: '',
+      previousSearchString: '',
       items: []
     }
   },
   components: {
     FontAwesomeIcon,
-    'movie': Movie
+    'suggestionItem': SuggestionItem
   },
   computed: {
     suggestions () {
@@ -55,6 +57,7 @@ export default {
   },
   methods: {
     updateSearch () {
+      this.previousSearchString = this.searchString
       if (this.searchString === null || (this.searchString.length === 0 && this.queryType === 'search')) {
         this.queryType = 'popular'
         this.$store.commit('resetMovieSuggestions')
@@ -104,7 +107,7 @@ export default {
   },
   watch: {
     searchString: function (val, oldVal) {
-      this._.debounce(this.updateSearch, 1000)()
+      this.$_.debounce(this.updateSearch, 1000)()
     }
   },
   i18n: {

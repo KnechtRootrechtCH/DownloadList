@@ -80,6 +80,9 @@ export const store = new Vuex.Store({
       firebase.database.ref('settings/fallbackMovieBackdrop').on('value', (snapshot) => {
         context.commit('setFallbackMovieBackdrop', snapshot.val())
       })
+      firebase.database.ref('settings/fallbackTvBackdrop').on('value', (snapshot) => {
+        context.commit('setFallbackTvBackdrop', snapshot.val())
+      })
     },
     getFirebaseUserData: (context) => {
       let uid = context.getters.user.uid
@@ -98,7 +101,6 @@ export const store = new Vuex.Store({
           query = 'https://api.themoviedb.org/3/movie/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._movieSuggestionsPage + 1)
           break
       }
-      console.log(query, parameters, context.state)
 
       axios.get(query).then(
         (response) => {
