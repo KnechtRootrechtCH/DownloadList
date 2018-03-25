@@ -6,17 +6,27 @@
     </div>
     <div class="menu-bar">
       <b-button-group>
-        <b-button class="menu-bar-button" variant="dark"><font-awesome-icon :icon="tvIcon" class="button-icon"/>TestTestTest</b-button>
-        <b-button class="menu-bar-button button-active" variant="light"><font-awesome-icon :icon="movieIcon" class="button-icon"/>TestTestTest</b-button>
+        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.movie}" @click="filter.movie = !filter.movie">
+          <font-awesome-icon :icon="tvIcon" class="button-icon"/>
+          {{ $t('list.filter.movie') }}
+        </b-button>
+        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.tv}" @click="filter.tv = !filter.tv">
+          <font-awesome-icon :icon="movieIcon" class="button-icon"/>
+          {{ $t('list.filter.tv') }}
+        </b-button>
+        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.downloaded}" @click="filter.downloaded = !filter.downloaded">
+          <font-awesome-icon :icon="downloadedIcon" class="button-icon"/>
+          {{ $t('list.filter.downloaded') }}
+        </b-button>
       </b-button-group>
-      <b-dropdown v-bind:text="sortButtonText" class="m-md-2 menu-bar-button" variant="light">
+
+      <b-dropdown v-bind:text="sortButtonText" :icon="movieIcon" class="m-md-2 menu-bar-button " variant="light">
         <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
       </b-dropdown>
     </div>
-    <div class="download-list container-fluid">
-
+    <transition-group name="download-list" tag="p" class="container-fluid download-container">
         <div class="download-item row" v-for="(item) in sortedItems" :key="item.key">
           <div class="col-sm-2 hidden-md-down download-item-media">
             <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
@@ -25,48 +35,15 @@
             {{item.priority}}:{{item.release_date}}{{item.first_air_date}}:{{item.title}}{{item.name}}:{{item.key}}
           </div>
         </div>
-      <!--
-      <div class="download-item row"
-        v-for="(item) in items"
-        :key="item.id">
-          <div class="col-sm-2 hidden-md-down download-item-media">
-            <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
-          </div>
-          <div class="col-sm-8 download-item-info">
-            <div>
-              <span class="download-item-title">{{ item.title }}</span> <span class="download-item-release">({{ getReleaseYear(item.release_date) }})</span>
-            </div>
-            <div v-if="isDownloaded(item.id)" class="download-item-info-section">
-              <div class="download-item-icon-group">
-                <div class="download-item-header">{{ $t("list.item.download") }}</div>
-                <font-awesome-icon :icon="checkIcon" class="download-item-icon downloaded-icon"/>
-                {{ $t("list.item.successfull") }}
-              </div>
-              </div>
-            <div v-if="!isDownloaded(item.id)" class="download-item-info-section">
-              <div class="download-item-icon-group">
-                <div class="download-item-header">{{ $t("list.item.priority") }}</div>
-                <font-awesome-icon :icon="removeIcon" class="download-item-icon remove-icon" v-on:click.stop="removeItem(item.id)"/>
-                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
-                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
-                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
-              </div>
-            </div>
-            <div class="download-item-info-section">
-              <div class="download-item-header">{{ $t("list.item.overview") }}</div>
-              <p class="download-item-content">{{ item.overview }}</p>
-            </div>
-          </div>
-      </div>
-      -->
-    </div>
+    </transition-group>
   </div>
 </template>
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import tvIcon from '@fortawesome/fontawesome-free-solid/faCheckSquare'
+import tvIcon from '@fortawesome/fontawesome-free-solid/faFilm'
 import movieIcon from '@fortawesome/fontawesome-free-solid/faTv'
+import downloadedIcon from '@fortawesome/fontawesome-free-solid/faDownload'
 
 // import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 
@@ -80,7 +57,8 @@ export default {
       overviewMaxChars: 250,
       filter: {
         movie: true,
-        tv: true
+        tv: true,
+        downloaded: true
       },
       sort: 'priority'
     }
@@ -109,14 +87,20 @@ export default {
     },
     movieIcon () {
       return movieIcon
+    },
+    downloadedIcon () {
+      return downloadedIcon
     }
   },
   methods: {
     filterItem (item) {
-      if (item.mediaType === 'movie' && !this.filter.movie) {
+      if (!this.filter.movie && item.mediaType === 'movie') {
         return false
       }
-      if (item.mediaType === 'tv' && !this.filter.tv) {
+      if (!this.filter.tv && item.mediaType === 'tv') {
+        return false
+      }
+      if (!this.filter.downloaded && item.downloaded) {
         return false
       }
       return true
@@ -220,6 +204,11 @@ export default {
         list: {
           header: 'Meine Liste',
           noItems: 'Du hast noch keine Downloads ausgewählt.',
+          filter: {
+            movie: 'Filme',
+            tv: 'Serien',
+            downloaded: 'Heruntergeladen'
+          },
           item: {
             overview: 'Übersicht',
             actions: 'Aktionen',
@@ -241,6 +230,11 @@ export default {
         list: {
           header: 'My list',
           noItems: 'There are no downloads on your list. Add some Movies or TV Series to fill your download list',
+          filter: {
+            movie: 'Movies',
+            tv: 'TV Series',
+            downloaded: 'Downloaded'
+          },
           item: {
             overview: 'Overview',
             actions: 'Actions',
@@ -271,15 +265,48 @@ export default {
 .menu-bar {
   margin: 0 0 20px 0;
 }
-.download-list {
+.download-container {
   margin: 0;
   padding: 0;
-}
-.download-item {
-  margin-bottom: 20px;
 }
 .button-icon {
   margin-right: 10px;
 }
+.menu-bar-button {
+  color: black;
+}
+.menu-bar-button.inactive {
+  color: grey;
+}
 
+/* base */
+.company {
+  backface-visibility: hidden;
+  z-index: 1;
+}
+
+/* moving */
+.download-list-move {
+  transition: all 600ms ease-in-out 50ms;
+}
+
+/* appearing */
+.download-list-enter-active {
+  transition: all 400ms ease-in-out;
+  opacity: 0;
+  z-index: 0;
+}
+
+/* disappearing */
+.download-list-leave-active {
+  position: absolute;
+  opacity: 0;
+  z-index: 0;
+}
+
+/* appear at / disappear to */
+.download-list-enter,
+.download-list-leave-to {
+  opacity: 0;
+}
 </style>
