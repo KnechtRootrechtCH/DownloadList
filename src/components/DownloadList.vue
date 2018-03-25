@@ -280,7 +280,7 @@ export default {
 }
 
 /* base */
-.company {
+.download-list {
   backface-visibility: hidden;
   z-index: 1;
 }

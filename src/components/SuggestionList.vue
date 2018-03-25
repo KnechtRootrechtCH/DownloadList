@@ -21,12 +21,12 @@
           </b-input-group>
         </div>
       </b-row>
-      <b-row class="suggestion-items">
+      <transition-group name="suggestion-list" tag="div" class="row suggestion-items">
         <div v-for="(item) in suggestions" :key="item.key"
         class="suggestion-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
           <suggestionCard v-bind:item="item"></suggestionCard>
         </div>
-      </b-row>
+      </transition-group>
     </b-container>
   </div>
 </template>
@@ -190,5 +190,14 @@ export default {
 }
 .suggestion-item {
   padding: 0;
+}
+.suggestion-list-enter-active {
+  transition: opacity 1.5s;
+}
+.suggestion-list-leave-active {
+  transition: opacity 0.5s;
+}
+.suggestion-list-enter, .suggestion-list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
