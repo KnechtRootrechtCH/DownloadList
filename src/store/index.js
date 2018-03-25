@@ -119,6 +119,9 @@ export const store = new Vuex.Store({
         case 'popular':
           query = 'https://api.themoviedb.org/3/' + parameters.mediaType + '/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
           break
+        case 'top_rated':
+          query = 'https://api.themoviedb.org/3/' + parameters.mediaType + '/top_rated?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
+          break
       }
 
       axios.get(query).then(

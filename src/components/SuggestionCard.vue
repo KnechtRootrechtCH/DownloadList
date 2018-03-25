@@ -4,18 +4,53 @@
       <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
     </div>
     <div class="card-body">
-      <div class="card-title col-xs-6">{{ title }}</div>
-      <div class="card-release col-xs-2">{{ releaseDate }}</div>
       <div class="card-icons container-fluid">
+        <div class="row">
+          <div class="card-title col-xs-12">{{ title }}</div>
+        </div>
+        <div class="row">
+          <div class="card-release col-xs-12">{{ releaseDate }}</div>
+        </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-           <font-awesome-icon v-b-tooltip :icon="infoIcon" class="card-icon" @click.stop="openInformationUrl()" v-bind:title="$t('suggestionCard.tooltip.info')"/>
+           <font-awesome-icon
+            v-b-tooltip
+            :icon="infoIcon"
+            class="card-icon"
+            @click.stop="openInformationUrl()"
+            v-bind:title="$t('suggestionCard.tooltip.info')"/>
           </div>
           <div class='col-xs-6'>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(3) }" @click.stop="setPriority(3)" v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(2) }" @click.stop="setPriority(2)" v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
-            <font-awesome-icon v-b-tooltip v-if="!isDownloaded()" :icon="priorityIcon" class="card-icon" v-bind:class="{ 'priority-icon-inactive': !hasPriority(1) }" @click.stop="setPriority(1)" v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
-            <font-awesome-icon v-b-tooltip v-if="isDownloaded()" :icon="downloadedIcon" class="card-icon check-icon" v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="!isDownloaded()"
+              :icon="priorityIcon"
+              class="card-icon priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
+              @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="!isDownloaded()"
+              :icon="priorityIcon"
+              class="card-icon priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
+              @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="!isDownloaded()"
+              :icon="priorityIcon"
+              class="card-icon priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
+              @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="isDownloaded()"
+              :icon="downloadedIcon"
+              class="card-icon check-icon"
+              v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
           </div>
         </div>
       </div>
@@ -37,7 +72,8 @@ export default {
   props: ['item'],
   data () {
     return {
-      lowestPriority: 3
+      lowestPriority: 3,
+      hoverPriority: 4
     }
   },
   components: {
@@ -69,6 +105,9 @@ export default {
       } else {
         return this.$i18n.t('suggestionCard.' + this.item.mediaType + '.dateNotFound')
       }
+    },
+    rating () {
+      return this.item.vote_average
     },
     backdrop () {
       if (this.item.backdrop_path) {
@@ -132,6 +171,9 @@ export default {
       }
       return false
     },
+    hoverPriorityIcon (priority) {
+      return priority >= this.hoverPriority
+    },
     hasPriority (priority) {
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -144,10 +186,7 @@ export default {
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
-        if (selectedItem.priority === priority) {
-          priority++
-        }
-        if (priority > this.lowestPriority) {
+        if (priority === this.lowestPriority && priority === selectedItem.priority) {
           this.$store.dispatch('removeItem', selectedItem.key)
         } else {
           this.$store.dispatch('setItemPriority', {
@@ -263,12 +302,14 @@ export default {
 .check-icon {
   color: darkgreen;
 }
-.priority-icon-inactive {
+.priority-icon.inactive {
   opacity: 0.5;
 }
-.priority-icon-active {
-    opacity: 0.8;
-    color: black;
+.priority-icon.inactive.highlight {
+  opacity: 1;
+}
+.priority-icon.highlight {
+  opacity: 1;
 }
 .card-img-overlay {
   z-index: 10;

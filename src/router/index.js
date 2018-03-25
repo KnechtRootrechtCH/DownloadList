@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
-import List from '@/components/List'
+import DownloadList from '@/components/DownloadList'
 import Movies from '@/components/Movies'
 import Series from '@/components/Series'
 import Info from '@/components/Info'
@@ -35,7 +35,7 @@ let router = new Router({
     {
       path: '/list',
       name: 'List',
-      component: List,
+      component: DownloadList,
       meta: {
         requiresAuth: true
       }

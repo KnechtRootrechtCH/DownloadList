@@ -5,8 +5,10 @@
         {{ $t("list.noItems") }}
     </div>
     <div class="menu-bar">
-      <b-button class="m-md-2 menu-bar-button" variant="dark">TestTestTest</b-button>
-      <b-button class="m-md-2 menu-bar-button button-active" variant="light">TestTestTest</b-button>
+      <b-button-group>
+        <b-button class="menu-bar-button" variant="dark"><font-awesome-icon :icon="tvIcon" class="button-icon"/>TestTestTest</b-button>
+        <b-button class="menu-bar-button button-active" variant="light"><font-awesome-icon :icon="movieIcon" class="button-icon"/>TestTestTest</b-button>
+      </b-button-group>
       <b-dropdown v-bind:text="sortButtonText" class="m-md-2 menu-bar-button" variant="light">
         <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
@@ -63,14 +65,13 @@
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import faStar from '@fortawesome/fontawesome-free-solid/faStar'
-import faTrash from '@fortawesome/fontawesome-free-solid/faTrash'
-import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle'
-import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
+import tvIcon from '@fortawesome/fontawesome-free-solid/faCheckSquare'
+import movieIcon from '@fortawesome/fontawesome-free-solid/faTv'
+
 // import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 
 export default {
-  name: 'List',
+  name: 'DownloadList',
   components: {
     FontAwesomeIcon
   },
@@ -100,20 +101,14 @@ export default {
       let filtered = this.filteredItems
       return filtered.sort(this.sortItems)
     },
-    checkIcon () {
-      return faCheckCircle
-    },
-    exclamationIcon () {
-      return faExclamationCircle
-    },
-    starIcon () {
-      return faStar
-    },
-    removeIcon () {
-      return faTrash
-    },
     sortButtonText () {
       return this.$i18n.t('list.buttons.sort') + ': ' + this.$i18n.t('list.sort.' + this.sort)
+    },
+    tvIcon () {
+      return tvIcon
+    },
+    movieIcon () {
+      return movieIcon
     }
   },
   methods: {
@@ -276,15 +271,15 @@ export default {
 .menu-bar {
   margin: 0 0 20px 0;
 }
-.menu-bar .menu-bar-button {
-  margin: 0 20px 0 0 !important;
-}
 .download-list {
   margin: 0;
   padding: 0;
 }
 .download-item {
   margin-bottom: 20px;
+}
+.button-icon {
+  margin-right: 10px;
 }
 
 </style>
