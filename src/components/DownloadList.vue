@@ -2,8 +2,8 @@
   <div class="list">
     <b-container fluid>
       <b-row>
-        <div>
-          <span class="download-list-header">{{ $t("list.header") }}</span>
+        <div class="download-list-header-row noselect">
+          <span class="download-list-header d-none d-md-inline">{{ $t("list.header") }}</span>
           <span class="download-list-navigation" @click="setFilter('movie')" v-bind:class="{ active: filter.movie && !filter.tv }">{{ $t('list.filter.movie') }}</span>
           <span class="download-list-navigation" @click="setFilter('tv')" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('list.filter.tv') }}</span>
           <span class="download-list-navigation" @click="setFilter('all')" v-bind:class="{ active: filter.tv && filter.movie }">{{ $t('list.filter.all') }}</span>
@@ -219,14 +219,26 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
 .list {
   margin: 10px 30px;
 }
+.download-list-header-row {
+  margin: 5px 0 5px 0;
+}
 .download-list-header {
   font-size: 36px;
+  margin-right: 20px;
 }
 .download-list-navigation {
-  margin-left: 20px;
+  margin-right: 20px;
   opacity: 0.7;
   cursor: pointer;
 }

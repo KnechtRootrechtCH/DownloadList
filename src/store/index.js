@@ -87,7 +87,9 @@ export const store = new Vuex.Store({
       })
     },
     getFirebaseUserData: (context) => {
+      let time = new Date()
       let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/access/').push(time.toString())
       firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
       firebase.database.ref('data/' + uid + '/items/').on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())

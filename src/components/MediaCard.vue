@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-dark suggestion-card" v-bind:class="{ 'suggestion-card-active': active, 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
+  <div class="card border-dark media-card" v-bind:class="{ 'media-card-active': active, 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
     <div class="card-image-top">
       <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
     </div>
@@ -18,9 +18,16 @@
             :icon="infoIcon"
             class="card-icon"
             @click.stop="openInformationUrl()"
-            v-bind:title="$t('suggestionCard.tooltip.info')"/>
+            v-bind:title="$t('mediaCard.tooltip.info')"/>
           </div>
           <div class='col-xs-6'>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="selected && !downloaded"
+              :icon="removeIcon"
+              class="card-icon"
+              @click.stop="toggleItem"
+              v-bind:title="$t('mediaCard.tooltip.remove')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="!downloaded"
@@ -28,7 +35,7 @@
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
               @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
+              v-bind:title="$t('mediaCard.tooltip.priority3')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="!downloaded"
@@ -36,7 +43,7 @@
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
               @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
+              v-bind:title="$t('mediaCard.tooltip.priority2')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="!downloaded"
@@ -44,13 +51,13 @@
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
               @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
+              v-bind:title="$t('mediaCard.tooltip.priority1')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="downloaded"
               :icon="downloadedIcon"
               class="card-icon check-icon"
-              v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
+              v-bind:title="$t('mediaCard.tooltip.downloaded')"/>
           </div>
         </div>
       </div>
@@ -96,14 +103,14 @@ export default {
       }
 
       if (!date) {
-        return this.$i18n.t('suggestionCard.' + this.item.mediaType + '.dateNotFound')
+        return this.$i18n.t('mediaCard.' + this.item.mediaType + '.dateNotFound')
       }
       let moment = this.$moment(date)
       let formated = moment.format('YYYY')
       if (formated) {
         return formated
       } else {
-        return this.$i18n.t('suggestionCard.' + this.item.mediaType + '.dateNotFound')
+        return this.$i18n.t('mediaCard.' + this.item.mediaType + '.dateNotFound')
       }
     },
     rating () {
@@ -198,13 +205,9 @@ export default {
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
-        if (priority === this.lowestPriority && priority === selectedItem.priority) {
-          this.$store.dispatch('removeItem', selectedItem.key)
-        } else {
-          this.$store.dispatch('setItemPriority', {
-            key: selectedItem.key,
-            priority: priority})
-        }
+        this.$store.dispatch('setItemPriority', {
+          key: selectedItem.key,
+          priority: priority})
       } else {
         this.item.priority = priority
         this.$store.dispatch('addItem', this.item)
@@ -222,7 +225,7 @@ export default {
   i18n: {
     messages: {
       de: {
-        suggestionCard: {
+        mediaCard: {
           tooltip: {
             info: 'Zusätzliche Informationen von "TheMovieDB.org"',
             downloaded: 'Bereits heruntergeladen',
@@ -241,7 +244,7 @@ export default {
         }
       },
       en: {
-        suggestionCard: {
+        mediaCard: {
           tooltip: {
             info: 'Additional information from "TheMovieDB.org"',
             downloaded: 'Downloaded',
@@ -268,8 +271,7 @@ export default {
 *:focus {
     outline: none;
 }
-
-.suggestion-card {
+.media-card {
   margin: 0 15px 15px 0;
   transition: transform .5s;
   -webkit-touch-callout: none;
@@ -280,14 +282,11 @@ export default {
   -o-user-select: none;
   user-select: none;
 }
-.suggestion-card:hover {
+.media-card:hover {
   z-index: 100;
   transform: scale(1.05);
 }
-.suggestion-card-selected {
-  border-color: darkkhaki;
-}
-.suggestion-card-active {
+.media-card-active {
   cursor: pointer;
 }
 .card-image-top {

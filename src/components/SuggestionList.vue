@@ -2,8 +2,8 @@
   <div class="list">
     <b-container fluid>
       <b-row>
-        <div>
-          <span class="suggestion-list-header">{{ header }}</span>
+        <div class="suggestion-list-header-row noselect">
+          <span class="suggestion-list-header d-none d-md-inline">{{ header }}</span>
           <span class="suggestion-list-navigation" @click="setQueryType('popular')" v-bind:class="{ active: queryType === 'popular' }">{{ $t('suggestionList.popular') }}</span>
           <span class="suggestion-list-navigation" @click="setQueryType('top_rated')" v-bind:class="{ active: queryType === 'top_rated' }">{{ $t('suggestionList.topRated') }}</span>
         </div>
@@ -158,14 +158,26 @@ export default {
 </script>
 
 <style scoped>
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
 .list {
   margin: 10px 30px;
 }
+.suggestion-list-header-row {
+  margin: 5px 0 5px 0;
+}
 .suggestion-list-header {
   font-size: 36px;
+  margin-right: 20px;
 }
 .suggestion-list-navigation {
-  margin-left: 20px;
+  margin-right: 20px;
   opacity: 0.7;
   cursor: pointer;
 }
