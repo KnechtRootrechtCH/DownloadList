@@ -4,9 +4,9 @@
       <b-row>
         <div class="download-list-header-row noselect">
           <span class="download-list-header d-none d-md-inline">{{ $t("list.header") }}</span>
+          <span class="download-list-navigation" @click="setFilter('all')" v-bind:class="{ active: filter.tv && filter.movie }">{{ $t('list.filter.all') }}</span>
           <span class="download-list-navigation" @click="setFilter('movie')" v-bind:class="{ active: filter.movie && !filter.tv }">{{ $t('list.filter.movie') }}</span>
           <span class="download-list-navigation" @click="setFilter('tv')" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('list.filter.tv') }}</span>
-          <span class="download-list-navigation" @click="setFilter('all')" v-bind:class="{ active: filter.tv && filter.movie }">{{ $t('list.filter.all') }}</span>
         </div>
       </b-row>
       <b-row>
@@ -50,7 +50,7 @@ export default {
       overviewMaxChars: 250,
       filter: {
         movie: true,
-        tv: false,
+        tv: true,
         downloaded: true
       },
       sort: 'priority',
