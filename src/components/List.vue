@@ -5,13 +5,25 @@
         {{ $t("list.noItems") }}
     </div>
     <div class="menu-bar">
-      <b-dropdown id="sort-dropdown" v-bind:text="sortButtonText" class="m-md-2 menu-bar-button" variant="dark">
+      <b-button class="m-md-2 menu-bar-button" variant="dark">TestTestTest</b-button>
+      <b-button class="m-md-2 menu-bar-button button-active" variant="light">TestTestTest</b-button>
+      <b-dropdown v-bind:text="sortButtonText" class="m-md-2 menu-bar-button" variant="light">
         <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
         <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
       </b-dropdown>
     </div>
     <div class="download-list container-fluid">
+
+        <div class="download-item row" v-for="(item) in sortedItems" :key="item.key">
+          <div class="col-sm-2 hidden-md-down download-item-media">
+            <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
+          </div>
+          <div class="col-sm-10 download-item-info">
+            {{item.priority}}:{{item.release_date}}{{item.first_air_date}}:{{item.title}}{{item.name}}:{{item.key}}
+          </div>
+        </div>
+      <!--
       <div class="download-item row"
         v-for="(item) in items"
         :key="item.id">
@@ -33,8 +45,6 @@
               <div class="download-item-icon-group">
                 <div class="download-item-header">{{ $t("list.item.priority") }}</div>
                 <font-awesome-icon :icon="removeIcon" class="download-item-icon remove-icon" v-on:click.stop="removeItem(item.id)"/>
-                <!--<font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 5) }" v-on:click.stop="setPriority(item.id, 5)"/>
-                <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 4) }" v-on:click.stop="setPriority(item.id, 4)"/>-->
                 <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 3) }" v-on:click.stop="setPriority(item.id, 3)"/>
                 <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 2) }" v-on:click.stop="setPriority(item.id, 2)"/>
                 <font-awesome-icon :icon="exclamationIcon" class="download-item-icon priority-icon" v-bind:class="{ 'priority-icon-active': hasPriority(item.id, 1) }" v-on:click.stop="setPriority(item.id, 1)"/>
@@ -46,6 +56,7 @@
             </div>
           </div>
       </div>
+      -->
     </div>
   </div>
 </template>
@@ -66,14 +77,28 @@ export default {
   data () {
     return {
       overviewMaxChars: 250,
+      filter: {
+        movie: true,
+        tv: true
+      },
       sort: 'priority'
     }
   },
   computed: {
     items () {
-      let items = this.$store.getters.items
-      items = this.sortItems(items, this.sort)
-      return items
+      let array = []
+      for (let key in this.$store.getters.items) {
+        let item = this.$store.getters.item(key)
+        array.push(item)
+      }
+      return array
+    },
+    filteredItems () {
+      return this.items.filter(this.filterItem)
+    },
+    sortedItems () {
+      let filtered = this.filteredItems
+      return filtered.sort(this.sortItems)
     },
     checkIcon () {
       return faCheckCircle
@@ -92,6 +117,50 @@ export default {
     }
   },
   methods: {
+    filterItem (item) {
+      if (item.mediaType === 'movie' && !this.filter.movie) {
+        return false
+      }
+      if (item.mediaType === 'tv' && !this.filter.tv) {
+        return false
+      }
+      return true
+    },
+    sortItems (a, b) {
+      if (this.sort === 'priority') {
+        if (a.downloaded) return 1
+        if (b.downloaded) return -1
+        if (a.priority - b.priority !== 0) return a.priority - b.priority
+      }
+      if (this.sort === 'release') {
+        let releaseA = this.getReleaseDateMoment(a)
+        let releaseB = this.getReleaseDateMoment(b)
+        if (releaseB - releaseA !== 0) return releaseB - releaseA
+      }
+
+      let titleA = this.getTitle(a)
+      let titleB = this.getTitle(b)
+      if (titleA > titleB) return 1
+      if (titleA < titleB) return -1
+      return 0
+    },
+    getReleaseDateMoment (item) {
+      let date = null
+      if (item.mediaType === 'movie') {
+        date = item.release_date
+      } else if (item.mediaType === 'tv') {
+        date = item.first_air_date
+      }
+      let moment = this.$moment(date)
+      return moment
+    },
+    getTitle (item) {
+      if (item.mediaType === 'movie') {
+        return item.title
+      } else if (item.mediaType === 'tv') {
+        return item.name
+      }
+    },
     getPoster (path) {
       if (path) {
         return 'http://image.tmdb.org/t/p/w200' + path
@@ -148,41 +217,6 @@ export default {
     },
     changeSortMethod (method) {
       this.sort = method
-    },
-    sortItems (items, sort) {
-      let array = []
-      for (let id in items) {
-        let item = this.$store.getters.item(id)
-        array.push(item)
-      }
-
-      // title sort as default
-      array.sort((a, b) => {
-        if (a.title > b.title) return 1
-        if (a.title < b.title) return -1
-        return 0
-      })
-
-      switch (sort) {
-        case 'priority':
-          array.sort((a, b) => {
-            if (a.downloaded) return true
-            if (b.downloaded) return false
-            if (a.priority < b.priority) return -1
-            if (a.priority > b.priority) return 1
-            return 0
-          })
-          break
-        case 'release':
-          array.sort((a, b) => {
-            if (a.release_date > b.release_date) return -1
-            if (a.release_date < b.release_date) return 1
-            return 0
-          })
-
-          break
-      }
-      return array
     }
   },
   i18n: {
@@ -245,122 +279,12 @@ export default {
 .menu-bar .menu-bar-button {
   margin: 0 20px 0 0 !important;
 }
-.download-item {
-  margin-bottom: 15px;
-}
 .download-list {
-  width: 100%;
   margin: 0;
   padding: 0;
 }
-.download-list .row {
-  margin: 0;
-  padding: 0;
-}
-.download-item .download-item-title {
-  font-size: 25px;
-  font-weight: bold;
-  color: white;
-}
-.download-item .download-item-release {
-  opacity: 0.6;
-}
-.download-item .download-item-media {
-  padding: 0;
-  margin: 0 10px 10px 0;
-}
-.download-item .download-item-info {
-  margin: 0;
-  padding: 0;
-}
-.download-item .download-item-info-section {
-  margin-top: 15px;
-}
-.download-item .download-item-header {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-.download-item .download-item-content {
-  font-size: 14px;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.download-item .download-item-icon-group {
-  margin-right: 15px;
-}
-.download-item-icon {
-  width: 20px;
-  height: 20px;
-}
-.downloaded-icon {
-  color: green;
-}
-.remove-icon {
-  margin-right: 5px;
-}
-.remove-icon:hover {
-  color: red;
-  cursor: pointer;
-}
-.priority-icon {
-  cursor: pointer;
-  opacity: 0.4;
-}
-.priority-icon-active {
-    cursor: pointer;
-    opacity: 1;
-}
-@media (min-width: 0px) {
-  .hidden-sm-down {
-    display: none;
-  }
-  .hidden-md-down {
-    display: none;
-  }
-}
-@media (min-width: 350px) {
-  .hidden-sm-down {
-    display: none;
-  }
-  .hidden-md-down {
-    display: none;
-  }
+.download-item {
+  margin-bottom: 20px;
 }
 
-@media (min-width: 700px) {
-  .hidden-sm-down {
-    display: block;
-  }
-  .hidden-md-down {
-    display: none;
-  }
-}
-
-@media (min-width: 1050px) {
-  .hidden-sm-down {
-    display: block;
-  }
-  .hidden-md-down {
-    display: block;
-  }
-}
-
-@media (min-width: 1400px) {
-  .hidden-sm-down {
-    display: block;
-  }
-  .hidden-md-down {
-    display: block;
-  }
-}
-
-@media (min-width: 1750px) {
-  .hidden-sm-down {
-    display: block;
-  }
-  .hidden-md-down {
-    display: block;
-  }
-}
 </style>
