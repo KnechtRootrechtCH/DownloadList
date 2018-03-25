@@ -1,5 +1,5 @@
 <template>
-  <div class="suggestion-list">
+  <div class="list">
     <b-container fluid>
       <b-row>
         <div>
@@ -24,7 +24,7 @@
       <transition-group name="suggestion-list" tag="div" class="row suggestion-items">
         <div v-for="(item) in suggestions" :key="item.key"
         class="suggestion-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
-          <suggestionCard v-bind:item="item"></suggestionCard>
+          <suggestionCard v-bind:item="item" mode="suggestionList"></suggestionCard>
         </div>
       </transition-group>
     </b-container>
@@ -36,7 +36,7 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
-import SuggestionCard from './SuggestionCard'
+import MediaCard from './MediaCard'
 
 export default {
   name: 'SuggestionList',
@@ -50,7 +50,7 @@ export default {
   },
   components: {
     FontAwesomeIcon,
-    'suggestionCard': SuggestionCard
+    'suggestionCard': MediaCard
   },
   computed: {
     suggestions () {
@@ -158,7 +158,7 @@ export default {
 </script>
 
 <style scoped>
-.suggestion-list {
+.list {
   margin: 10px 30px;
 }
 .suggestion-list-header {

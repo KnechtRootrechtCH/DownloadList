@@ -32,6 +32,9 @@ export const store = new Vuex.Store({
     },
 
     setItems (state, items) { state._items = items },
+    removeItem (state, key) {
+      delete state._items[key]
+    },
     resetSuggestions (state) {
       state._suggestionsCount = 0
       state._suggestionsPage = 0
@@ -97,6 +100,7 @@ export const store = new Vuex.Store({
     },
     removeItem: (context, key) => {
       let uid = context.getters.user.uid
+      context.commit('removeItem', key)
       firebase.database.ref('data/' + uid + '/items/' + key).set(null)
     },
     setItemPriority: (context, payload) => {

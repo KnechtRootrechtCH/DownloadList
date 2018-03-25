@@ -1,41 +1,28 @@
 <template>
   <div class="list">
-    <h2>{{ $t("list.header") }}</h2>
-    <div v-if="!items" class="download-item-info-section">
-        {{ $t("list.noItems") }}
-    </div>
-    <div class="menu-bar">
-      <b-button-group>
-        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.movie}" @click="filter.movie = !filter.movie">
-          <font-awesome-icon :icon="tvIcon" class="button-icon"/>
-          {{ $t('list.filter.movie') }}
-        </b-button>
-        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.tv}" @click="filter.tv = !filter.tv">
-          <font-awesome-icon :icon="movieIcon" class="button-icon"/>
-          {{ $t('list.filter.tv') }}
-        </b-button>
-        <b-button class="menu-bar-button" variant="light" v-bind:class="{'btn-dark inactive' : !filter.downloaded}" @click="filter.downloaded = !filter.downloaded">
-          <font-awesome-icon :icon="downloadedIcon" class="button-icon"/>
-          {{ $t('list.filter.downloaded') }}
-        </b-button>
-      </b-button-group>
-
-      <b-dropdown v-bind:text="sortButtonText" :icon="movieIcon" class="m-md-2 menu-bar-button " variant="light">
-        <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
-        <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
-        <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
-      </b-dropdown>
-    </div>
-    <transition-group name="download-list" tag="p" class="container-fluid download-container">
-        <div class="download-item row" v-for="(item) in sortedItems" :key="item.key">
-          <div class="col-sm-2 hidden-md-down download-item-media">
-            <progressive-img class="download-item-poster" v-bind:src="getPoster(item.poster_path)"></progressive-img>
-          </div>
-          <div class="col-sm-10 download-item-info">
-            {{item.priority}}:{{item.release_date}}{{item.first_air_date}}:{{item.title}}{{item.name}}:{{item.key}}
-          </div>
+    <b-container fluid>
+      <b-row>
+        <div>
+          <span class="download-list-header">{{ $t("list.header") }}</span>
+          <span class="download-list-navigation" @click="setFilter('movie')" v-bind:class="{ active: filter.movie && !filter.tv }">{{ $t('list.filter.movie') }}</span>
+          <span class="download-list-navigation" @click="setFilter('tv')" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('list.filter.tv') }}</span>
+          <span class="download-list-navigation" @click="setFilter('all')" v-bind:class="{ active: filter.tv && filter.movie }">{{ $t('list.filter.all') }}</span>
         </div>
-    </transition-group>
+      </b-row>
+      <!--<b-row>
+        <b-dropdown v-bind:text="sortButtonText" :icon="movieIcon" class="m-md-2 menu-bar-button " variant="light">
+          <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
+          <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
+          <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
+        </b-dropdown>
+      </b-row>-->
+      <transition-group name="download-list" tag="div" class="row download-items">
+        <div v-for="(item) in sortedItems" :key="item.key"
+          class="download-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
+          <downloadCard v-bind:item="item" mode="downloadList"></downloadCard>
+        </div>
+      </transition-group>
+    </b-container>
   </div>
 </template>
 
@@ -44,20 +31,22 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import tvIcon from '@fortawesome/fontawesome-free-solid/faFilm'
 import movieIcon from '@fortawesome/fontawesome-free-solid/faTv'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faDownload'
+import sortIcon from '@fortawesome/fontawesome-free-solid/faSortAlphaDown'
 
-// import faMinusCircle from '@fortawesome/fontawesome-free-solid/faMinusCircle'
+import MediaCard from './MediaCard'
 
 export default {
   name: 'DownloadList',
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    'downloadCard': MediaCard
   },
   data () {
     return {
       overviewMaxChars: 250,
       filter: {
         movie: true,
-        tv: true,
+        tv: false,
         downloaded: true
       },
       sort: 'priority'
@@ -90,10 +79,28 @@ export default {
     },
     downloadedIcon () {
       return downloadedIcon
+    },
+    sortIcon () {
+      return sortIcon
     }
   },
   methods: {
+    setFilter (filter) {
+      if (filter === 'all') {
+        this.filter.movie = true
+        this.filter.tv = true
+      } else if (filter === 'movie') {
+        this.filter.movie = true
+        this.filter.tv = false
+      } else if (filter === 'tv') {
+        this.filter.movie = false
+        this.filter.tv = true
+      }
+    },
     filterItem (item) {
+      if (item.priority <= 0) {
+        return false
+      }
       if (!this.filter.movie && item.mediaType === 'movie') {
         return false
       }
@@ -140,60 +147,6 @@ export default {
         return item.name
       }
     },
-    getPoster (path) {
-      if (path) {
-        return 'http://image.tmdb.org/t/p/w200' + path
-      } else {
-        return this.$store.getters.fallbackMovieBackdrop
-      }
-    },
-    getReleaseYear (date) {
-      if (date) {
-        return date.substring(0, 4)
-      } else {
-        return ''
-      }
-    },
-    getOverviewShort (item) {
-      let overview = item.overview
-      if (overview && overview.length > this.overviewMaxChars) {
-        return overview.substring(0, this.overviewMaxChars) + '…'
-      }
-      return item.overview
-    },
-    isDownloaded (id) {
-      var item = this.$store.getters.item(id)
-      if (item) {
-        return item.downloaded
-      }
-      return false
-    },
-    hasPriority (id, priority) {
-      var item = this.$store.getters.item(id)
-      if (item) {
-        return item.priority <= priority
-      }
-      return false
-    },
-    removeItem (id) {
-      var item = this.$store.getters.item(id)
-      if (item) {
-        this.$store.dispatch('removeMovie', item.id)
-      }
-    },
-    setPriority (id, p) {
-      var item = this.$store.getters.item(id)
-      var priority = p
-      if (item) {
-        if (item.priority === priority) {
-          priority++
-        }
-
-        this.$store.dispatch('setMoviePriority', {
-          id: item.id,
-          priority: priority})
-      }
-    },
     changeSortMethod (method) {
       this.sort = method
     }
@@ -205,6 +158,7 @@ export default {
           header: 'Meine Liste',
           noItems: 'Du hast noch keine Downloads ausgewählt.',
           filter: {
+            all: 'Alle',
             movie: 'Filme',
             tv: 'Serien',
             downloaded: 'Heruntergeladen'
@@ -231,6 +185,7 @@ export default {
           header: 'My list',
           noItems: 'There are no downloads on your list. Add some Movies or TV Series to fill your download list',
           filter: {
+            all: 'Everything',
             movie: 'Movies',
             tv: 'TV Series',
             downloaded: 'Downloaded'
@@ -262,21 +217,23 @@ export default {
 .list {
   margin: 10px 30px;
 }
-.menu-bar {
-  margin: 0 0 20px 0;
+.download-list-header {
+  font-size: 36px;
 }
-.download-container {
-  margin: 0;
+.download-list-navigation {
+  margin-left: 20px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.download-list-navigation.active {
+  opacity: 1;
+  font-weight: bold;
+}
+.download-list-navigation:hover {
+  opacity: 1;
+}
+.download-item {
   padding: 0;
-}
-.button-icon {
-  margin-right: 10px;
-}
-.menu-bar-button {
-  color: black;
-}
-.menu-bar-button.inactive {
-  color: grey;
 }
 
 /* base */
@@ -292,15 +249,13 @@ export default {
 
 /* appearing */
 .download-list-enter-active {
-  transition: all 400ms ease-in-out;
-  opacity: 0;
-  z-index: 0;
+  transition: all 400ms ease-out;
 }
 
 /* disappearing */
 .download-list-leave-active {
+  transition: all 200ms ease-in;
   position: absolute;
-  opacity: 0;
   z-index: 0;
 }
 

@@ -68,8 +68,8 @@ import priorityIcon from '@fortawesome/fontawesome-free-solid/faDownload'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 
 export default {
-  name: 'SuggestionItem',
-  props: ['item'],
+  name: 'MediaCard',
+  props: ['item', 'mode'],
   data () {
     return {
       lowestPriority: 3,
