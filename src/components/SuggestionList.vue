@@ -24,7 +24,7 @@
       <transition-group name="suggestion-list" tag="div" class="row suggestion-items">
         <div v-for="(item) in suggestions" :key="item.key"
         class="suggestion-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
-          <suggestionCard v-bind:item="item" mode="suggestionList"></suggestionCard>
+          <suggestionCard v-bind:item="item" mode="suggestionCard"></suggestionCard>
         </div>
       </transition-group>
     </b-container>

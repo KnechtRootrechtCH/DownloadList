@@ -9,17 +9,23 @@
           <span class="download-list-navigation" @click="setFilter('all')" v-bind:class="{ active: filter.tv && filter.movie }">{{ $t('list.filter.all') }}</span>
         </div>
       </b-row>
-      <!--<b-row>
-        <b-dropdown v-bind:text="sortButtonText" :icon="movieIcon" class="m-md-2 menu-bar-button " variant="light">
-          <b-dropdown-item-button v-on:click="changeSortMethod('title')">{{ $t("list.sort.title") }}</b-dropdown-item-button>
-          <b-dropdown-item-button v-on:click="changeSortMethod('priority')">{{ $t("list.sort.priority") }}</b-dropdown-item-button>
-          <b-dropdown-item-button v-on:click="changeSortMethod('release')">{{ $t("list.sort.release") }}</b-dropdown-item-button>
-        </b-dropdown>
-      </b-row>-->
+      <b-row>
+        <div class="download-input-row col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-3">
+          <b-input-group class="download-input-group">
+            <b-input-group-prepend is-text>
+              <font-awesome-icon :icon="searchIcon" />
+            </b-input-group-prepend>
+            <b-form-input class="download-input" v-model="searchString" v-bind:placeholder="$t('list.filter.searchPlaceholder')"></b-form-input>
+            <b-input-group-append is-text v-on:click="searchString = ''">
+              <font-awesome-icon :icon="timesIcon" class="download-input-clear"/>
+            </b-input-group-append>
+          </b-input-group>
+        </div>
+      </b-row>
       <transition-group name="download-list" tag="div" class="row download-items">
         <div v-for="(item) in sortedItems" :key="item.key"
           class="download-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
-          <downloadCard v-bind:item="item" mode="downloadList"></downloadCard>
+          <downloadCard v-bind:item="item" mode="downloadCard"></downloadCard>
         </div>
       </transition-group>
     </b-container>
@@ -28,10 +34,8 @@
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import tvIcon from '@fortawesome/fontawesome-free-solid/faFilm'
-import movieIcon from '@fortawesome/fontawesome-free-solid/faTv'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faDownload'
-import sortIcon from '@fortawesome/fontawesome-free-solid/faSortAlphaDown'
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
 import MediaCard from './MediaCard'
 
@@ -49,7 +53,8 @@ export default {
         tv: false,
         downloaded: true
       },
-      sort: 'priority'
+      sort: 'priority',
+      searchString: ''
     }
   },
   computed: {
@@ -71,17 +76,11 @@ export default {
     sortButtonText () {
       return this.$i18n.t('list.buttons.sort') + ': ' + this.$i18n.t('list.sort.' + this.sort)
     },
-    tvIcon () {
-      return tvIcon
+    searchIcon () {
+      return faSearch
     },
-    movieIcon () {
-      return movieIcon
-    },
-    downloadedIcon () {
-      return downloadedIcon
-    },
-    sortIcon () {
-      return sortIcon
+    timesIcon () {
+      return faTimes
     }
   },
   methods: {
@@ -109,6 +108,10 @@ export default {
       }
       if (!this.filter.downloaded && item.downloaded) {
         return false
+      }
+      if (this.searchString.length > 2) {
+        let title = this.getTitle(item)
+        return title.toLowerCase().includes(this.searchString.toLowerCase())
       }
       return true
     },
@@ -161,7 +164,8 @@ export default {
             all: 'Alle',
             movie: 'Filme',
             tv: 'Serien',
-            downloaded: 'Heruntergeladen'
+            downloaded: 'Heruntergeladen',
+            searchPlaceholder: 'Liste durchsuchen…'
           },
           item: {
             overview: 'Übersicht',
@@ -188,7 +192,8 @@ export default {
             all: 'Everything',
             movie: 'Movies',
             tv: 'TV Series',
-            downloaded: 'Downloaded'
+            downloaded: 'Downloaded',
+            searchPlaceholder: 'Search downloadlist…'
           },
           item: {
             overview: 'Overview',
@@ -231,6 +236,18 @@ export default {
 }
 .download-list-navigation:hover {
   opacity: 1;
+}
+.download-input-row {
+  padding: 0 15px 0 0;
+}
+.download-input-group {
+  padding: 0;
+}
+.download-input-clear:hover {
+  color: black;
+}
+.download-items {
+  margin-top: 20px;
 }
 .download-item {
   padding: 0;

@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-dark suggestion-card" v-bind:class="{ 'suggestion-card-active': !isDownloaded(), 'bg-light text-dark': isSelected(), 'bg-dark text-light': !isSelected() }" v-on:click.stop="toggleItem()">
+  <div class="card border-dark suggestion-card" v-bind:class="{ 'suggestion-card-active': active, 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
     <div class="card-image-top">
       <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
     </div>
@@ -23,7 +23,7 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-b-tooltip
-              v-if="!isDownloaded()"
+              v-if="!downloaded"
               :icon="priorityIcon"
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
@@ -31,7 +31,7 @@
               v-bind:title="$t('suggestionCard.tooltip.priority3')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="!isDownloaded()"
+              v-if="!downloaded"
               :icon="priorityIcon"
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
@@ -39,7 +39,7 @@
               v-bind:title="$t('suggestionCard.tooltip.priority2')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="!isDownloaded()"
+              v-if="!downloaded"
               :icon="priorityIcon"
               class="card-icon priority-icon"
               v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
@@ -47,7 +47,7 @@
               v-bind:title="$t('suggestionCard.tooltip.priority1')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="isDownloaded()"
+              v-if="downloaded"
               :icon="downloadedIcon"
               class="card-icon check-icon"
               v-bind:title="$t('suggestionCard.tooltip.downloaded')"/>
@@ -137,9 +137,32 @@ export default {
       } else if (this.item.mediaType === 'tv') {
         return this.$store.getters.fallbackTvBackdrop
       }
+    },
+    selected () {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      return selectedItem
+    },
+    downloaded () {
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        return selectedItem.downloaded
+      }
+      return false
+    },
+    active () {
+      if (this.mode === 'suggestionCard') {
+        return !this.downloaded
+      } else {
+        return false
+      }
     }
   },
   methods: {
+    cardClicked () {
+      if (this.mode === 'suggestionCard' && !this.downloaded) {
+        this.toggleItem()
+      }
+    },
     openInformationUrl () {
       this.destroyTooltips()
       var url = 'https://www.themoviedb.org/' + this.item.mediaType + '/' + this.item.id
@@ -159,17 +182,6 @@ export default {
         this.item.priority = this.lowestPriority
         this.$store.dispatch('addItem', this.item)
       }
-    },
-    isSelected () {
-      var selectedItem = this.$store.getters.item(this.item.key)
-      return selectedItem
-    },
-    isDownloaded () {
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.downloaded
-      }
-      return false
     },
     hoverPriorityIcon (priority) {
       return priority >= this.hoverPriority
