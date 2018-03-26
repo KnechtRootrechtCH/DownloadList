@@ -4,8 +4,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import DownloadList from '@/components/DownloadList'
-import Movies from '@/components/Movies'
-import Series from '@/components/Series'
+import Browse from '@/components/Browse'
 import Info from '@/components/Info'
 
 import firebase from 'firebase'
@@ -33,25 +32,42 @@ let router = new Router({
       component: SignUp
     },
     {
+      path: '/browse/search',
+      name: 'Search',
+      component: Browse,
+      meta: {
+        requiresAuth: true
+      },
+      props: {
+        mode: 'search'
+      }
+    },
+    {
+      path: '/browse/movies',
+      name: 'Movies',
+      component: Browse,
+      meta: {
+        requiresAuth: true
+      },
+      props: {
+        mode: 'movie'
+      }
+    },
+    {
+      path: '/browse/tv',
+      name: 'Series',
+      component: Browse,
+      meta: {
+        requiresAuth: true
+      },
+      props: {
+        mode: 'tv'
+      }
+    },
+    {
       path: '/list',
       name: 'List',
       component: DownloadList,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/movies',
-      name: 'Movies',
-      component: Movies,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/series',
-      name: 'Series',
-      component: Series,
       meta: {
         requiresAuth: true
       }

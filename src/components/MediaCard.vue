@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-dark media-card" v-bind:class="{ 'media-card-active': active, 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
+  <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
     <div class="card-image-top">
       <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
     </div>
@@ -30,28 +30,11 @@
               v-bind:title="$t('mediaCard.tooltip.remove')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="!downloaded"
-              :icon="priorityIcon"
-              class="card-icon priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
-              @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority3')"/>
-            <font-awesome-icon
-              v-b-tooltip
-              v-if="!downloaded"
-              :icon="priorityIcon"
-              class="card-icon priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
-              @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority2')"/>
-            <font-awesome-icon
-              v-b-tooltip
-              v-if="!downloaded"
-              :icon="priorityIcon"
-              class="card-icon priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
-              @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority1')"/>
+              v-if="!selected && !downloaded"
+              :icon="addIcon"
+              class="card-icon"
+              @click.stop="toggleItem"
+              v-bind:title="$t('mediaCard.tooltip.add')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="downloaded"
@@ -70,13 +53,13 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 
 import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
 import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
-import removeIcon from '@fortawesome/fontawesome-free-solid/faTimesCircle'
+import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 import priorityIcon from '@fortawesome/fontawesome-free-solid/faDownload'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 
 export default {
   name: 'MediaCard',
-  props: ['item', 'mode'],
+  props: ['item'],
   data () {
     return {
       lowestPriority: 3,
@@ -88,29 +71,29 @@ export default {
   },
   computed: {
     title () {
-      if (this.item.mediaType === 'movie') {
+      if (this.item.media_type === 'movie') {
         return this.item.title
-      } else if (this.item.mediaType === 'tv') {
+      } else if (this.item.media_type === 'tv') {
         return this.item.name
       }
     },
     releaseDate () {
       let date = null
-      if (this.item.mediaType === 'movie') {
+      if (this.item.media_type === 'movie') {
         date = this.item.release_date
-      } else if (this.item.mediaType === 'tv') {
+      } else if (this.item.media_type === 'tv') {
         date = this.item.first_air_date
       }
 
       if (!date) {
-        return this.$i18n.t('mediaCard.' + this.item.mediaType + '.dateNotFound')
+        return this.$i18n.t('mediaCard.' + this.item.media_type + '.dateNotFound')
       }
       let moment = this.$moment(date)
       let formated = moment.format('YYYY')
       if (formated) {
         return formated
       } else {
-        return this.$i18n.t('mediaCard.' + this.item.mediaType + '.dateNotFound')
+        return this.$i18n.t('mediaCard.' + this.item.media_type + '.dateNotFound')
       }
     },
     rating () {
@@ -139,9 +122,9 @@ export default {
       return priorityIcon
     },
     backdropPlaceholder () {
-      if (this.item.mediaType === 'movie') {
+      if (this.item.media_type === 'movie') {
         return this.$store.getters.fallbackMovieBackdrop
-      } else if (this.item.mediaType === 'tv') {
+      } else if (this.item.media_type === 'tv') {
         return this.$store.getters.fallbackTvBackdrop
       }
     },
@@ -155,24 +138,15 @@ export default {
         return selectedItem.downloaded
       }
       return false
-    },
-    active () {
-      if (this.mode === 'suggestionCard') {
-        return !this.downloaded
-      } else {
-        return false
-      }
     }
   },
   methods: {
     cardClicked () {
-      if (this.mode === 'suggestionCard' && !this.downloaded) {
-        this.toggleItem()
-      }
+      // open item detail page
     },
     openInformationUrl () {
       this.destroyTooltips()
-      var url = 'https://www.themoviedb.org/' + this.item.mediaType + '/' + this.item.id
+      var url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
       var win = window.open(url, '_blank')
       win.focus()
     },
@@ -227,13 +201,13 @@ export default {
       de: {
         mediaCard: {
           tooltip: {
-            info: 'Zusätzliche Informationen von "TheMovieDB.org"',
-            downloaded: 'Bereits heruntergeladen',
+            add: 'Diesen Titel der Downloadliste hinzufügen',
             remove: 'Aus Downloadliste entfernen',
+            downloaded: 'Bereits heruntergeladen',
+            info: 'Zusätzliche Informationen von "TheMovieDB.org"',
             priority3: 'Tiefe Priorität',
             priority2: 'Mittlere Priorität',
-            priority1: 'Hohe Priorität',
-            add: 'Diesen Titel der Downloadliste hinzufügen'
+            priority1: 'Hohe Priorität'
           },
           movie: {
             dateNotFound: '-'
@@ -246,13 +220,14 @@ export default {
       en: {
         mediaCard: {
           tooltip: {
-            info: 'Additional information from "TheMovieDB.org"',
-            downloaded: 'Downloaded',
+            add: 'Add to download list',
             remove: 'Remove from download list',
+            downloaded: 'Downloaded',
+            info: 'Additional information from "TheMovieDB.org"',
             priority3: 'Low priority',
             priority2: 'Medium priority',
-            priority1: 'High priority',
-            add: 'Add to download list'
+            priority1: 'High priority'
+
           },
           movie: {
             dateNotFound: '-'
@@ -272,7 +247,6 @@ export default {
     outline: none;
 }
 .media-card {
-  margin: 0 15px 15px 0;
   transition: transform .5s;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -285,9 +259,6 @@ export default {
 .media-card:hover {
   z-index: 100;
   transform: scale(1.05);
-}
-.media-card-active {
-  cursor: pointer;
 }
 .card-image-top {
   background-color: #343a40;

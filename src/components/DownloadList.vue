@@ -22,12 +22,14 @@
           </b-input-group>
         </div>
       </b-row>
+      <media-grid v-bind:items="items" mode="list" filter="filter" sort="sort"></media-grid>
+      <!--
       <transition-group name="download-list" tag="div" class="row download-items">
         <div v-for="(item) in sortedItems" :key="item.key"
           class="download-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
           <downloadCard v-bind:item="item" mode="downloadCard"></downloadCard>
         </div>
-      </transition-group>
+      </transition-group>-->
     </b-container>
   </div>
 </template>
@@ -37,13 +39,13 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
-import MediaCard from './MediaCard'
+import MediaGrid from './MediaGrid'
 
 export default {
   name: 'DownloadList',
   components: {
     FontAwesomeIcon,
-    'downloadCard': MediaCard
+    'mediaGrid': MediaGrid
   },
   data () {
     return {
@@ -59,19 +61,7 @@ export default {
   },
   computed: {
     items () {
-      let array = []
-      for (let key in this.$store.getters.items) {
-        let item = this.$store.getters.item(key)
-        array.push(item)
-      }
-      return array
-    },
-    filteredItems () {
-      return this.items.filter(this.filterItem)
-    },
-    sortedItems () {
-      let filtered = this.filteredItems
-      return filtered.sort(this.sortItems)
+      return this.$store.getters.itemsArray
     },
     sortButtonText () {
       return this.$i18n.t('list.buttons.sort') + ': ' + this.$i18n.t('list.sort.' + this.sort)
@@ -94,60 +84,6 @@ export default {
       } else if (filter === 'tv') {
         this.filter.movie = false
         this.filter.tv = true
-      }
-    },
-    filterItem (item) {
-      if (item.priority <= 0) {
-        return false
-      }
-      if (!this.filter.movie && item.mediaType === 'movie') {
-        return false
-      }
-      if (!this.filter.tv && item.mediaType === 'tv') {
-        return false
-      }
-      if (!this.filter.downloaded && item.downloaded) {
-        return false
-      }
-      if (this.searchString.length > 2) {
-        let title = this.getTitle(item)
-        return title.toLowerCase().includes(this.searchString.toLowerCase())
-      }
-      return true
-    },
-    sortItems (a, b) {
-      if (this.sort === 'priority') {
-        if (a.downloaded) return 1
-        if (b.downloaded) return -1
-        if (a.priority - b.priority !== 0) return a.priority - b.priority
-      }
-      if (this.sort === 'release') {
-        let releaseA = this.getReleaseDateMoment(a)
-        let releaseB = this.getReleaseDateMoment(b)
-        if (releaseB - releaseA !== 0) return releaseB - releaseA
-      }
-
-      let titleA = this.getTitle(a)
-      let titleB = this.getTitle(b)
-      if (titleA > titleB) return 1
-      if (titleA < titleB) return -1
-      return 0
-    },
-    getReleaseDateMoment (item) {
-      let date = null
-      if (item.mediaType === 'movie') {
-        date = item.release_date
-      } else if (item.mediaType === 'tv') {
-        date = item.first_air_date
-      }
-      let moment = this.$moment(date)
-      return moment
-    },
-    getTitle (item) {
-      if (item.mediaType === 'movie') {
-        return item.title
-      } else if (item.mediaType === 'tv') {
-        return item.name
       }
     },
     changeSortMethod (method) {

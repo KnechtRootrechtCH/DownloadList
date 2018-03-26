@@ -16,7 +16,7 @@ export const store = new Vuex.Store({
     _user: null,
 
     _items: {},
-    _suggestions: [],
+    _suggestions: {},
     _suggestionsPage: 0,
     _suggestionsPages: 0,
     _suggestionsCount: 0
@@ -49,9 +49,18 @@ export const store = new Vuex.Store({
         state._suggestions = []
       }
       payload.items.forEach(item => {
-        item.mediaType = payload.mediaType
-        item.key = payload.mediaType + ':' + item.id
-        state._suggestions.push(item)
+        if (!item.media_type) {
+          item.media_type = payload.media_type
+        }
+        item.key = item.media_type + ':' + item.id
+        if (item.media_type === 'movie' || item.media_type === 'tv') {
+          state._suggestions[item.key] = item
+        } else if (item.media_type === 'person') {
+          item.known_for.forEach(knownFor => {
+            knownFor.key = knownFor.media_type + ':' + knownFor.id
+            state._suggestions[knownFor.key] = knownFor
+          })
+        }
       })
     },
 
@@ -89,6 +98,7 @@ export const store = new Vuex.Store({
     getFirebaseUserData: (context) => {
       let time = new Date()
       let uid = context.getters.user.uid
+      console.log(context.getters.user)
       firebase.database.ref('data/' + uid + '/access/').push(time.toString())
       firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
       firebase.database.ref('data/' + uid + '/items/').on('value', (snapshot) => {
@@ -120,15 +130,17 @@ export const store = new Vuex.Store({
       let query = null
       switch (parameters.queryType) {
         case 'search':
-          query = 'https://api.themoviedb.org/3/search/' + parameters.mediaType + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1) + '&query=' + parameters.searchString
+          query = 'https://api.themoviedb.org/3/search/' + parameters.media_type + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1) + '&query=' + parameters.searchString
           break
         case 'popular':
-          query = 'https://api.themoviedb.org/3/' + parameters.mediaType + '/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
+          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
           break
         case 'top_rated':
-          query = 'https://api.themoviedb.org/3/' + parameters.mediaType + '/top_rated?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
+          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/top_rated?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
           break
       }
+
+      console.log(parameters, query)
 
       axios.get(query).then(
         (response) => {
@@ -137,7 +149,7 @@ export const store = new Vuex.Store({
             'pages': response.data.total_pages,
             'page': response.data.page,
             'items': response.data.results,
-            'mediaType': parameters.mediaType
+            'media_type': parameters.media_type
           })
         })
     }
@@ -149,7 +161,24 @@ export const store = new Vuex.Store({
 
     items: (state) => { return state._items },
     item: (state) => (key) => { return state._items !== null ? state._items[key] : null },
+    itemsArray: (state) => {
+      let array = []
+      for (let key in state._items) {
+        let item = state._items[key]
+        array.push(item)
+      }
+      return array
+    },
+
     suggestions: (state) => { return state._suggestions },
+    suggestionsArray: (state) => {
+      let array = []
+      for (let key in state._suggestions) {
+        let item = state._suggestions[key]
+        array.push(item)
+      }
+      return array
+    },
 
     locale: (state) => { return state._locale },
     movieDbApiKey: (state) => { return state._movieDbApiKey },
