@@ -2,10 +2,12 @@
   <div class="media-grid">
     <b-container fluid class="media-container">
       <transition-group name="media-group" tag="div" class="row media-row">
-        <div v-for="(item) in sortedItems" :key="item.key"
-        class="media-item col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
+        <b-col
+        v-for="(item) in sortedItems" :key="item.key"
+        cols="12" sm="12" md="4" lg="3" xl="3"
+        class="media-item">
           <mediaCard v-bind:item="item"></mediaCard>
-        </div>
+        </b-col>
       </transition-group>
     </b-container>
   </div>
@@ -52,12 +54,33 @@ export default {
       if (!this.filter.tv && item.media_type === 'tv') {
         return false
       }
+
+      let selectedItem = this.$store.getters.item(item.key)
+
       if (!this.filter.downloaded) {
-        let selectedItem = this.$store.getters.item(item.key)
         if (selectedItem && selectedItem.downloaded) {
           return false
         }
       }
+
+      if (!this.filter.notDownloaded) {
+        if (!selectedItem || !selectedItem.downloaded) {
+          return false
+        }
+      }
+
+      switch (selectedItem.priority) {
+        case 1:
+          if (!this.filter.priority1) return false
+          break
+        case 2:
+          if (!this.filter.priority2) return false
+          break
+        case 3:
+          if (!this.filter.priority3) return false
+          break
+      }
+
       if (this.filter.string && this.filter.string.length > 2) {
         let title = this.getTitle(item)
         return title.toLowerCase().includes(this.searchString.toLowerCase())
@@ -74,6 +97,16 @@ export default {
         let releaseA = this.getReleaseDateMoment(a)
         let releaseB = this.getReleaseDateMoment(b)
         if (releaseB - releaseA !== 0) return releaseB - releaseA
+      }
+      if (this.sort === 'rating') {
+        if (a.vote_average < b.vote_average) return 1
+        if (a.vote_average > b.vote_average) return -1
+        return 0
+      }
+      if (this.sort === 'popularity') {
+        if (a.popularity < b.popularity) return 1
+        if (a.popularity > b.popularity) return -1
+        return 0
       }
 
       let titleA = this.getTitle(a)

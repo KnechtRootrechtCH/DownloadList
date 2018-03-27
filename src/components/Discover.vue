@@ -1,53 +1,45 @@
 <template>
-  <div class="browse">
-    <div class="browse-navigation">
-      <h2 class="browse-header noselect">{{ $t(mode) }}</h2>
-      <b-collapse id="collapse-navigation" class="browse-navigation-items noselect" v-bind:visible="mode !== 'search'">
-        <span class="browse-header">{{ header }}</span>
-        <span class="browse-navigation-item" @click="setQueryType('popular')" v-bind:class="{ active: queryType === 'popular' }">{{ $t('popular') }}</span>
-        <span class="browse-navigation-item" @click="setQueryType('top_rated')" v-bind:class="{ active: queryType === 'top_rated' }">{{ $t('topRated') }}</span>
-        <span class="browse-navigation-item" @click="setQueryType('search')" v-bind:class="{ active: queryType === 'search' }">{{ $t('search') }}</span>
+  <div class="discover">
+    <div class="discover-navigation">
+      <h2 class="discover-header noselect">{{ $t(mode) }}</h2>
+      <b-collapse id="collapse-navigation" class="discover-navigation-items noselect" v-bind:visible="mode !== 'discover'">
+        <span class="discover-navigation-item" @click="setQueryType('popular')" v-bind:class="{ active: queryType === 'popular' }">{{ $t('popular') }}</span>
+        <span class="discover-navigation-item" @click="setQueryType('top_rated')" v-bind:class="{ active: queryType === 'top_rated' }">{{ $t('topRated') }}</span>
+        <span class="discover-navigation-item" @click="setQueryType('search')" v-bind:class="{ active: queryType === 'search' }">{{ $t('search') }}</span>
       </b-collapse>
       <b-collapse id="collapse-input" v-bind:visible="queryType === 'search'">
-        <b-input-group class="browse-search-group">
+        <b-input-group class="discover-search-group">
           <!--<b-input-group-prepend is-text>
             <font-awesome-icon :icon="searchIcon" />
           </b-input-group-prepend>-->
-          <b-form-input class="browse-search-input" v-model="searchString" v-bind:placeholder="$t('searchPlaceholder.' + mode)"></b-form-input>
+          <b-form-input class="discover-search-input" v-model="searchString" v-bind:placeholder="$t('searchPlaceholder.' + mode)"></b-form-input>
           <b-input-group-append is-text v-on:click="clearSearch">
-              <font-awesome-icon :icon="timesIcon" class="browse-search-clear"/>
+              <font-awesome-icon :icon="crossIcon" class="discover-search-clear"/>
           </b-input-group-append>
         </b-input-group>
       </b-collapse>
     </div>
-    <div class="browse-content">
-      <mediaGrid v-bind:filter="filter" v-bind:items="items"></mediaGrid>
+    <div class="discover-content">
+      <mediaGrid v-bind:items="items"></mediaGrid>
     </div>
   </div>
 </template>
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
-import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
+import searchIcon from '@fortawesome/fontawesome-free-solid/faSearch'
+import crossIcon from '@fortawesome/fontawesome-free-solid/faTimes'
 
 import MediaGrid from './MediaGrid'
 
 export default {
-  name: 'Browse',
+  name: 'discover',
   props: ['mode', 'header', 'inputPlaceholder'],
   data () {
     return {
       queryType: 'popular',
       searchString: '',
-      previousSearchString: '',
-      filter: {
-        movie: true,
-        tv: true,
-        downloaded: true,
-        selected: true,
-        notSelected: true
-      }
+      previousSearchString: ''
     }
   },
   components: {
@@ -56,13 +48,14 @@ export default {
   },
   computed: {
     items () {
-      return this.$store.getters.suggestionsArray
+      let items = this.$store.getters.suggestionsArray
+      return items
     },
     searchIcon () {
-      return faSearch
+      return searchIcon
     },
-    timesIcon () {
-      return faTimes
+    crossIcon () {
+      return crossIcon
     }
   },
   methods: {
@@ -82,25 +75,28 @@ export default {
       }
       this.previousSearchString = this.searchString
 
-      if (this.searchString.length === 0 && this.queryType === 'search' && this.mode !== 'search') {
-        this.queryType = 'popular'
-        this.loadItems()
-      } else if (this.searchString.length > 2) {
-        this.queryType = 'search'
-        this.loadItems()
+      if (this.searchString.length === 0 && this.queryType === 'search') {
+        return
       }
+      this.loadItems()
     },
     loadItems (nextPage) {
       if (!nextPage) {
         this.$store.commit('resetSuggestions')
       }
       let mediaType = this.mode
-      if (this.mode === 'search') {
-        mediaType = 'multi'
+      let queryType = this.queryType
+      if (this.mode === 'discover' && this.queryType === 'search') {
+        if (this.searchString.length > 2) {
+          mediaType = 'multi'
+        } else {
+          mediaType = 'movie'
+          queryType = 'popular'
+        }
       }
       this.$store.dispatch('getSuggestions', {
         'media_type': mediaType,
-        'queryType': this.queryType,
+        'queryType': queryType,
         'searchString': this.searchString
       })
     },
@@ -119,9 +115,8 @@ export default {
   },
   created () {
     window.addEventListener('scroll', this.handleScroll)
-    if (this.mode === 'search') {
+    if (this.mode === 'discover') {
       this.queryType = 'search'
-      return
     }
     this.loadItems()
   },
@@ -133,13 +128,10 @@ export default {
       this.$_.debounce(this.updateSearch, 1000)()
     },
     mode: function (val, oldVal) {
-      if (val === 'search') {
+      if (val === 'discover') {
         this.queryType = 'search'
-        if (this.searchString < 3) {
-          return
-        }
       }
-      if (this.queryType === 'search' && this.searchString < 3) {
+      if (val !== 'discover' && this.queryType === 'search' && this.searchString.length < 3) {
         this.queryType = 'popular'
       }
       this.loadItems()
@@ -148,18 +140,20 @@ export default {
   i18n: {
     messages: {
       de: {
+        discover: 'Entdecken',
         movie: 'Filme',
         tv: 'Serien',
         popular: 'Beliebt',
         topRated: 'Bestbewertet',
-        search: 'Suche',
+        search: 'Suchen',
         searchPlaceholder: {
           movie: 'Film suchen…',
           tv: 'Serie suchen…',
-          search: 'Film, Serie, Regisseur oder Schauspieler suchen…'
+          discover: 'Film, Serie oder Person…'
         }
       },
       en: {
+        discover: 'Discover',
         movie: 'Movies',
         tv: 'TV Shows',
         popular: 'Popular',
@@ -168,7 +162,7 @@ export default {
         searchPlaceholder: {
           movie: 'Search Movie…',
           tv: 'Search TV Show…',
-          search: 'Search for Movie, TV Show, Director or Actor…'
+          discover: 'Movie, TV Show or Person…'
         }
       }
     }
@@ -187,26 +181,31 @@ export default {
   -o-user-select: none;
   user-select: none;
 }
-.browse-navigation {
+.discover-navigation {
   margin: 20px 20px 0 20px;
 }
-.browse-navigation-item {
-  margin-right: 20px;
+.discover-navigation-item {
   opacity: 0.7;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
+  margin: 0 10px 0 10px;
 }
-.browse-navigation-item.active {
+.discover-navigation-item:first-child {
+  margin: 0 10px 0 1px;
+}
+.discover-navigation-item:last-child {
+  margin: 0 0 0 10px;
+}
+.discover-navigation-item.active {
   opacity: 1;
-  font-weight: bold;
 }
-.browse-navigation-item:hover {
+.discover-navigation-item:hover {
   opacity: 1;
 }
-.browse-search-group {
+.discover-search-group {
   margin-top: 10px;
 }
-.browse-search-clear:hover {
+.discover-search-clear:hover {
   color: darkred;
 }
 </style>

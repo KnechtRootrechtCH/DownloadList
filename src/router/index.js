@@ -3,8 +3,8 @@ import Router from 'vue-router'
 
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
-import DownloadList from '@/components/DownloadList'
-import Browse from '@/components/Browse'
+import List from '@/components/List'
+import Discover from '@/components/Discover'
 import Info from '@/components/Info'
 
 import firebase from 'firebase'
@@ -32,20 +32,20 @@ let router = new Router({
       component: SignUp
     },
     {
-      path: '/browse/search',
-      name: 'Search',
-      component: Browse,
+      path: '/browse/discover',
+      name: 'Discover',
+      component: Discover,
       meta: {
         requiresAuth: true
       },
       props: {
-        mode: 'search'
+        mode: 'discover'
       }
     },
     {
       path: '/browse/movies',
       name: 'Movies',
-      component: Browse,
+      component: Discover,
       meta: {
         requiresAuth: true
       },
@@ -56,7 +56,7 @@ let router = new Router({
     {
       path: '/browse/tv',
       name: 'Series',
-      component: Browse,
+      component: Discover,
       meta: {
         requiresAuth: true
       },
@@ -67,7 +67,7 @@ let router = new Router({
     {
       path: '/list',
       name: 'List',
-      component: DownloadList,
+      component: List,
       meta: {
         requiresAuth: true
       }
@@ -90,6 +90,7 @@ router.beforeEach((to, from, next) => {
   if (requiresAuth && !currentUser) {
     next('authenticate')
   } else {
+    window.scrollTo(0, 0)
     next()
   }
 })

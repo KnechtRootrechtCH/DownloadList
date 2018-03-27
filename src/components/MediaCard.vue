@@ -227,7 +227,6 @@ export default {
             priority3: 'Low priority',
             priority2: 'Medium priority',
             priority1: 'High priority'
-
           },
           movie: {
             dateNotFound: '-'
@@ -277,8 +276,8 @@ export default {
   margin-bottom: 4px;
 }
 .card-icon {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   cursor: pointer;
 }
 .check-icon {

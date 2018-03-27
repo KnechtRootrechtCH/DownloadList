@@ -54,32 +54,15 @@ export const store = new Vuex.Store({
         }
         item.key = item.media_type + ':' + item.id
         if (item.media_type === 'movie' || item.media_type === 'tv') {
-          state._suggestions[item.key] = item
+          Vue.set(state._suggestions, item.key, item)
+          // state._suggestions[item.key] = item
         } else if (item.media_type === 'person') {
           item.known_for.forEach(knownFor => {
             knownFor.key = knownFor.media_type + ':' + knownFor.id
-            state._suggestions[knownFor.key] = knownFor
+            Vue.set(state._suggestions, knownFor.key, knownFor)
+            // state._suggestions[knownFor.key] = knownFor
           })
         }
-      })
-    },
-
-    setTv (state, tv) { state._tv = tv },
-    resetTvSuggestions (state) {
-      state._tvSuggestionsCount = 0
-      state._tvSuggestionsPage = 0
-      state._tvSuggestionsPages = 0
-      state._tvSuggestions = []
-    },
-    setTvSuggestions (state, payload) {
-      state._tvSuggestionsCount = payload.count
-      state._tvSuggestionsPage = payload.page
-      state._tvSuggestionsPages = payload.pages
-      if (payload.page <= 1) {
-        state._tvSuggestions = []
-      }
-      payload.items.forEach(element => {
-        state._tvSuggestions.push(element)
       })
     }
   },
@@ -98,7 +81,6 @@ export const store = new Vuex.Store({
     getFirebaseUserData: (context) => {
       let time = new Date()
       let uid = context.getters.user.uid
-      console.log(context.getters.user)
       firebase.database.ref('data/' + uid + '/access/').push(time.toString())
       firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
       firebase.database.ref('data/' + uid + '/items/').on('value', (snapshot) => {
@@ -140,7 +122,7 @@ export const store = new Vuex.Store({
           break
       }
 
-      console.log(parameters, query)
+      // console.log(parameters, query)
 
       axios.get(query).then(
         (response) => {

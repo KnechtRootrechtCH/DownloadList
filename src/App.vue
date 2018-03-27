@@ -48,6 +48,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #ddd;
 }
+.app-content {
+  padding-top:56px;
+}
 .app-content a {
   color: #ffbf58;
 }

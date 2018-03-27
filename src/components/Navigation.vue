@@ -1,22 +1,25 @@
 <template>
-  <div>
-    <b-navbar variant="dark" type="dark" toggleable="sm">
+  <div class="navigation">
+    <b-navbar variant="dark" type="dark" toggleable="sm" fixed="top">
       <b-navbar-brand to="/">
         <img src="../assets/logo.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
       </b-navbar-brand>
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav>
+          <b-nav-item to="/browse/discover">{{ $t("nav.discover") }}</b-nav-item>
           <b-nav-item to="/browse/movies">{{ $t("nav.movies") }}</b-nav-item>
           <b-nav-item to="/browse/tv">{{ $t("nav.tv") }}</b-nav-item>
-          <b-nav-item to="/browse/search">{{ $t("nav.search") }}</b-nav-item>
           <b-nav-item to="/list">{{ $t("nav.downloadList") }}</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item-dropdown right>
-          <template slot="button-content">
-            <font-awesome-icon :icon="dropdownIcon" class="navigation-icon d-none d-sm-inline"/>
-          </template>
+          <b-dropdown-divider class="d-sm-none"></b-dropdown-divider>
+          <b-nav-item to="/info" class="d-sm-none">{{ $t("nav.about") }}</b-nav-item>
+          <b-nav-item v-on:click="signOut" class="d-sm-none">{{ $t("nav.signout") }}</b-nav-item>
+          <b-nav-item-dropdown right class="d-none d-sm-inline" no-caret>
+            <template slot="button-content">
+              <font-awesome-icon :icon="dropdownIcon" class="navigation-icon"/>
+            </template>
             <b-dropdown-item to="/info">{{ $t("nav.about") }}</b-dropdown-item>
             <b-dropdown-item v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -53,7 +56,7 @@ export default {
       de: {
         nav: {
           home: 'Home',
-          search: 'Suche',
+          discover: 'Entdecken',
           movies: 'Filme',
           tv: 'Serien',
           downloadList: 'Download Liste',
@@ -64,7 +67,7 @@ export default {
       en: {
         nav: {
           home: 'Home',
-          search: 'Search',
+          discover: 'Discover',
           movies: 'Movies',
           tv: 'TV Shows',
           downloadList: 'Download List',
@@ -78,4 +81,11 @@ export default {
 </script>
 
 <style scoped>
+.navigation-icon {
+  width: 20px;
+  height: 20px;
+}
+.navigation .nav-link {
+  font-size: 20px;
+}
 </style>
