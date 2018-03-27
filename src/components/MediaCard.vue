@@ -1,7 +1,10 @@
 <template>
   <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
     <div class="card-image-top">
-      <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+      <progressive-img class="card-image-backdrop" v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+      <div class="edit-overlay" v-bind:class="{ 'edit-overlay-active' : editMode }">
+        Priority Edit Overlay
+      </div>
     </div>
     <div class="card-body">
       <div class="card-icons container-fluid">
@@ -21,6 +24,13 @@
             v-bind:title="$t('mediaCard.tooltip.info')"/>
           </div>
           <div class='col-xs-6'>
+            <font-awesome-icon
+              v-b-tooltip
+              v-if="selected"
+              :icon="editIcon"
+              class="card-icon"
+              @click.stop="editMode = !editMode"
+              v-bind:title="$t('mediaCard.tooltip.edit')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="selected && !downloaded"
@@ -54,8 +64,13 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
 import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
 import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
-import priorityIcon from '@fortawesome/fontawesome-free-solid/faDownload'
+import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
+
+import highPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleUp'
+import mediunPriorityIcon from '@fortawesome/fontawesome-free-solid/faCircle'
+import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleDown'
 
 export default {
   name: 'MediaCard',
@@ -63,7 +78,8 @@ export default {
   data () {
     return {
       lowestPriority: 3,
-      hoverPriority: 4
+      hoverPriority: 4,
+      editMode: false
     }
   },
   components: {
@@ -121,6 +137,9 @@ export default {
     priorityIcon () {
       return priorityIcon
     },
+    editIcon () {
+      return editIcon
+    },
     backdropPlaceholder () {
       if (this.item.media_type === 'movie') {
         return this.$store.getters.fallbackMovieBackdrop
@@ -152,6 +171,7 @@ export default {
     },
     toggleItem () {
       this.destroyTooltips()
+      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -203,6 +223,7 @@ export default {
           tooltip: {
             add: 'Diesen Titel der Downloadliste hinzufügen',
             remove: 'Aus Downloadliste entfernen',
+            edit: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
             info: 'Zusätzliche Informationen von "TheMovieDB.org"',
             priority3: 'Tiefe Priorität',
@@ -222,6 +243,7 @@ export default {
           tooltip: {
             add: 'Add to download list',
             remove: 'Remove from download list',
+            edit: 'Change priority',
             downloaded: 'Downloaded',
             info: 'Additional information from "TheMovieDB.org"',
             priority3: 'Low priority',
@@ -256,7 +278,6 @@ export default {
   user-select: none;
 }
 .media-card:hover {
-  z-index: 100;
   transform: scale(1.05);
 }
 .card-image-top {
@@ -264,6 +285,7 @@ export default {
 }
 .card-body {
   padding: 10px;
+  z-index: 3;
 }
 .card-title {
   font-weight: bold;
@@ -283,17 +305,19 @@ export default {
 .check-icon {
   color: darkgreen;
 }
-.priority-icon.inactive {
-  opacity: 0.5;
+.edit-overlay {
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: -1;
+  
 }
-.priority-icon.inactive.highlight {
-  opacity: 1;
-}
-.priority-icon.highlight {
-  opacity: 1;
-}
-.card-img-overlay {
-  z-index: 10;
-  padding: 15px;
+.edit-overlay-active {
+  opacity: 0.8;
+  z-index: 2;
 }
 </style>
