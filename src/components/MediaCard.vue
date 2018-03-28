@@ -3,7 +3,61 @@
     <div class="card-image-top">
       <progressive-img class="card-image-backdrop" v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
       <div class="edit-overlay" v-bind:class="{ 'edit-overlay-active' : editMode }">
-        Priority Edit Overlay
+        <b-container fluid class="edit-overlay-container">
+          <b-row class="edit-overlay-row">
+            <b-col cols="8" class="edit-overlay-label">
+              {{ $t('mediaCard.priority') }}:
+            </b-col>
+            <b-col cols="4" class="edit-overlay-label text-right">
+              {{ $t('mediaCard.priority' + priority) }}
+            </b-col>
+          </b-row>
+          <b-row class="edit-overlay-row">
+            <b-col cols="6" class="edit-overlay-label">
+              {{ $t('mediaCard.priorityChange') }}:
+            </b-col>
+            <b-col cols="6" class="text-right edit-overlay-icons">
+            <font-awesome-icon
+              v-b-tooltip
+              :icon="highPriorityIcon"
+              class="card-icon priority-icon"
+              @click.stop="increasePriority()"
+              v-bind:title="$t('mediaCard.priorityPlus')"/>
+            <font-awesome-icon
+              v-b-tooltip
+              :icon="lowPriorityIcon"
+              class="card-icon priority-icon"
+              @click.stop="decreasePriority()"
+              v-bind:title="$t('mediaCard.priorityMinus')"/>
+              </b-col>
+          </b-row>
+          <b-row class="edit-overlay-row" v-if="downloaded">
+            <b-col cols="9" class="edit-overlay-label">
+            {{ $t('mediaCard.redownload') }}:
+            </b-col>
+            <b-col cols="3" class="text-right edit-overlay-icons">
+            <font-awesome-icon
+              v-b-tooltip
+              :icon="redownloadIcon"
+              class="card-icon priority-icon"
+              @click.stop="increasePriority()"
+              v-bind:title="$t('mediaCard.redownload')"/>
+              </b-col>
+          </b-row>
+          <b-row class="edit-overlay-row" v-if="!downloaded">
+            <b-col cols="9" class="edit-overlay-label">
+            {{ $t('mediaCard.markAsDownloaded') }}:
+            </b-col>
+            <b-col cols="3" class="text-right edit-overlay-icons">
+            <font-awesome-icon
+              v-b-tooltip
+              :icon="downloadedIcon"
+              class="card-icon priority-icon"
+              @click.stop="increasePriority()"
+              v-bind:title="$t('mediaCard.markAsDownloaded')"/>
+              </b-col>
+          </b-row>
+        </b-container>
       </div>
     </div>
     <div class="card-body">
@@ -65,11 +119,12 @@ import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
 import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
 import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
+import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
 
 import highPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleUp'
-import mediunPriorityIcon from '@fortawesome/fontawesome-free-solid/faCircle'
+import mediumPriorityIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleDown'
 
 export default {
@@ -78,7 +133,7 @@ export default {
   data () {
     return {
       lowestPriority: 3,
-      hoverPriority: 4,
+      defaultPriority: 2,
       editMode: false
     }
   },
@@ -122,6 +177,14 @@ export default {
         return ''
       }
     },
+    priority () {
+      let selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        return selectedItem.priority
+      } else {
+        return 0
+      }
+    },
     addIcon () {
       return addIcon
     },
@@ -139,6 +202,18 @@ export default {
     },
     editIcon () {
       return editIcon
+    },
+    highPriorityIcon () {
+      return highPriorityIcon
+    },
+    mediumPriorityIcon () {
+      return mediumPriorityIcon
+    },
+    lowPriorityIcon () {
+      return lowPriorityIcon
+    },
+    redownloadIcon () {
+      return redownloadIcon
     },
     backdropPlaceholder () {
       if (this.item.media_type === 'movie') {
@@ -180,12 +255,31 @@ export default {
         }
         this.$store.dispatch('removeItem', selectedItem.key)
       } else {
-        this.item.priority = this.lowestPriority
+        this.item.priority = this.defaultPriority
         this.$store.dispatch('addItem', this.item)
       }
     },
-    hoverPriorityIcon (priority) {
-      return priority >= this.hoverPriority
+    increasePriority () {
+      this.destroyTooltips()
+
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem && selectedItem.priority > 1) {
+        selectedItem.priority--
+        this.$store.dispatch('setItemPriority', {
+          key: selectedItem.key,
+          priority: selectedItem.priority})
+      }
+    },
+    decreasePriority () {
+      this.destroyTooltips()
+
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem && selectedItem.priority < this.lowestPriority) {
+        selectedItem.priority++
+        this.$store.dispatch('setItemPriority', {
+          key: selectedItem.key,
+          priority: selectedItem.priority})
+      }
     },
     hasPriority (priority) {
       var selectedItem = this.$store.getters.item(this.item.key)
@@ -225,17 +319,24 @@ export default {
             remove: 'Aus Downloadliste entfernen',
             edit: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
-            info: 'Zusätzliche Informationen von "TheMovieDB.org"',
-            priority3: 'Tiefe Priorität',
-            priority2: 'Mittlere Priorität',
-            priority1: 'Hohe Priorität'
+            info: 'Zusätzliche Informationen von "TheMovieDB.org"'
           },
           movie: {
             dateNotFound: '-'
           },
           tv: {
             dateNotFound: '-'
-          }
+          },
+          priority: 'Aktuelle Priorität',
+          priority3: 'Tief',
+          priority2: 'Mittel',
+          priority1: 'Hoch',
+          priority0: 'Keine',
+          priorityChange: 'Priorität ändern',
+          priorityPlus: 'Priorität erhöhen',
+          priorityMinus: 'Priorität senken',
+          redownload: 'Re-Download',
+          markAsDownloaded: 'Als Heruntergeladen markieren'
         }
       },
       en: {
@@ -245,17 +346,24 @@ export default {
             remove: 'Remove from download list',
             edit: 'Change priority',
             downloaded: 'Downloaded',
-            info: 'Additional information from "TheMovieDB.org"',
-            priority3: 'Low priority',
-            priority2: 'Medium priority',
-            priority1: 'High priority'
+            info: 'Additional information from "TheMovieDB.org"'
           },
           movie: {
             dateNotFound: '-'
           },
           tv: {
             dateNotFound: '-'
-          }
+          },
+          priority: 'Current Priority',
+          priority3: 'Low',
+          priority2: 'Medium',
+          priority1: 'High',
+          priority0: 'None',
+          priorityChange: 'Change priority',
+          priorityPlus: 'Increase priority',
+          priorityMinus: 'Decrease priority',
+          redownload: 'Re-Download',
+          markAsDownloaded: 'Mark downloaded'
         }
       }
     }
@@ -314,10 +422,36 @@ export default {
   left: 0;
   opacity: 0;
   z-index: -1;
-  
+
 }
 .edit-overlay-active {
   opacity: 0.8;
   z-index: 2;
+  padding: 5px;
+}
+.edit-overlay-container {
+  padding: 0;
+  margin: 0;
+}
+.edit-overlay-row {
+  margin: 4px 0 4px 0;
+  height: 40px;
+}
+.edit-overlay-label {
+  font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 40px;
+  padding: 7px;
+}
+.edit-overlay-icons {
+  padding-right: 7px;
+}
+.priority-icon-active {
+  color: yellow;
+}
+.priority-icon:hover {
+  color: black;
 }
 </style>
