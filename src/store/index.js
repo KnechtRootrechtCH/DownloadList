@@ -103,6 +103,12 @@ export const store = new Vuex.Store({
         'priority': payload.priority
       })
     },
+    setItemDownloaded: (context, payload) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/items/' + payload.key).update({
+        'downloaded': payload.downloaded
+      })
+    },
 
     getSuggestions: (context, parameters) => {
       if (context.state._suggestionsPage !== 0 && context.state._suggestionsPage === context.state._suggestionsPages) {

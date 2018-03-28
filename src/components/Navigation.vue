@@ -47,7 +47,7 @@ export default {
   methods: {
     signOut () {
       firebase.auth().signOut().then(() => {
-        this.$router.replace('authenticate')
+        this.$router.replace('/authenticate')
       })
     }
   },

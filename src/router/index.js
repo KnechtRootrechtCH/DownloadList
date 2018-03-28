@@ -15,11 +15,11 @@ let router = new Router({
   routes: [
     {
       path: '*',
-      redirect: '/list'
+      redirect: '/browse/discover'
     },
     {
       path: '/',
-      redirect: '/list'
+      redirect: '/browse/discover'
     },
     {
       path: '/authenticate',
@@ -88,7 +88,7 @@ router.beforeEach((to, from, next) => {
   let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
   if (requiresAuth && !currentUser) {
-    next('authenticate')
+    next('/authenticate')
   } else {
     window.scrollTo(0, 0)
     next()

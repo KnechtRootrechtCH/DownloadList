@@ -40,7 +40,7 @@
               v-b-tooltip
               :icon="redownloadIcon"
               class="card-icon priority-icon"
-              @click.stop="increasePriority()"
+              @click.stop="setDownloaded(false)"
               v-bind:title="$t('mediaCard.redownload')"/>
               </b-col>
           </b-row>
@@ -53,7 +53,7 @@
               v-b-tooltip
               :icon="downloadedIcon"
               class="card-icon priority-icon"
-              @click.stop="increasePriority()"
+              @click.stop="setDownloaded(true)"
               v-bind:title="$t('mediaCard.markAsDownloaded')"/>
               </b-col>
           </b-row>
@@ -299,6 +299,16 @@ export default {
       } else {
         this.item.priority = priority
         this.$store.dispatch('addItem', this.item)
+      }
+    },
+    setDownloaded (downloaded) {
+      this.destroyTooltips()
+
+      var selectedItem = this.$store.getters.item(this.item.key)
+      if (selectedItem) {
+        this.$store.dispatch('setItemDownloaded', {
+          key: selectedItem.key,
+          downloaded: downloaded})
       }
     },
     destroyTooltips () {

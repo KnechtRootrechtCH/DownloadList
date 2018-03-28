@@ -1,6 +1,6 @@
 <template>
   <div class="sign-up">
-    <form>
+    <form v-on:submit.prevent="signUp">
       <div class="form-group">
         <label for="email">Mail</label>
         <input type="email" v-model="email" class="form-control" placeholder="name@example.com" v-on:submit.prevent="signUp">
@@ -8,15 +8,15 @@
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" v-model="password" class="form-control" v-on:submit.prevent="signUp">
+        <input type="password" v-model="password" class="form-control">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasPasswordMessage }">{{ passwordMessage }}</small>
       </div>
       <div class="form-group" v-bind:class="{ 'has-danger': hasPasswordRepeatMessage }">
         <label for="passwordRepeat">Password</label>
-        <input type="password" v-model="passwordRepeat" class="form-control" v-on:submit.prevent="signUp">
+        <input type="password" v-model="passwordRepeat" class="form-control">
         <small class="form-control-feedback" v-bind:class="{ 'text-warning': hasPasswordRepeatMessage }">{{ passwordRepeatMessage }}</small>
       </div>
-      <button type="submit" v-on:click="signUp" class="btn btn-yellow">Signup</button>
+      <button type="submit" class="btn btn-yellow">Signup</button>
     </form>
     <small id="login" class="form-text">Go back to <router-link to="/authenticate">login</router-link>.</small>
   </div>
@@ -72,7 +72,7 @@ export default {
           alert('Account successfully created.')
           this.$store.commit('setUser')
           this.$store.dispatch('getFirebaseUserData')
-          this.$router.replace('list')
+          this.$router.replace('/')
         },
         (err) => {
           this.emailMessage = err.message
