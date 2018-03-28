@@ -1,7 +1,7 @@
 <template>
   <div class="media-grid">
     <b-container fluid class="media-container">
-      <transition-group name="media-group" tag="div" class="row media-row">
+      <transition-group name="media-grid" tag="div" class="row media-row">
         <b-col
         v-for="(item) in sortedItems" :key="item.key"
         cols="12" sm="12" md="4" lg="3" xl="3"
@@ -160,29 +160,32 @@ export default {
 .media-item {
   padding: 10px;
 }
-/*
-.media-group {
+/* base */
+.media-grid {
   backface-visibility: hidden;
   z-index: 1;
 }
-
-.media-group-move {
+/* moving */
+.media-grid-move {
   transition: all 600ms ease-in-out 50ms;
 }
-
-.media-group-enter-active {
-  transition: all 400ms ease-out;
+/* appearing */
+.media-grid-enter-active {
+  /* transition: all 400ms ease-out; */
+  transition: opacity 200ms ease-in;
 }
-
-.media-group-leave-active {
+/* disappearing */
+.media-grid-leave-active {
+  transition: opacity 200ms ease-in;
+  /*
   transition: all 200ms ease-in;
   position: absolute;
   z-index: 0;
+  */
 }
-
-.media-group-enter,
-.media-group-leave-to {
+/* appear at / disappear to */
+.media-grid-enter,
+.media-grid-leave-to {
   opacity: 0;
 }
-*/
 </style>
