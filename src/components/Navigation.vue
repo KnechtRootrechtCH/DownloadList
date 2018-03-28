@@ -81,6 +81,9 @@ export default {
 </script>
 
 <style scoped>
+*:focus {
+    outline: none;
+}
 .navigation-icon {
   width: 20px;
   height: 20px;

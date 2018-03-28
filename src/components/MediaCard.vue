@@ -3,61 +3,51 @@
     <div class="card-image-top">
       <progressive-img class="card-image-backdrop" v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
       <div class="edit-overlay" v-bind:class="{ 'edit-overlay-active' : editMode }">
-        <b-container fluid class="edit-overlay-container">
-          <b-row class="edit-overlay-row">
-            <b-col cols="8" class="edit-overlay-label">
-              {{ $t('mediaCard.priority') }}:
-            </b-col>
-            <b-col cols="4" class="edit-overlay-label text-right">
-              {{ $t('mediaCard.priority' + priority) }}
-            </b-col>
-          </b-row>
-          <b-row class="edit-overlay-row">
-            <b-col cols="6" class="edit-overlay-label">
-              {{ $t('mediaCard.priorityChange') }}:
-            </b-col>
-            <b-col cols="6" class="text-right edit-overlay-icons">
+        <div class="edit-overlay-content">{{ $t('mediaCard.changepriority') }}</div>
+        <div class="edit-overlay-content">
             <font-awesome-icon
               v-b-tooltip
-              :icon="highPriorityIcon"
-              class="card-icon priority-icon"
-              @click.stop="increasePriority()"
-              v-bind:title="$t('mediaCard.priorityPlus')"/>
+              v-if="selected"
+              :icon="priorityIcon"
+              class="priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
+              @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('mediaCard.tooltip.priority3')"/>
             <font-awesome-icon
               v-b-tooltip
-              :icon="lowPriorityIcon"
-              class="card-icon priority-icon"
-              @click.stop="decreasePriority()"
-              v-bind:title="$t('mediaCard.priorityMinus')"/>
-              </b-col>
-          </b-row>
-          <b-row class="edit-overlay-row" v-if="downloaded">
-            <b-col cols="9" class="edit-overlay-label">
-            {{ $t('mediaCard.redownload') }}:
-            </b-col>
-            <b-col cols="3" class="text-right edit-overlay-icons">
+              v-if="selected"
+              :icon="priorityIcon"
+              class="priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
+              @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('mediaCard.tooltip.priority2')"/>
             <font-awesome-icon
               v-b-tooltip
-              :icon="redownloadIcon"
-              class="card-icon priority-icon"
-              @click.stop="setDownloaded(false)"
-              v-bind:title="$t('mediaCard.redownload')"/>
-              </b-col>
-          </b-row>
-          <b-row class="edit-overlay-row" v-if="!downloaded">
-            <b-col cols="9" class="edit-overlay-label">
-            {{ $t('mediaCard.markAsDownloaded') }}:
-            </b-col>
-            <b-col cols="3" class="text-right edit-overlay-icons">
-            <font-awesome-icon
-              v-b-tooltip
-              :icon="downloadedIcon"
-              class="card-icon priority-icon"
-              @click.stop="setDownloaded(true)"
-              v-bind:title="$t('mediaCard.markAsDownloaded')"/>
-              </b-col>
-          </b-row>
-        </b-container>
+              v-if="selected"
+              :icon="priorityIcon"
+              class="priority-icon"
+              v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
+              @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
+              v-bind:title="$t('mediaCard.tooltip.priority1')"/>
+        </div>
+        <div v-if="!downloaded" class="edit-overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
+        <div v-if="!downloaded" class="edit-overlay-content">
+          <font-awesome-icon
+            v-b-tooltip
+            :icon="downloadedIcon"
+            class="card-icon priority-icon"
+            @click.stop="setDownloaded(true)"
+            v-bind:title="$t('mediaCard.markAsDownloaded')"/>
+        </div>
+        <div v-if="downloaded" class="edit-overlay-content">{{ $t('mediaCard.redownload') }}</div>
+        <div v-if="downloaded" class="edit-overlay-content">
+          <font-awesome-icon
+            v-b-tooltip
+            :icon="redownloadIcon"
+            class="card-icon priority-icon"
+            @click.stop="setDownloaded(false)"
+            v-bind:title="$t('mediaCard.redownload')"/>
+        </div>
       </div>
     </div>
     <div class="card-body">
@@ -83,8 +73,8 @@
               v-if="selected"
               :icon="editIcon"
               class="card-icon"
-              @click.stop="editMode = !editMode"
-              v-bind:title="$t('mediaCard.tooltip.edit')"/>
+              @click.stop="editMode = !editMode, destroyTooltips()"
+              v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
               v-b-tooltip
               v-if="selected && !downloaded"
@@ -134,6 +124,7 @@ export default {
     return {
       lowestPriority: 3,
       defaultPriority: 2,
+      hoverPriority: 10,
       editMode: false
     }
   },
@@ -290,6 +281,7 @@ export default {
     },
     setPriority (priority) {
       this.destroyTooltips()
+      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -303,6 +295,7 @@ export default {
     },
     setDownloaded (downloaded) {
       this.destroyTooltips()
+      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -310,6 +303,9 @@ export default {
           key: selectedItem.key,
           downloaded: downloaded})
       }
+    },
+    hoverPriorityIcon (priority) {
+      return priority >= this.hoverPriority
     },
     destroyTooltips () {
       // quite a hack, but works
@@ -327,9 +323,12 @@ export default {
           tooltip: {
             add: 'Diesen Titel der Downloadliste hinzufügen',
             remove: 'Aus Downloadliste entfernen',
-            edit: 'Priorität ändern',
+            editPriority: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
-            info: 'Zusätzliche Informationen von "TheMovieDB.org"'
+            info: 'Zusätzliche Informationen von "TheMovieDB.org"',
+            priority3: 'Tief',
+            priority2: 'Mittel',
+            priority1: 'Hoch'
           },
           movie: {
             dateNotFound: '-'
@@ -337,16 +336,10 @@ export default {
           tv: {
             dateNotFound: '-'
           },
-          priority: 'Aktuelle Priorität',
-          priority3: 'Tief',
-          priority2: 'Mittel',
-          priority1: 'Hoch',
-          priority0: 'Keine',
-          priorityChange: 'Priorität ändern',
-          priorityPlus: 'Priorität erhöhen',
-          priorityMinus: 'Priorität senken',
-          redownload: 'Re-Download',
-          markAsDownloaded: 'Als Heruntergeladen markieren'
+          changepriority: 'Priorität anpassen',
+
+          redownload: 'Erneut Herunterladen',
+          markAsDownloaded: 'Als heruntergeladen markieren'
         }
       },
       en: {
@@ -354,9 +347,12 @@ export default {
           tooltip: {
             add: 'Add to download list',
             remove: 'Remove from download list',
-            edit: 'Change priority',
+            editPriority: 'Change priority',
             downloaded: 'Downloaded',
-            info: 'Additional information from "TheMovieDB.org"'
+            info: 'Additional information from "TheMovieDB.org"',
+            priority3: 'Low',
+            priority2: 'Medium',
+            priority1: 'High'
           },
           movie: {
             dateNotFound: '-'
@@ -364,16 +360,10 @@ export default {
           tv: {
             dateNotFound: '-'
           },
-          priority: 'Current Priority',
-          priority3: 'Low',
-          priority2: 'Medium',
-          priority1: 'High',
-          priority0: 'None',
-          priorityChange: 'Change priority',
-          priorityPlus: 'Increase priority',
-          priorityMinus: 'Decrease priority',
-          redownload: 'Re-Download',
-          markAsDownloaded: 'Mark downloaded'
+          changepriority: 'Change priority',
+
+          redownload: 'Mark for Re-Download',
+          markAsDownloaded: 'Mark as downloaded'
         }
       }
     }
@@ -439,29 +429,23 @@ export default {
   z-index: 2;
   padding: 5px;
 }
-.edit-overlay-container {
-  padding: 0;
-  margin: 0;
-}
-.edit-overlay-row {
-  margin: 4px 0 4px 0;
-  height: 40px;
-}
-.edit-overlay-label {
+.edit-overlay-content {
+  text-align: center;
   font-size: 16px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  height: 40px;
-  padding: 7px;
+  font-weight: bold;
 }
-.edit-overlay-icons {
-  padding-right: 7px;
+.priority-icon {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
 }
-.priority-icon-active {
-  color: yellow;
+.priority-icon.inactive {
+  opacity: 0.5;
 }
-.priority-icon:hover {
-  color: black;
+.priority-icon.inactive.highlight {
+  opacity: 1;
+}
+.priority-icon.highlight {
+  opacity: 1;
 }
 </style>
