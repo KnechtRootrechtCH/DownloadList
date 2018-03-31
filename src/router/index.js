@@ -5,6 +5,7 @@ import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import List from '@/components/List'
 import Discover from '@/components/Discover'
+import Movie from '@/components/Movie'
 import Info from '@/components/Info'
 
 import firebase from 'firebase'
@@ -52,6 +53,15 @@ let router = new Router({
       props: {
         mode: 'movie'
       }
+    },
+    {
+      path: '/browse/movies/:itemId',
+      name: 'Movie',
+      component: Movie,
+      meta: {
+        requiresAuth: true
+      },
+      props: true
     },
     {
       path: '/browse/tv',
