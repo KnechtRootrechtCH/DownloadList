@@ -1,52 +1,54 @@
 <template>
   <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
-    <div class="card-image-top">
-      <progressive-img class="card-image-backdrop" v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
-      <div class="edit-overlay" v-bind:class="{ 'edit-overlay-active' : editMode }">
-        <div class="edit-overlay-content">{{ $t('mediaCard.changepriority') }}</div>
-        <div class="edit-overlay-content">
+    <div class="card-img-top">
+      <div class="overlay-container">
+        <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+        <div class="overlay" v-bind:class="{ 'overlay-active' : editModeActive }">
+          <div class="overlay-content">{{ $t('mediaCard.changepriority') }}</div>
+          <div class="overlay-content">
+              <font-awesome-icon
+                v-b-tooltip
+                v-if="selected"
+                :icon="priorityIcon"
+                class="overlay-icon"
+                v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
+                @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
+                v-bind:title="$t('mediaCard.tooltip.priority3')"/>
+              <font-awesome-icon
+                v-b-tooltip
+                v-if="selected"
+                :icon="priorityIcon"
+                class="overlay-icon"
+                v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
+                @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
+                v-bind:title="$t('mediaCard.tooltip.priority2')"/>
+              <font-awesome-icon
+                v-b-tooltip
+                v-if="selected"
+                :icon="priorityIcon"
+                class="overlay-icon"
+                v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
+                @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
+                v-bind:title="$t('mediaCard.tooltip.priority1')"/>
+          </div>
+          <div v-if="downloadHandling && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
+          <div v-if="downloadHandling && !downloaded" class="overlay-content">
             <font-awesome-icon
               v-b-tooltip
-              v-if="selected"
-              :icon="priorityIcon"
-              class="priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
-              @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority3')"/>
+              :icon="downloadedIcon"
+              class="card-icon overlay-icon"
+              @click.stop="setDownloaded(true)"
+              v-bind:title="$t('mediaCard.markAsDownloaded')"/>
+          </div>
+          <div v-if="downloadHandling && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
+          <div v-if="downloadHandling && downloaded" class="overlay-content">
             <font-awesome-icon
               v-b-tooltip
-              v-if="selected"
-              :icon="priorityIcon"
-              class="priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
-              @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority2')"/>
-            <font-awesome-icon
-              v-b-tooltip
-              v-if="selected"
-              :icon="priorityIcon"
-              class="priority-icon"
-              v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
-              @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
-              v-bind:title="$t('mediaCard.tooltip.priority1')"/>
-        </div>
-        <div v-if="!downloaded" class="edit-overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
-        <div v-if="!downloaded" class="edit-overlay-content">
-          <font-awesome-icon
-            v-b-tooltip
-            :icon="downloadedIcon"
-            class="card-icon priority-icon"
-            @click.stop="setDownloaded(true)"
-            v-bind:title="$t('mediaCard.markAsDownloaded')"/>
-        </div>
-        <div v-if="downloaded" class="edit-overlay-content">{{ $t('mediaCard.redownload') }}</div>
-        <div v-if="downloaded" class="edit-overlay-content">
-          <font-awesome-icon
-            v-b-tooltip
-            :icon="redownloadIcon"
-            class="card-icon priority-icon"
-            @click.stop="setDownloaded(false)"
-            v-bind:title="$t('mediaCard.redownload')"/>
+              :icon="redownloadIcon"
+              class="card-icon overlay-icon"
+              @click.stop="setDownloaded(false)"
+              v-bind:title="$t('mediaCard.redownload')"/>
+          </div>
         </div>
       </div>
     </div>
@@ -70,8 +72,8 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-b-tooltip
-              v-if="selected"
-              :icon="editIcon"
+              v-if="priorityHandling == 'button' && selected"
+              :icon="priorityIcon"
               class="card-icon"
               @click.stop="editMode = !editMode, destroyTooltips()"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
@@ -119,7 +121,7 @@ import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircl
 
 export default {
   name: 'MediaCard',
-  props: ['item'],
+  props: ['item', 'priorityHandling', 'downloadHandling'],
   data () {
     return {
       lowestPriority: 3,
@@ -132,6 +134,16 @@ export default {
     FontAwesomeIcon
   },
   computed: {
+    editModeActive () {
+      switch (this.priorityHandling) {
+        case 'button':
+          return this.editMode
+        case 'selected':
+          return this.selected
+        default:
+          return this.priorityHandling
+      }
+    },
     title () {
       if (this.item.media_type === 'movie') {
         return this.item.title
@@ -336,7 +348,7 @@ export default {
           tv: {
             dateNotFound: '-'
           },
-          changepriority: 'Priorität anpassen',
+          changepriority: 'Priorität',
 
           redownload: 'Erneut Herunterladen',
           markAsDownloaded: 'Als heruntergeladen markieren'
@@ -360,7 +372,7 @@ export default {
           tv: {
             dateNotFound: '-'
           },
-          changepriority: 'Change priority',
+          changepriority: 'Priority',
 
           redownload: 'Mark for Re-Download',
           markAsDownloaded: 'Mark as downloaded'
@@ -413,39 +425,45 @@ export default {
 .check-icon {
   color: darkgreen;
 }
-.edit-overlay {
+.overlay-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.overlay {
   height: 100%;
   width: 100%;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   top: 0;
   left: 0;
   opacity: 0;
   z-index: -1;
-
 }
-.edit-overlay-active {
-  opacity: 0.8;
+.overlay-active {
+  opacity: 1;
   z-index: 2;
   padding: 5px;
 }
-.edit-overlay-content {
+.overlay-content {
   text-align: center;
   font-size: 16px;
   font-weight: bold;
+  color: white;
 }
-.priority-icon {
+.overlay-icon {
   width: 35px;
   height: 35px;
   cursor: pointer;
+  color: white;
 }
-.priority-icon.inactive {
+.overlay-icon.inactive {
   opacity: 0.5;
 }
-.priority-icon.inactive.highlight {
+.overlay-icon.inactive.highlight {
   opacity: 1;
 }
-.priority-icon.highlight {
+.overlay-icon.highlight {
   opacity: 1;
 }
 </style>

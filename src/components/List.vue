@@ -11,6 +11,10 @@
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
             <b-col cols="2" md="6" class="text-right checklist-navigation-colunn">
+              <span class="checklist-navigation-item" @click="priorityEdit = !priorityEdit" v-bind:class="{ active: priorityEdit }">
+                <span class="d-none d-lg-inline">{{$t('edit') }}</span>
+                <font-awesome-icon :icon="priorityIcon" class="checklist-navigation-icon"/>
+              </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="sortIcon" class="checklist-navigation-icon"/>
@@ -63,7 +67,7 @@
       </b-collapse>
     </div>
     <div class="checklist-content">
-      <mediaGrid v-bind:filter="filter" v-bind:sort="sort" v-bind:items="items"></mediaGrid>
+      <mediaGrid v-bind:filter="filter" v-bind:sort="sort" v-bind:items="items" v-bind:priorityHandling="priorityEdit" downloadHandling="true"></mediaGrid>
     </div>
   </div>
 </template>
@@ -74,6 +78,8 @@ import searchIcon from '@fortawesome/fontawesome-free-solid/faSearch'
 import crossIcon from '@fortawesome/fontawesome-free-solid/faTimes'
 import filterIcon from '@fortawesome/fontawesome-free-solid/faFilter'
 import sortIcon from '@fortawesome/fontawesome-free-solid/faSort'
+import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
+import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
 
 import MediaGrid from './MediaGrid'
 
@@ -93,6 +99,7 @@ export default {
         text: ''
       },
       sort: 'priority',
+      priorityEdit: false,
       filterPanelActive: false,
       sortPanelActive: false
     }
@@ -116,6 +123,12 @@ export default {
     },
     sortIcon () {
       return sortIcon
+    },
+    editIcon () {
+      return editIcon
+    },
+    priorityIcon () {
+      return priorityIcon
     }
   },
   methods: {
@@ -128,7 +141,6 @@ export default {
 
   },
   watch: {
-
   },
   i18n: {
     messages: {
@@ -144,6 +156,7 @@ export default {
         priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
         sort: 'Sortierung',
+        edit: 'Priorisieren',
         rating: 'Bewertung',
         title: 'Titel',
         popularity: 'Beliebtheit',
@@ -164,6 +177,7 @@ export default {
         priority3: 'Low',
         downloaded: 'Downloaded',
         sort: 'Sort',
+        edit: 'Edit Priorities',
         rating: 'Rating',
         title: 'Title',
         popularity: 'Popularity',
