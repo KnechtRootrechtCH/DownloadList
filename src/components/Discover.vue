@@ -20,7 +20,13 @@
       </b-collapse>
     </div>
     <div class="discover-content">
-      <mediaGrid v-bind:items="items" priorityHandling="button"></mediaGrid>
+      <mediaGrid
+        v-bind:items="items"
+        v-bind:showEditButton="true"
+        editModeHandling="internal"
+        v-bind:showPriorityControls="true"
+        v-bind:showReDownloadControls="true">
+      ></mediaGrid>
     </div>
   </div>
 </template>

@@ -8,7 +8,7 @@
           <div class="overlay-content">
               <font-awesome-icon
                 v-b-tooltip
-                v-if="selected"
+                v-if="showPriorityControls && selected"
                 :icon="priorityIcon"
                 class="overlay-icon"
                 v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
@@ -16,7 +16,7 @@
                 v-bind:title="$t('mediaCard.tooltip.priority3')"/>
               <font-awesome-icon
                 v-b-tooltip
-                v-if="selected"
+                v-if="showPriorityControls && selected"
                 :icon="priorityIcon"
                 class="overlay-icon"
                 v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
@@ -24,15 +24,15 @@
                 v-bind:title="$t('mediaCard.tooltip.priority2')"/>
               <font-awesome-icon
                 v-b-tooltip
-                v-if="selected"
+                v-if="showPriorityControls && selected"
                 :icon="priorityIcon"
                 class="overlay-icon"
                 v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
                 @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
                 v-bind:title="$t('mediaCard.tooltip.priority1')"/>
           </div>
-          <div v-if="downloadHandling && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
-          <div v-if="downloadHandling && !downloaded" class="overlay-content">
+          <div v-if="showReDownloadControls && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
+          <div v-if="showReDownloadControls && !downloaded" class="overlay-content">
             <font-awesome-icon
               v-b-tooltip
               :icon="downloadedIcon"
@@ -40,8 +40,8 @@
               @click.stop="setDownloaded(true)"
               v-bind:title="$t('mediaCard.markAsDownloaded')"/>
           </div>
-          <div v-if="downloadHandling && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
-          <div v-if="downloadHandling && downloaded" class="overlay-content">
+          <div v-if="showReDownloadControls && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
+          <div v-if="showReDownloadControls && downloaded" class="overlay-content">
             <font-awesome-icon
               v-b-tooltip
               :icon="redownloadIcon"
@@ -72,10 +72,10 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-b-tooltip
-              v-if="priorityHandling == 'button' && selected"
-              :icon="priorityIcon"
+              v-if="showEditButton && selected"
+              :icon="editIcon"
               class="card-icon"
-              @click.stop="editMode = !editMode, destroyTooltips()"
+              @click.stop="editModeInternal = !editModeInternal, destroyTooltips()"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
               v-b-tooltip
@@ -121,13 +121,13 @@ import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircl
 
 export default {
   name: 'MediaCard',
-  props: ['item', 'priorityHandling', 'downloadHandling'],
+  props: ['item', 'showEditButton', 'editModeHandling', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
   data () {
     return {
       lowestPriority: 3,
       defaultPriority: 2,
       hoverPriority: 10,
-      editMode: false
+      editModeInternal: false
     }
   },
   components: {
@@ -135,13 +135,15 @@ export default {
   },
   computed: {
     editModeActive () {
-      switch (this.priorityHandling) {
-        case 'button':
-          return this.editMode
+      switch (this.editModeHandling) {
+        case 'internal':
+          return this.editModeInternal
         case 'selected':
           return this.selected
+        case 'external':
+          return this.editMode || this.editModeInternal
         default:
-          return this.priorityHandling
+          return this.editModeInternal
       }
     },
     title () {
@@ -249,7 +251,6 @@ export default {
     },
     toggleItem () {
       this.destroyTooltips()
-      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -257,31 +258,10 @@ export default {
           return
         }
         this.$store.dispatch('removeItem', selectedItem.key)
+        this.editModeInternal = false
       } else {
         this.item.priority = this.defaultPriority
         this.$store.dispatch('addItem', this.item)
-      }
-    },
-    increasePriority () {
-      this.destroyTooltips()
-
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem && selectedItem.priority > 1) {
-        selectedItem.priority--
-        this.$store.dispatch('setItemPriority', {
-          key: selectedItem.key,
-          priority: selectedItem.priority})
-      }
-    },
-    decreasePriority () {
-      this.destroyTooltips()
-
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem && selectedItem.priority < this.lowestPriority) {
-        selectedItem.priority++
-        this.$store.dispatch('setItemPriority', {
-          key: selectedItem.key,
-          priority: selectedItem.priority})
       }
     },
     hasPriority (priority) {
@@ -293,7 +273,6 @@ export default {
     },
     setPriority (priority) {
       this.destroyTooltips()
-      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
@@ -307,7 +286,6 @@ export default {
     },
     setDownloaded (downloaded) {
       this.destroyTooltips()
-      this.editMode = false
 
       var selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {

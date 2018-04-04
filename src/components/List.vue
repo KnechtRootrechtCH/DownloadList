@@ -5,15 +5,15 @@
       <b-collapse id="collapse-navigation" class="checklist-navigation-items noselect" v-bind:visible="mode !== 'discover'">
         <b-container fluid>
           <b-row>
-            <b-col cols="10" md="6" class="checklist-navigation-colunn">
+            <b-col cols="8" md="6" class="checklist-navigation-colunn">
               <span class="checklist-navigation-item" @click="filter.movie = true, filter.tv = true" v-bind:class="{ active: filter.movie && filter.tv }">{{ $t('all') }}</span>
               <span class="checklist-navigation-item" @click="filter.movie = true, filter.tv = false" v-bind:class="{ active: filter.movie && ! filter.tv }">{{ $t('movie') }}</span>
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
-            <b-col cols="2" md="6" class="text-right checklist-navigation-colunn">
-              <span class="checklist-navigation-item" @click="priorityEdit = !priorityEdit" v-bind:class="{ active: priorityEdit }">
+            <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
+              <span class="checklist-navigation-item" @click="editModeActive = !editModeActive" v-bind:class="{ active: editModeActive }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
-                <font-awesome-icon :icon="priorityIcon" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="editIcon" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
@@ -67,7 +67,16 @@
       </b-collapse>
     </div>
     <div class="checklist-content">
-      <mediaGrid v-bind:filter="filter" v-bind:sort="sort" v-bind:items="items" v-bind:priorityHandling="priorityEdit" downloadHandling="true"></mediaGrid>
+      <mediaGrid
+        v-bind:items="items"
+        v-bind:filter="filter"
+        v-bind:sort="sort"
+        v-bind:showEditButton="true"
+        editModeHandling="external"
+        v-bind:editMode="editModeActive"
+        v-bind:showPriorityControls="true"
+        v-bind:showReDownloadControls="true">
+      </mediaGrid>
     </div>
   </div>
 </template>
@@ -99,7 +108,7 @@ export default {
         text: ''
       },
       sort: 'priority',
-      priorityEdit: false,
+      editModeActive: false,
       filterPanelActive: false,
       sortPanelActive: false
     }
@@ -156,7 +165,7 @@ export default {
         priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
         sort: 'Sortierung',
-        edit: 'Priorisieren',
+        edit: 'Priorität Editieren',
         rating: 'Bewertung',
         title: 'Titel',
         popularity: 'Beliebtheit',
@@ -177,7 +186,7 @@ export default {
         priority3: 'Low',
         downloaded: 'Downloaded',
         sort: 'Sort',
-        edit: 'Edit Priorities',
+        edit: 'Edit Priority',
         rating: 'Rating',
         title: 'Title',
         popularity: 'Popularity',
@@ -209,13 +218,13 @@ export default {
   opacity: 0.7;
   cursor: pointer;
   font-size: 20px;
-  margin: 0 10px 0 10px;
+  margin: 0 8px 0 8px;
 }
 .checklist-navigation-item:first-child {
-  margin: 0 10px 0 1px;
+  margin: 0 8px 0 1px;
 }
 .checklist-navigation-item:last-child {
-  margin: 0 0 0 10px;
+  margin: 0 0 0 8px;
 }
 .checklist-navigation-item.active {
   opacity: 1;

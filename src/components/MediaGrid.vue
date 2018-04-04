@@ -6,7 +6,14 @@
         v-for="(item) in sortedItems" :key="item.key"
         cols="12" sm="12" md="4" lg="3" xl="3"
         class="media-item">
-          <mediaCard v-bind:item="item" v-bind:priorityHandling='priorityHandling' v-bind:downloadHandling='downloadHandling'></mediaCard>
+          <mediaCard
+            v-bind:item="item"
+            v-bind:showEditButton="showEditButton"
+            v-bind:editModeHandling="editModeHandling"
+            v-bind:editMode="editMode"
+            v-bind:showPriorityControls="showPriorityControls"
+            v-bind:showReDownloadControls="showReDownloadControls">
+          </mediaCard>
         </b-col>
       </transition-group>
     </b-container>
@@ -18,7 +25,7 @@ import MediaCard from './MediaCard'
 
 export default {
   name: 'MediaGrid',
-  props: ['items', 'sort', 'filter', 'priorityHandling', 'downloadHandling'],
+  props: ['items', 'sort', 'filter', 'showEditButton', 'editModeHandling', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
   data () {
     return {
     }
