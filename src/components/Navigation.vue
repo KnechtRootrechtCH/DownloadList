@@ -8,7 +8,7 @@
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav>
           <b-nav-item to="/browse/discover">{{ $t("nav.discover") }}</b-nav-item>
-          <b-nav-item to="/browse/movies">{{ $t("nav.movies") }}</b-nav-item>
+          <b-nav-item to="/browse/movie">{{ $t("nav.movies") }}</b-nav-item>
           <b-nav-item to="/browse/tv">{{ $t("nav.tv") }}</b-nav-item>
           <b-nav-item to="/list">{{ $t("nav.downloadList") }}</b-nav-item>
         </b-navbar-nav>

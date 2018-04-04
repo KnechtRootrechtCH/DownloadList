@@ -49,16 +49,6 @@ body {
   color: #ddd;
 }
 .app-content {
-  padding-top:56px;
-}
-.app-content a {
-  color: #ffbf58;
-}
-.app-content a:hover {
-  color: #ffbf58;
-}
-.app-content .btn-yellow {
-  background-color: #ffbf58;
-  border-color: #ffbf58;
+  padding-top:58px;
 }
 </style>

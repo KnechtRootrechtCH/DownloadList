@@ -51,7 +51,7 @@
         </b-container>
       </b-collapse>
       <b-collapse id="collapse-sort" v-bind:visible="sortPanelActive">
-<b-container fluid class="checklist-filter-panel">
+        <b-container fluid class="checklist-filter-panel">
           <b-row class="checklist-filter-row">
             <b-col class="checklist-filter-items text-right">
               <b-button-group>
@@ -75,7 +75,8 @@
         editModeHandling="external"
         v-bind:editMode="editModeActive"
         v-bind:showPriorityControls="true"
-        v-bind:showReDownloadControls="true">
+        v-bind:showReDownloadControls="true"
+        detailsRouterPrefix="list">
       </mediaGrid>
     </div>
   </div>

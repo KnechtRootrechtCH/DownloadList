@@ -5,7 +5,7 @@ import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import List from '@/components/List'
 import Discover from '@/components/Discover'
-import Movie from '@/components/Movie'
+import Item from '@/components/Item'
 import Info from '@/components/Info'
 
 import firebase from 'firebase'
@@ -44,7 +44,7 @@ let router = new Router({
       }
     },
     {
-      path: '/browse/movies',
+      path: '/browse/movie',
       name: 'Movies',
       component: Discover,
       meta: {
@@ -55,15 +55,6 @@ let router = new Router({
       }
     },
     {
-      path: '/browse/movies/:itemId',
-      name: 'Movie',
-      component: Movie,
-      meta: {
-        requiresAuth: true
-      },
-      props: true
-    },
-    {
       path: '/browse/tv',
       name: 'Series',
       component: Discover,
@@ -71,8 +62,18 @@ let router = new Router({
         requiresAuth: true
       },
       props: {
+        default: true,
         mode: 'tv'
       }
+    },
+    {
+      path: '/browse/:mediaType/:id',
+      name: 'Item',
+      component: Item,
+      meta: {
+        requiresAuth: true
+      },
+      props: true
     },
     {
       path: '/list',
@@ -81,6 +82,15 @@ let router = new Router({
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: '/list/:mediaType/:id',
+      name: 'ListItem',
+      component: Item,
+      meta: {
+        requiresAuth: true
+      },
+      props: true
     },
     {
       path: '/info',

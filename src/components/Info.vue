@@ -61,4 +61,10 @@ li {
 img.app_logo {
   height: 300px;
 }
+a {
+  color: #ffbf58;
+}
+a:hover {
+  color: #ffbf58;
+}
 </style>

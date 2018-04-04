@@ -62,12 +62,13 @@
         </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-           <font-awesome-icon
-            v-b-tooltip
-            :icon="infoIcon"
-            class="card-icon"
-            @click.stop="openInformationUrl()"
-            v-bind:title="$t('mediaCard.tooltip.info')"/>
+            <router-link v-bind:to="'/' + detailsRouterPrefix + '/' + item.media_type + '/' + item.id">
+              <font-awesome-icon
+                v-b-tooltip
+                :icon="infoIcon"
+                class="card-icon"
+                v-bind:title="$t('mediaCard.tooltip.info')"/>
+            </router-link>
           </div>
           <div class='col-xs-6'>
             <font-awesome-icon
@@ -121,7 +122,13 @@ import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircl
 
 export default {
   name: 'MediaCard',
-  props: ['item', 'showEditButton', 'editModeHandling', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
+  props: ['item',
+    'showEditButton',
+    'editModeHandling',
+    'editMode',
+    'showPriorityControls',
+    'showReDownloadControls',
+    'detailsRouterPrefix'],
   data () {
     return {
       lowestPriority: 3,
@@ -443,5 +450,11 @@ export default {
 }
 .overlay-icon.highlight {
   opacity: 1;
+}
+a {
+  color: inherit;
+}
+a:hover {
+  color: inherit;
 }
 </style>

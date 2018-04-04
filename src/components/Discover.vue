@@ -25,7 +25,8 @@
         v-bind:showEditButton="true"
         editModeHandling="internal"
         v-bind:showPriorityControls="true"
-        v-bind:showReDownloadControls="true">
+        v-bind:showReDownloadControls="true"
+        detailsRouterPrefix="browse">
       ></mediaGrid>
     </div>
   </div>

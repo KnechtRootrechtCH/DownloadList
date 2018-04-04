@@ -16,6 +16,7 @@ export const store = new Vuex.Store({
     _user: null,
 
     _items: {},
+    _suggestionDetails: null,
     _suggestions: {},
     _suggestionsPage: 0,
     _suggestionsPages: 0,
@@ -40,6 +41,13 @@ export const store = new Vuex.Store({
       state._suggestionsPage = 0
       state._suggestionsPages = 0
       state._suggestions = []
+    },
+    setSuggestionDetails (state, payload) {
+      if (payload) {
+        state._suggestionDetails = payload.data
+      } else {
+        state._suggestionDetails = null
+      }
     },
     setSuggestions (state, payload) {
       state._suggestionsCount = payload.count
@@ -140,6 +148,22 @@ export const store = new Vuex.Store({
             'media_type': parameters.media_type
           })
         })
+    },
+    getSuggestionDetails: (context, parameters) => {
+      let query = null
+      context.commit('setSuggestionDetails', null)
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+
+      // console.log(parameters, query)
+
+      axios.get(query).then(
+        (response) => {
+          if (response.status === 200) {
+            context.commit('setSuggestionDetails', {
+              'data': response.data
+            })
+          }
+        })
     }
   },
   getters: {
@@ -158,6 +182,7 @@ export const store = new Vuex.Store({
       return array
     },
 
+    suggestionDetails: (state) => { return state._suggestionDetails },
     suggestions: (state) => { return state._suggestions },
     suggestionsArray: (state) => {
       let array = []

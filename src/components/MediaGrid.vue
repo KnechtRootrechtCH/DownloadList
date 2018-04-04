@@ -12,7 +12,8 @@
             v-bind:editModeHandling="editModeHandling"
             v-bind:editMode="editMode"
             v-bind:showPriorityControls="showPriorityControls"
-            v-bind:showReDownloadControls="showReDownloadControls">
+            v-bind:showReDownloadControls="showReDownloadControls"
+            v-bind:detailsRouterPrefix="detailsRouterPrefix">
           </mediaCard>
         </b-col>
       </transition-group>
@@ -25,7 +26,15 @@ import MediaCard from './MediaCard'
 
 export default {
   name: 'MediaGrid',
-  props: ['items', 'sort', 'filter', 'showEditButton', 'editModeHandling', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
+  props: ['items',
+    'sort',
+    'filter',
+    'showEditButton',
+    'editModeHandling',
+    'editMode',
+    'showPriorityControls',
+    'showReDownloadControls',
+    'detailsRouterPrefix'],
   data () {
     return {
     }
