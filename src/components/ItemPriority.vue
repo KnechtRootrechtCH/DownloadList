@@ -1,12 +1,12 @@
 <template>
   <b-list-group-item
     button
-    class="item-action"
+    class="action"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
     @click="increase()"
     v-bind:class="{ active : isActive }"
-    v-bind:style="{ color : this.color, background : this.colorInverted, border : this.colorInverted }">
+    v-bind:style="{ color : this.color, background : this.colorInverted }">
     <font-awesome-icon
       :icon="actionIcon"
       class="icon clickable"
@@ -43,10 +43,11 @@ import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
   name: 'ItemPriority',
-  props: ['itemKey', 'current', 'min', 'label', 'icon', 'isActive', 'colorVariant'],
+  props: ['itemKey', 'current', 'label', 'icon', 'isActive', 'colorVariant'],
   data () {
     return {
       hover: false,
+      min: 4,
       priority: 10
     }
   },
@@ -111,8 +112,13 @@ export default {
 .clickable {
   cursor: pointer;
 }
-.item-action {
+.action {
   font-size: 18px;
+  border-color: #f0f0f0;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 0;
+  margin-bottom: 5px;
 }
 .label {
   float: right;

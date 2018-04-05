@@ -1,11 +1,12 @@
 <template>
   <b-list-group-item
     button
-    class="item-action"
+    class="action"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
+    @click="hover = false"
     v-bind:class="{ active : isActive, 'clickable' : isClickable }"
-    v-bind:style="{ color : this.color, background : this.colorInverted, border : this.colorInverted }">
+    v-bind:style="{ color : this.color, background : this.colorInverted }">
     <font-awesome-icon
       :icon="actionIcon"
       class="icon"
@@ -27,6 +28,7 @@ import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 import starIcon from '@fortawesome/fontawesome-free-solid/faStar'
 import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
 import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
@@ -53,6 +55,7 @@ export default {
         case 'star': return starIcon
         case 'downloaded': return downloadedIcon
         case 'redownload': return redownloadIcon
+        case 'comment': return commentIcon
         default: return defaultIcon
       }
     },
@@ -81,13 +84,18 @@ export default {
 .clickable {
   cursor: pointer;
 }
-.item-action {
+.action {
   font-size: 18px;
+  border-color: #f0f0f0;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 0;
+  margin-bottom: 5px;
 }
-.item-action .label {
+.action .label {
   float: right;
 }
-.item-action .icon {
+.action .icon {
   width: 18px;
   height: 18px;
 }
