@@ -15,34 +15,97 @@
             </div>
           </div>
         </div>
-        <div id="overview" class="content-section">
-          <h5>{{ $t('item.overview') }}</h5>
-          <div>{{ details.overview}}</div>
-        </div>
-        <div id="info" class="content-section">
-          <h5>{{ $t('item.links') }}</h5>
-          <div>Homepage:&nbsp;<a target="_blank" v-bind:href="details.homepage">{{ details.homepage }}</a></div>
-          <div>MovieDb:&nbsp;<a target="_blank" v-bind:href="movieDbUrl">{{ movieDbUrl }}</a></div>
-
-          <!--
-          <h5>{{ $t('item.description') }}</h5>
-          <div>{{details.description}}</div>
-          -->
-        </div>
-        <!--
-        <div id="edit" class="content-section" v-if="selected">
-          <h5>{{ $t('item.edit') }}</h5>
-
-        </div>
-        <div id="seasons" class="content-section" v-if="mediaType === 'tv'">
-          <h5>{{ $t('item.seasons') }}</h5>
-
-        </div>
-        -->
+        <b-container fluid>
+          <b-row>
+            <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
+              <!--<h5>{{ $t('item.overview') }}</h5>-->
+              <div>{{ details.overview}}</div>
+            </b-col>
+            <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
+              <!--<h5>{{ $t('item.actions') }}</h5>-->
+              <b-list-group>
+                <action
+                  v-if="downloaded"
+                  v-bind:label="$t('item.action.downloaded')"
+                  v-bind:isClickable="false"
+                  v-bind:isActive="true"
+                  v-bind:colorVariant="green"
+                  icon="downloaded"></action>
+                <priority
+                  v-if="selected && !downloaded"
+                  v-bind:label="$t('item.action.priority')"
+                  v-bind:colorVariant="purple"
+                  v-bind:itemKey="key"
+                  v-bind:current="item.priority"
+                  min="3"
+                  icon="star"
+                  @click.native="setDownloaded(false)"></priority>
+                <action
+                  v-if="!selected"
+                  v-bind:label="$t('item.action.select')"
+                  v-bind:isClickable="true"
+                  v-bind:colorVariant="blue"
+                  icon="add"
+                  @click.native="setSelected(true)"></action>
+                <action
+                  v-if="selected && !downloaded"
+                  v-bind:label="$t('item.action.markDownloaded')"
+                  v-bind:isClickable="true"
+                  v-bind:colorVariant="green"
+                  icon="downloaded"
+                  @click.native="setDownloaded(true)"></action>
+                <action
+                  v-if="selected && downloaded"
+                  v-bind:label="$t('item.action.redownload')"
+                  v-bind:isClickable="true"
+                  v-bind:colorVariant="purple"
+                  icon="redownload"
+                  @click.native="setDownloaded(false)"></action>
+                <action
+                  v-if="selected && !downloaded"
+                  v-bind:label="$t('item.action.deselect')"
+                  v-bind:isClickable="true"
+                  v-bind:colorVariant="red"
+                  icon="remove"
+                  @click.native="setSelected(false)"></action>
+              </b-list-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" class="content-section">
+              <h5>{{ $t('item.info') }}</h5>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
+              Cast Info...
+            </b-col>
+            <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
+              <b-list-group>
+                <action
+                  v-if="details.homepage"
+                  v-bind:label="$t('item.links.homepage')"
+                  v-bind:isClickable="true"
+                  v-bind:isActive="false"
+                  v-bind:colorVariant="blue"
+                  icon="globe"
+                  @click.native="open(details.homepage)"></action>
+                <action
+                  v-if="movieDbUrl"
+                  v-bind:label="$t('item.links.moviedb')"
+                  v-bind:isClickable="true"
+                  v-bind:isActive="false"
+                  v-bind:colorVariant="blue"
+                  v-bind:icon="mediaType"
+                  @click.native="open(movieDbUrl)"></action>
+              </b-list-group>
+            </b-col>
+          </b-row>
+        </b-container>
       </div>
     </div>
     <div v-if="!details">
-      item not found ({{ key }})
+      <!-- TODO: handle load fail -->
     </div>
   </div>
 </template>
@@ -58,9 +121,8 @@ import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
 
-import highPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleUp'
-import mediumPriorityIcon from '@fortawesome/fontawesome-free-solid/faCircle'
-import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleDown'
+import ItemAction from './ItemAction'
+import ItemPriority from './ItemPriority'
 
 export default {
   name: 'Item',
@@ -70,11 +132,16 @@ export default {
       lowestPriority: 3,
       defaultPriority: 2,
       hoverPriority: 10,
-      editMode: false
+      green: '#339933',
+      blue: '#444499',
+      red: '#CC3333',
+      purple: '#CC22BB'
     }
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    'action': ItemAction,
+    'priority': ItemPriority
   },
   computed: {
     key () {
@@ -199,53 +266,35 @@ export default {
     editIcon () {
       return editIcon
     },
-    highPriorityIcon () {
-      return highPriorityIcon
-    },
-    mediumPriorityIcon () {
-      return mediumPriorityIcon
-    },
-    lowPriorityIcon () {
-      return lowPriorityIcon
-    },
     redownloadIcon () {
       return redownloadIcon
     }
   },
   methods: {
-    getMovieDbUrl () {
-      var url = 'https://www.themoviedb.org/' + this.mediaType + '/' + this.item.id
-      return url
+    open (url) {
+      var win = window.open(url, '_blank')
+      win.focus()
     },
-    hasPriority (priority) {
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.priority <= priority
-      }
-      return false
-    },
-    setPriority (priority) {
+    setSelected (select) {
       this.destroyTooltips()
-      this.editMode = false
+      console.log('setSelected', select)
 
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        this.$store.dispatch('setItemPriority', {
-          key: selectedItem.key,
-          priority: priority})
+      if (!select) {
+        this.$store.dispatch('removeItem', this.item.key)
       } else {
-        this.item.priority = priority
-        this.$store.dispatch('addItem', this.item)
+        console.log('add', this.details)
+        this.details.priority = this.defaultPriority
+        this.details.media_type = this.mediaType
+        this.details.key = this.mediaType + ':' + this.details.id
+        this.$store.dispatch('addItem', this.details)
       }
     },
     setDownloaded (downloaded) {
       this.destroyTooltips()
-      this.editMode = false
 
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
+      if (this.item) {
         this.$store.dispatch('setItemDownloaded', {
-          key: selectedItem.key,
+          key: this.item.key,
           downloaded: downloaded})
       }
     },
@@ -271,14 +320,40 @@ export default {
     messages: {
       de: {
         item: {
+          actions: 'Aktionen',
+          action: {
+            downloaded: 'Heruntergeladen',
+            select: 'Der Liste hinzufügen',
+            deselect: 'Aus Liste entfernen',
+            markDownloaded: 'Als heruntergeladen markieren',
+            redownload: 'Erneut herunterladen',
+            priority: 'Download Priorität'
+          },
           overview: 'Handlung',
-          links: 'Links'
+          info: 'Details',
+          links: {
+            moviedb: 'The Movie Db',
+            homepage: 'Homepage'
+          }
         }
       },
       en: {
         item: {
+          actions: 'Actions',
+          action: {
+            downloaded: 'Downloaded',
+            select: 'Add to downloadlist',
+            deselect: 'Remove from downloadlist',
+            markDownloaded: 'Mark as downloaded',
+            redownload: 'Redownload',
+            priority: 'Download priority'
+          },
           overview: 'Overview',
-          links: 'Links'
+          info: 'Details',
+          links: {
+            moviedb: 'The Movie Db',
+            homepage: 'Homepage'
+          }
         }
       }
     }
@@ -323,5 +398,8 @@ export default {
 }
 .content-section {
   padding: 15px;
+}
+.action-list-item .action-label {
+  float: right;
 }
 </style>
