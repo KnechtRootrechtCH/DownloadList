@@ -3,53 +3,7 @@
     <div class="card-img-top">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
-        <div class="overlay" v-bind:class="{ 'overlay-active' : editModeActive }">
-          <div class="overlay-content">{{ $t('mediaCard.changepriority') }}</div>
-          <div class="overlay-content">
-              <font-awesome-icon
-                v-b-tooltip
-                v-if="showPriorityControls && selected"
-                :icon="priorityIcon"
-                class="overlay-icon"
-                v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
-                @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
-                v-bind:title="$t('mediaCard.tooltip.priority3')"/>
-              <font-awesome-icon
-                v-b-tooltip
-                v-if="showPriorityControls && selected"
-                :icon="priorityIcon"
-                class="overlay-icon"
-                v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
-                @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
-                v-bind:title="$t('mediaCard.tooltip.priority2')"/>
-              <font-awesome-icon
-                v-b-tooltip
-                v-if="showPriorityControls && selected"
-                :icon="priorityIcon"
-                class="overlay-icon"
-                v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
-                @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
-                v-bind:title="$t('mediaCard.tooltip.priority1')"/>
-          </div>
-          <div v-if="showReDownloadControls && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
-          <div v-if="showReDownloadControls && !downloaded" class="overlay-content">
-            <font-awesome-icon
-              v-b-tooltip
-              :icon="downloadedIcon"
-              class="card-icon overlay-icon"
-              @click.stop="setDownloaded(true)"
-              v-bind:title="$t('mediaCard.markAsDownloaded')"/>
-          </div>
-          <div v-if="showReDownloadControls && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
-          <div v-if="showReDownloadControls && downloaded" class="overlay-content">
-            <font-awesome-icon
-              v-b-tooltip
-              :icon="redownloadIcon"
-              class="card-icon overlay-icon"
-              @click.stop="setDownloaded(false)"
-              v-bind:title="$t('mediaCard.redownload')"/>
-          </div>
-        </div>
+        <overlay v-bind:item="item" v-bind:editMode="editModeActive" v-bind:showPriorityControls="showPriorityControls" v-bind:showReDownloadControls="showReDownloadControls" ></overlay>
       </div>
     </div>
     <div class="card-body">
@@ -116,9 +70,7 @@ import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
 
-import highPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleUp'
-import mediumPriorityIcon from '@fortawesome/fontawesome-free-solid/faCircle'
-import lowPriorityIcon from '@fortawesome/fontawesome-free-solid/faArrowAltCircleDown'
+import MediaCardEditOverlay from './MediaCardOverlay'
 
 export default {
   name: 'MediaCard',
@@ -131,14 +83,12 @@ export default {
     'detailsRouterPrefix'],
   data () {
     return {
-      lowestPriority: 3,
-      defaultPriority: 2,
-      hoverPriority: 10,
       editModeInternal: false
     }
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    'overlay': MediaCardEditOverlay
   },
   computed: {
     editModeActive () {
@@ -189,14 +139,6 @@ export default {
         return ''
       }
     },
-    priority () {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.priority
-      } else {
-        return 0
-      }
-    },
     addIcon () {
       return addIcon
     },
@@ -214,15 +156,6 @@ export default {
     },
     editIcon () {
       return editIcon
-    },
-    highPriorityIcon () {
-      return highPriorityIcon
-    },
-    mediumPriorityIcon () {
-      return mediumPriorityIcon
-    },
-    lowPriorityIcon () {
-      return lowPriorityIcon
     },
     redownloadIcon () {
       return redownloadIcon
@@ -271,39 +204,6 @@ export default {
         this.$store.dispatch('addItem', this.item)
       }
     },
-    hasPriority (priority) {
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.priority <= priority
-      }
-      return false
-    },
-    setPriority (priority) {
-      this.destroyTooltips()
-
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        this.$store.dispatch('setItemPriority', {
-          key: selectedItem.key,
-          priority: priority})
-      } else {
-        this.item.priority = priority
-        this.$store.dispatch('addItem', this.item)
-      }
-    },
-    setDownloaded (downloaded) {
-      this.destroyTooltips()
-
-      var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        this.$store.dispatch('setItemDownloaded', {
-          key: selectedItem.key,
-          downloaded: downloaded})
-      }
-    },
-    hoverPriorityIcon (priority) {
-      return priority >= this.hoverPriority
-    },
     destroyTooltips () {
       // quite a hack, but works
       let tooltips = document.getElementsByClassName('tooltip')
@@ -322,21 +222,14 @@ export default {
             remove: 'Aus Downloadliste entfernen',
             editPriority: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
-            info: 'Zusätzliche Informationen von "TheMovieDB.org"',
-            priority3: 'Tief',
-            priority2: 'Mittel',
-            priority1: 'Hoch'
+            info: 'Zusätzliche Informationen von "TheMovieDB.org"'
           },
           movie: {
             dateNotFound: '-'
           },
           tv: {
             dateNotFound: '-'
-          },
-          changepriority: 'Priorität',
-
-          redownload: 'Erneut Herunterladen',
-          markAsDownloaded: 'Als heruntergeladen markieren'
+          }
         }
       },
       en: {
@@ -346,21 +239,14 @@ export default {
             remove: 'Remove from download list',
             editPriority: 'Change priority',
             downloaded: 'Downloaded',
-            info: 'Additional information from "TheMovieDB.org"',
-            priority3: 'Low',
-            priority2: 'Medium',
-            priority1: 'High'
+            info: 'Additional information from "TheMovieDB.org"'
           },
           movie: {
             dateNotFound: '-'
           },
           tv: {
             dateNotFound: '-'
-          },
-          changepriority: 'Priority',
-
-          redownload: 'Mark for Re-Download',
-          markAsDownloaded: 'Mark as downloaded'
+          }
         }
       }
     }
