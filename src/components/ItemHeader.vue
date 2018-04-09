@@ -3,16 +3,30 @@
     <div class="poster-section">
       <progressive-img class="poster" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
     </div>
+    <div class="icons-section">
+      <div class="header-icons">
+        <font-awesome-icon
+        v-b-tooltip
+        v-if="downloaded"
+        :icon="downloadedIcon"
+        class="icon"
+        v-bind:title="$t('item.downloaded')"/>
+      </div>
+    </div>
     <div class="title-section">
         <h2 class="header-title d-none d-lg-inline">{{ title }}&nbsp;</h2>
         <h3 class="header-title d-none d-md-inline d-lg-none">{{ title }}&nbsp;</h3>
         <h5 class="header-title d-md-none">{{ title }}&nbsp;</h5>
         <span class="header-year">{{ releaseYear }}</span>
+        <div class="header-tagline d-none d-md-block" v-if="details.tagline">{{ details.tagline}}</div>
     </div>
   </div>
 </template>
 
 <script>
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+
 export default {
   name: 'ItemHeader',
   props: ['item', 'details', 'mediaType'],
@@ -21,8 +35,12 @@ export default {
     }
   },
   components: {
+    FontAwesomeIcon
   },
   computed: {
+    downloadedIcon () {
+      return downloadedIcon
+    },
     title () {
       if (this.mediaType === 'movie') {
         return this.details.title
@@ -58,7 +76,7 @@ export default {
     poster () {
       // https://image.tmdb.org/t/p/w300_and_h450_bestv2/rzRwTcFvttcN1ZpX2xv4j3tSdJu.jpg
       if (this.details.poster_path) {
-        return 'https://image.tmdb.org/t/p/w300_and_h450_bestv2' + this.details.poster_path
+        return 'https://image.tmdb.org/t/p/w185' + this.details.poster_path
       } else {
         return ''
       }
@@ -108,8 +126,14 @@ export default {
   i18n: {
     messages: {
       de: {
+        item: {
+          downloaded: 'Erfolgreich heruntergeladen'
+        }
       },
       en: {
+        item: {
+          downloaded: 'Successfully downloaded'
+        }
       }
     }
   }
@@ -128,15 +152,24 @@ export default {
   float: left;
   width: 180px;
 }
+.icons-section {
+  padding: 100px 15px 0 0;
+  height: 150px;
+}
 .title-section {
-  padding: 150px 0 0 0;
   overflow: hidden;
   white-space: nowrap;
+}
+.header-icons {
+  float: right;
 }
 .header-title {
   overflow: hidden;
   text-overflow: wrap;
   white-space: pre-wrap;
+}
+.header-tagline {
+  font-style: italic;
 }
 .header-year {
   opacity: 0.8;
@@ -146,5 +179,10 @@ export default {
   margin: 0 15px 0 15px;
   border-color: #d0d0d0;
   border-style: solid;
+}
+.icon {
+  width: 28px;
+  height: 28px;
+  color: lime;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="content" v-if="cast">
-      <span class="label">{{ $t('item.cast')}}</span>
+    <div class="content" v-if="cast && castFiltered.length > 0">
+      <h5 class="label">{{ $t('item.cast')}}</h5>
       <swiper :options="swiperOptions" ref="mySwiper">
         <swiper-slide v-for="(person) in castFiltered" :key="person.credit_id">
           <div class="card border-dark media-card bg-dark text-faded">
@@ -34,24 +34,25 @@ export default {
         spaceBetween: 5,
         effect: 'slide',
         mousewheel: false,
+        watchOverflow: true,
         breakpoints: {
           400: {
-            slidesPerView: 1
-          },
-          576: {
             slidesPerView: 2
           },
-          768: {
+          576: {
             slidesPerView: 3
           },
-          992: {
+          768: {
             slidesPerView: 4
           },
-          1200: {
+          992: {
             slidesPerView: 5
           },
-          1400: {
+          1200: {
             slidesPerView: 6
+          },
+          1400: {
+            slidesPerView: 8
           }
         },
         /*

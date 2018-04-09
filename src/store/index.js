@@ -127,6 +127,10 @@ export const store = new Vuex.Store({
       let uid = context.getters.user.uid
       firebase.database.ref('data/' + uid + '/items/' + item.key).set(item)
     },
+    updateItem: (context, item) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/items/' + item.key).set(item)
+    },
     removeItem: (context, key) => {
       let uid = context.getters.user.uid
       context.commit('removeItem', key)

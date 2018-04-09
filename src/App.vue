@@ -26,6 +26,11 @@ export default {
       shows: []
     }
   },
+  computed: {
+    movieDbConfig () {
+      return this.$store.getters.movieDbConfiguration
+    }
+  },
   created: function () {
     this.$store.dispatch('getFirebaseData')
     this.$store.dispatch('getMovieDbConfiguration')

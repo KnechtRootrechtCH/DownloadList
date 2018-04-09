@@ -83,7 +83,8 @@ export default {
     'detailsRouterPrefix'],
   data () {
     return {
-      editModeInternal: false
+      editModeInternal: false,
+      defaultPriority: 2
     }
   },
   components: {
@@ -169,7 +170,7 @@ export default {
     },
     selected () {
       var selectedItem = this.$store.getters.item(this.item.key)
-      return selectedItem
+      return selectedItem && selectedItem.priority > 0
     },
     downloaded () {
       var selectedItem = this.$store.getters.item(this.item.key)
@@ -193,11 +194,13 @@ export default {
       this.destroyTooltips()
 
       var selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
+      if (selectedItem && selectedItem.priority > 0) {
         if (selectedItem.downloaded) {
           return
         }
-        this.$store.dispatch('removeItem', selectedItem.key)
+        // this.$store.dispatch('removeItem', selectedItem.key)
+        selectedItem.priority = 0
+        this.$store.dispatch('updateItem', selectedItem)
         this.editModeInternal = false
       } else {
         this.item.priority = this.defaultPriority

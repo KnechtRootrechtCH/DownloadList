@@ -122,7 +122,10 @@ export default {
       return this.details.homepage
     },
     isAvailableOnNetflix () {
-      return this.details.homepage.includes('www.netflix.com/')
+      if (this.details.homepage) {
+        return this.details.homepage.includes('www.netflix.com/')
+      }
+      return false
     },
     links () {
       let links = []

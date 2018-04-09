@@ -97,8 +97,10 @@ export default {
       blue: '#444499',
       red: '#CC3333',
       purple: '#CC22BB',
+      darkgrey: '#333333',
       grey: '#666666',
-      netflixRed: '#B9090B'
+      netflixRed: '#B9090B',
+      gold: '#dd9c25'
     }
   },
   components: {
@@ -114,7 +116,7 @@ export default {
       }
     },
     selected () {
-      return this.item
+      return this.item && this.item.priority > 0
     },
     downloaded () {
       if (this.item) {
@@ -129,7 +131,10 @@ export default {
       return this.details.homepage
     },
     isAvailableOnNetflix () {
-      return this.details.homepage.includes('www.netflix.com/')
+      if (this.details.homepage) {
+        return this.details.homepage.includes('www.netflix.com/')
+      }
+      return false
     }
   },
   methods: {
@@ -139,7 +144,9 @@ export default {
     },
     setSelected (select) {
       if (!select) {
-        this.$store.dispatch('removeItem', this.item.key)
+        // this.$store.dispatch('removeItem', this.item.key)
+        this.item.priority = 0
+        this.$store.dispatch('updateItem', this.item)
       } else {
         this.details.priority = this.defaultPriority
         this.details.media_type = this.mediaType
@@ -183,7 +190,7 @@ export default {
             downloaded: 'Downloaded',
             select: 'Add to list',
             deselect: 'Remove from list',
-            markDownloadedmovie: 'Mark as donw',
+            markDownloadedmovie: 'Mark as done',
             markDownloadedtv: 'Mark as done',
             redownload: 'Mark for redownload',
             priority: 'Priority',

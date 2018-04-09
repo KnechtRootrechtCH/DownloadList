@@ -9,23 +9,31 @@
           <b-row>
             <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
               <div class="content">
-                <p class="tagline" v-if="details.tagline">{{ details.tagline}}</p>
+                <p class="tagline d-md-none" v-if="details.tagline">{{ details.tagline}}</p>
                 <p>{{ details.overview}}</p>
               </div>
-              <item-information class="d-none d-md-inline" v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
+              <item-information class="" v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
             </b-col>
             <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
+              <!--<h5 class="label d-md-none">{{ $t('item.actions')}}</h5>-->
               <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-actions>
             </b-col>
           </b-row>
+          <!--
           <b-row class="d-md-none">
             <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
               <item-information v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-information>
             </b-col>
           </b-row>
+          -->
           <b-row>
             <b-col cols="12" md="12" xl="12" id="cast" class="content-section">
               <item-cast v-bind:cast="cast"></item-cast>
+            </b-col>
+          </b-row>
+          <b-row v-if="details.seasons">
+            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
+              <item-seasons v-bind:item="item" v-bind:seasons="details.seasons"></item-seasons>
             </b-col>
           </b-row>
         </b-container>
@@ -42,6 +50,8 @@ import ItemHeader from './ItemHeader'
 import ItemInformation from './ItemInformation'
 import ItemActions from './ItemActions'
 import ItemCast from './ItemCast'
+import ItemSeasons from './ItemSeasons'
+import ItemEpisodeList from './ItemEpisodeList'
 
 export default {
   name: 'Item',
@@ -54,7 +64,9 @@ export default {
     'item-header': ItemHeader,
     'item-information': ItemInformation,
     'item-actions': ItemActions,
-    'item-cast': ItemCast
+    'item-cast': ItemCast,
+    'item-seasons': ItemSeasons,
+    'item-episode-list': ItemEpisodeList
   },
   computed: {
     key () {
@@ -95,6 +107,7 @@ export default {
         item: {
           overview: 'Handlung',
           info: 'Details',
+          actions: 'Aktionen',
           cast: 'Besetzung',
           originalTitle: 'Originaltitel'
         }
@@ -103,6 +116,7 @@ export default {
         item: {
           overview: 'Overview',
           info: 'Details',
+          actions: 'Actions',
           cast: 'Cast',
           originalTitle: 'Original title'
         }
@@ -121,5 +135,9 @@ export default {
 }
 .spacer {
   margin-top: 15px;
+}
+.tagline {
+  font-style: italic;
+  font-weight: bold;
 }
 </style>
