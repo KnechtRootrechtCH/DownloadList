@@ -97,8 +97,10 @@ export default {
       blue: '#444499',
       red: '#CC3333',
       purple: '#CC22BB',
+      darkgrey: '#333333',
       grey: '#666666',
-      netflixRed: '#B9090B'
+      netflixRed: '#B9090B',
+      gold: '#dd9c25'
     }
   },
   components: {
