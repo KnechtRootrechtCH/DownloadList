@@ -2,23 +2,23 @@
   <div>
     <div class="content" v-if="cast">
       <span class="label">{{ $t('item.cast')}}</span>
-      <b-container fluid class="cast-container">
-        <transition-group name="cast-grid" tag="div" class="row cast-row">
-          <b-col
-          v-for="(person) in castFiltered" :key="person.id"
-          cols="4" sm="4" md="3" lg="2" xl="2"
-          class="cast-item">
-            <div class="card border-dark media-card bg-dark text-light" v-on:click.stop="cardClicked(person)">
+      <swiper :options="swiperOptions" ref="mySwiper">
+        <swiper-slide v-for="(person) in castFiltered" :key="person.id">
+          <div class="card border-dark media-card bg-dark text-light">
               <div class="card-img-top">
-                <progressive-img v-bind:src="picture(person)" :blur="2"></progressive-img>
+                <progressive-img class="photo" v-bind:src="picture(person)" :blur="10"></progressive-img>
               </div>
               <div class="card-body">
-                {{ person.name }}
+                <div class="actor"><a v-bind:href="'https://www.themoviedb.org/person/' + person.id" target="_blank">{{ person.name }}</a></div>
+                <div class="character">{{ person.character }}</div>
               </div>
             </div>
-          </b-col>
-        </transition-group>
-      </b-container>
+        </swiper-slide>
+        <div class="swiper-pagination"  slot="pagination"></div>
+        <div class="swiper-button-prev" slot="button-prev"></div>
+        <div class="swiper-button-next" slot="button-next"></div>
+        <div class="swiper-scrollbar"   slot="scrollbar"></div>
+      </swiper>
     </div>
   </div>
 </template>
@@ -29,6 +29,35 @@ export default {
   props: ['cast'],
   data () {
     return {
+      swiperOptions: {
+        slidesPerView: 8,
+        effect: 'slide',
+        mousewheel: false,
+        breakpoints: {
+          400: {
+            slidesPerView: 1
+          },
+          576: {
+            slidesPerView: 2
+          },
+          768: {
+            slidesPerView: 3
+          },
+          992: {
+            slidesPerView: 4
+          },
+          1200: {
+            slidesPerView: 5
+          },
+          1400: {
+            slidesPerView: 6
+          }
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev'
+        }
+      }
     }
   },
   components: {
@@ -40,16 +69,13 @@ export default {
     }
   },
   methods: {
-    cardClicked (person) {
-      alert(person)
-    },
     open (url) {
       var win = window.open(url, '_blank')
       win.focus()
     },
     picture (person) {
       if (person.profile_path) {
-        return 'https://image.tmdb.org/t/p/w200' + person.profile_path
+        return 'https://image.tmdb.org/t/p/w185' + person.profile_path
       } else {
         return ''
       }
@@ -73,11 +99,24 @@ export default {
 </script>
 
 <style scoped>
+*:focus {
+    outline: none;
+}
 .label {
   font-weight: bold;
   /* text-transform: uppercase; */
 }
-.cast-item {
-  padding: 0;
+.card-body {
+  padding: 5px;
+}
+.card-body .actor {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-body .character {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

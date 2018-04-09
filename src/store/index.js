@@ -10,6 +10,7 @@ Vue.use(VueAxios, axios)
 export const store = new Vuex.Store({
   state: {
     _movieDbApiKey: '23703a8a857927f41414fb155404393d',
+    _movieDbConfiguration: null,
     _fallbackMovieBackdrop: '',
     _fallbackTvBackdrop: '',
     _locale: 'en',
@@ -28,6 +29,7 @@ export const store = new Vuex.Store({
     setMovieDbApiKey: (state, payload) => { state._movieDbApiKey = payload },
     setFallbackMovieBackdrop: (state, payload) => { state._fallbackMovieBackdrop = payload },
     setFallbackTvBackdrop: (state, payload) => { state._fallbackTvBackdrop = payload },
+    setMovieDbConfiguration: (state, payload) => { state._movieDbConfiguration = payload },
 
     setLocale: state => { state._locale = navigator.language.trim().substring(0, 2) },
     setUser: state => {
@@ -91,6 +93,15 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    getMovieDbConfiguration: (context) => {
+      let query = 'https://api.themoviedb.org/3/configuration?api_key=' + context.state._movieDbApiKey
+      axios.get(query).then(
+        (response) => {
+          context.commit('setMovieDbConfiguration', response.data)
+        }
+      )
+    },
+
     getFirebaseData: (context) => {
       firebase.database.ref('settings/movieDbApiKey').on('value', (snapshot) => {
         context.commit('setMovieDbApiKey', snapshot.val())
@@ -156,13 +167,15 @@ export const store = new Vuex.Store({
 
       axios.get(query).then(
         (response) => {
-          context.commit('setSuggestions', {
-            'count': response.data.total_results,
-            'pages': response.data.total_pages,
-            'page': response.data.page,
-            'items': response.data.results,
-            'media_type': parameters.media_type
-          })
+          if (response.status === 200) {
+            context.commit('setSuggestions', {
+              'count': response.data.total_results,
+              'pages': response.data.total_pages,
+              'page': response.data.page,
+              'items': response.data.results,
+              'media_type': parameters.media_type
+            })
+          }
         })
     },
     getSuggestionDetails: (context, parameters) => {
@@ -233,6 +246,7 @@ export const store = new Vuex.Store({
 
     locale: (state) => { return state._locale },
     movieDbApiKey: (state) => { return state._movieDbApiKey },
+    movieDbConfiguration: (state) => { return state._movieDbConfiguration },
     fallbackMovieBackdrop: (state) => { return state._fallbackMovieBackdrop },
     fallbackTvBackdrop: (state) => { return state._fallbackTvBackdrop }
   }

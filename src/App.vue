@@ -28,6 +28,7 @@ export default {
   },
   created: function () {
     this.$store.dispatch('getFirebaseData')
+    this.$store.dispatch('getMovieDbConfiguration')
     let currentUser = firebase.auth().currentUser
     if (currentUser) {
       this.$store.dispatch('getFirebaseUserData')

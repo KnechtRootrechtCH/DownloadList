@@ -12,6 +12,9 @@ import BootstrapVue from 'bootstrap-vue'
 import VueProgressiveImage from 'vue-progressive-image'
 import moment from 'moment'
 import VueMomentJS from 'vue-momentjs'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+
+import 'swiper/dist/css/swiper.css'
 
 import App from './App'
 
@@ -21,6 +24,7 @@ Vue.use(underscore)
 Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
 Vue.use(VueMomentJS, moment)
+Vue.use(VueAwesomeSwiper)
 
 let app
 
