@@ -10,8 +10,13 @@
     <font-awesome-icon
       :icon="actionIcon"
       class="icon"
+      v-if="!internalIcon"
       v-bind:class="icon"/>
-      <span class="label">{{ label.toUpperCase() }}</span>
+    <!-- NETFLIX CUSTOM ICON
+      <img v-if="icon === 'netflix' && hover" src="../assets/netflix-white.svg" class="icon">
+    <img v-if="icon === 'netflix' && !hover" src="../assets/netflix-red.svg" class="icon">
+    -->
+    <span class="label">{{ label }}</span>
   </b-list-group-item>
 </template>
 
@@ -29,6 +34,7 @@ import starIcon from '@fortawesome/fontawesome-free-solid/faStar'
 import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
 import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
+import netflixIcon from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
@@ -56,8 +62,12 @@ export default {
         case 'downloaded': return downloadedIcon
         case 'redownload': return redownloadIcon
         case 'comment': return commentIcon
+        case 'netflix': return netflixIcon
         default: return defaultIcon
       }
+    },
+    internalIcon () {
+      return false // return this.icon === 'netflix'
     },
     color () {
       if (this.isActive || this.hover) {
@@ -94,6 +104,7 @@ export default {
 }
 .action .label {
   float: right;
+  text-transform: uppercase;
 }
 .action .icon {
   width: 18px;

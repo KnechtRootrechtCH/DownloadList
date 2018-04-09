@@ -51,4 +51,10 @@ body {
 .app-content {
   padding-top:58px;
 }
+a {
+  color: #ffbf58;
+}
+a:hover {
+  color: #ffbf58;
+}
 </style>

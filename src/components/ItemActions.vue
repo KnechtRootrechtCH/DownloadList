@@ -1,5 +1,14 @@
 <template>
   <b-list-group>
+      <action
+      v-if="details.homepage && isAvailableOnNetflix"
+      v-bind:label="$t('item.action.netflix')"
+      v-bind:isClickable="true"
+      v-bind:isActive="false"
+      v-bind:colorVariant="netflixRed"
+      icon="netflix"
+      @click.native="open(details.homepage)"></action>
+    <!--
     <action
       v-if="downloaded"
       v-bind:label="$t('item.action.downloaded')"
@@ -7,9 +16,11 @@
       v-bind:isActive="true"
       v-bind:colorVariant="green"
       icon="downloaded"></action>
+    -->
     <priority
       v-if="selected && !downloaded"
       v-bind:label="$t('item.action.priority')"
+      v-bind:isClickable="true"
       v-bind:colorVariant="purple"
       v-bind:itemKey="item.key"
       v-bind:current="item.priority"
@@ -24,7 +35,7 @@
       @click.native="setSelected(true)"></action>
     <action
       v-if="selected && !downloaded"
-      v-bind:label="$t('item.action.markDownloaded')"
+      v-bind:label="$t('item.action.markDownloaded' + mediaType)"
       v-bind:isClickable="true"
       v-bind:colorVariant="green"
       icon="downloaded"
@@ -50,6 +61,24 @@
       v-bind:colorVariant="grey"
       icon="comment"
       @click.native="addComment()"></action>
+      <!--
+    <action
+      v-if="details.homepage && !isAvailableOnNetflix"
+      v-bind:label="$t('item.action.homepage')"
+      v-bind:isClickable="true"
+      v-bind:isActive="false"
+      v-bind:colorVariant="blue"
+      icon="globe"
+      @click.native="open(details.homepage)"></action>
+    <action
+      v-if="movieDbUrl"
+      v-bind:label="$t('item.action.moviedb')"
+      v-bind:isClickable="true"
+      v-bind:isActive="false"
+      v-bind:colorVariant="blue"
+      icon="info"
+      @click.native="open(movieDbUrl)"></action>
+      -->
   </b-list-group>
 </template>
 
@@ -68,7 +97,8 @@ export default {
       blue: '#444499',
       red: '#CC3333',
       purple: '#CC22BB',
-      grey: '#666666'
+      grey: '#666666',
+      netflixRed: '#B9090B'
     }
   },
   components: {
@@ -83,10 +113,6 @@ export default {
         return 0
       }
     },
-    movieDbUrl () {
-      this.destroyTooltips()
-      return 'https://www.themoviedb.org/' + this.mediaType + '/' + this.id
-    },
     selected () {
       return this.item
     },
@@ -95,6 +121,15 @@ export default {
         return this.item.downloaded
       }
       return false
+    },
+    movieDbUrl () {
+      return 'https://www.themoviedb.org/' + this.mediaType + '/' + this.details.id
+    },
+    homepage () {
+      return this.details.homepage
+    },
+    isAvailableOnNetflix () {
+      return this.details.homepage.includes('www.netflix.com/')
     }
   },
   methods: {
@@ -131,10 +166,14 @@ export default {
             downloaded: 'Heruntergeladen',
             select: 'Der Liste hinzufügen',
             deselect: 'Aus Liste entfernen',
-            markDownloaded: 'Als heruntergeladen markieren',
+            markDownloadedmovie: 'Als erledigt markieren',
+            markDownloadedtv: 'Als erledigt markieren',
             redownload: 'Erneut herunterladen',
-            priority: 'Download Priorität',
-            comment: 'Kommentar hinzufügen'
+            priority: 'Priorität',
+            comment: 'Kommentar hinzufügen',
+            moviedb: 'The Movie Db',
+            homepage: 'Homepage',
+            netflix: 'Auf Netflix abspielen'
           }
         }
       },
@@ -144,10 +183,14 @@ export default {
             downloaded: 'Downloaded',
             select: 'Add to list',
             deselect: 'Remove from list',
-            markDownloaded: 'Mark as downloaded',
-            redownload: 'Redownload',
-            priority: 'Download priority',
-            comment: 'Add comment'
+            markDownloadedmovie: 'Mark as donw',
+            markDownloadedtv: 'Mark as done',
+            redownload: 'Mark for redownload',
+            priority: 'Priority',
+            comment: 'Add comment',
+            moviedb: 'The Movie Db',
+            homepage: 'Homepage',
+            netflix: 'Watch on Netflix'
           }
         }
       }
@@ -157,4 +200,14 @@ export default {
 </script>
 
 <style scoped>
+.content {
+  margin-bottom: 10px;
+}
+.tagline {
+  font-weight: bold;
+  font-style: italic;
+}
+.label {
+  font-weight: bold;
+}
 </style>

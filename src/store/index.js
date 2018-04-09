@@ -17,6 +17,8 @@ export const store = new Vuex.Store({
 
     _items: {},
     _suggestionDetails: null,
+    _suggestionCast: null,
+    _suggestionCrew: null,
     _suggestions: {},
     _suggestionsPage: 0,
     _suggestionsPages: 0,
@@ -47,6 +49,20 @@ export const store = new Vuex.Store({
         state._suggestionDetails = payload.data
       } else {
         state._suggestionDetails = null
+      }
+    },
+    setSuggestionCast (state, payload) {
+      if (payload) {
+        state._suggestionCast = payload.data.cast
+      } else {
+        state.__suggestionCast = null
+      }
+    },
+    setSuggestionCrew (state, payload) {
+      if (payload) {
+        state._suggestionCrew = payload.data.crew
+      } else {
+        state._suggestionCrew = null
       }
     },
     setSuggestions (state, payload) {
@@ -164,6 +180,26 @@ export const store = new Vuex.Store({
             })
           }
         })
+    },
+    getSuggestionCredits: (context, parameters) => {
+      let query = null
+      context.commit('setSuggestionCast', null)
+      context.commit('setSuggestionCrew', null)
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '/credits?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+
+      // console.log(parameters, query)
+
+      axios.get(query).then(
+        (response) => {
+          if (response.status === 200) {
+            context.commit('setSuggestionCast', {
+              'data': response.data
+            })
+            context.commit('setSuggestionCrew', {
+              'data': response.data
+            })
+          }
+        })
     }
   },
   getters: {
@@ -183,6 +219,8 @@ export const store = new Vuex.Store({
     },
 
     suggestionDetails: (state) => { return state._suggestionDetails },
+    suggestionCast: (state) => { return state._suggestionCast },
+    suggestionCrew: (state) => { return state._suggestionCrew },
     suggestions: (state) => { return state._suggestions },
     suggestionsArray: (state) => {
       let array = []

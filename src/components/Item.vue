@@ -8,23 +8,24 @@
         <b-container fluid>
           <b-row>
             <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
-              <item-information v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-information>
+              <div class="content">
+                <p class="tagline" v-if="details.tagline">{{ details.tagline}}</p>
+                <p>{{ details.overview}}</p>
+              </div>
+              <item-information class="d-none d-md-inline" v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
             </b-col>
             <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
               <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-actions>
-              <item-links v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-links>
+            </b-col>
+          </b-row>
+          <b-row class="d-md-none">
+            <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
+              <item-information v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-information>
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" class="content-section">
-              <h5>{{ $t('item.info') }}</h5>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
-              Cast Info...
-            </b-col>
-            <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
+            <b-col cols="12" md="12" xl="12" id="cast" class="content-section">
+              <item-cast v-bind:cast="cast"></item-cast>
             </b-col>
           </b-row>
         </b-container>
@@ -40,7 +41,7 @@
 import ItemHeader from './ItemHeader'
 import ItemInformation from './ItemInformation'
 import ItemActions from './ItemActions'
-import ItemLinks from './ItemLinks'
+import ItemCast from './ItemCast'
 
 export default {
   name: 'Item',
@@ -53,7 +54,7 @@ export default {
     'item-header': ItemHeader,
     'item-information': ItemInformation,
     'item-actions': ItemActions,
-    'item-links': ItemLinks
+    'item-cast': ItemCast
   },
   computed: {
     key () {
@@ -62,6 +63,14 @@ export default {
     details () {
       let details = this.$store.getters.suggestionDetails
       return details
+    },
+    cast () {
+      let cast = this.$store.getters.suggestionCast
+      return cast
+    },
+    crew () {
+      let crew = this.$store.getters.suggestionCrew
+      return crew
     },
     item () {
       var item = this.$store.getters.item(this.key)
@@ -72,6 +81,10 @@ export default {
   },
   created () {
     this.$store.dispatch('getSuggestionDetails', {
+      'media_type': this.mediaType,
+      'id': this.id
+    })
+    this.$store.dispatch('getSuggestionCredits', {
       'media_type': this.mediaType,
       'id': this.id
     })

@@ -88,6 +88,15 @@ export default {
       } else if (this.mediaType === 'tv') {
         return this.$store.getters.fallbackTvBackdrop
       }
+    },
+    downloaded () {
+      if (this.item) {
+        return this.item.downloaded
+      }
+      return false
+    },
+    isAvailableOnNetflix () {
+      return this.details.homepage.includes('www.netflix.com/')
     }
   },
   methods: {
@@ -134,7 +143,6 @@ export default {
 }
 .poster {
   width: 150px;
-  height: 225px;
   margin: 0 15px 0 15px;
   border-color: #d0d0d0;
   border-style: solid;

@@ -5,7 +5,7 @@
     @mouseenter="hover = true"
     @mouseleave="hover = false"
     @click="increase()"
-    v-bind:class="{ active : isActive }"
+    v-bind:class="{ active : isActive, 'clickable' : isClickable }"
     v-bind:style="{ color : this.color, background : this.colorInverted }">
     <font-awesome-icon
       :icon="actionIcon"
@@ -43,11 +43,11 @@ import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
   name: 'ItemPriority',
-  props: ['itemKey', 'current', 'label', 'icon', 'isActive', 'colorVariant'],
+  props: ['itemKey', 'current', 'label', 'icon', 'isClickable', 'isActive', 'colorVariant'],
   data () {
     return {
       hover: false,
-      min: 4,
+      min: 3,
       priority: 10
     }
   },
