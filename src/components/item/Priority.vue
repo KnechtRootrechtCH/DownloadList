@@ -93,6 +93,7 @@ export default {
       this.$store.dispatch('setItemPriority', {
         key: this.itemKey,
         priority: priority})
+      this.priority = 4
     },
     increase () {
       let priority = this.current - 1
