@@ -38,7 +38,7 @@
           </b-row>
           <b-row>
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <item-comments v-bind:item="item" v-bind:editMode="commentsEditMode" @addCommentDone="addCommentDone"></item-comments>
+              <item-comments v-bind:item="item"></item-comments>
             </b-col>
           </b-row>
         </b-container>
@@ -97,10 +97,7 @@ export default {
   },
   methods: {
     addComment () {
-      this.commentsEditMode = true
-    },
-    addCommentDone () {
-      this.commentsEditMode = false
+      window.scrollTo(0, document.body.scrollHeight)
     }
   },
   created () {

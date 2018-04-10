@@ -151,7 +151,7 @@ export default {
         this.details.priority = this.defaultPriority
         this.details.media_type = this.mediaType
         this.details.key = this.mediaType + ':' + this.details.id
-        this.$store.dispatch('addItem', this.details)
+        this.$store.dispatch('updateItem', this.details)
       }
     },
     setDownloaded (downloaded) {
