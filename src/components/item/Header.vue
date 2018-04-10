@@ -1,7 +1,8 @@
 <template>
   <div class="header" v-bind:style="{ backgroundImage: 'url(' + backdrop + ')' }">
     <div class="poster-section">
-      <progressive-img class="poster" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
+      <progressive-img class="poster-small d-md-none" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
+      <progressive-img class="poster-big d-none d-md-block" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
     </div>
     <div class="icons-section">
       <div class="header-icons">
@@ -146,15 +147,14 @@ export default {
     height: 200px;
     background-size: cover;
     background-position: center;
-    padding: 60px 0 0 0;
+    padding: 30px 0 0 0;
 }
 .poster-section {
   float: left;
-  width: 180px;
 }
 .icons-section {
-  padding: 100px 15px 0 0;
-  height: 150px;
+  padding: 130px 15px 0 0;
+  height: 180px;
 }
 .title-section {
   overflow: hidden;
@@ -174,8 +174,14 @@ export default {
 .header-year {
   opacity: 0.8;
 }
-.poster {
+.poster-small {
   width: 150px;
+  margin: 20px 15px 0 15px;
+  border-color: #d0d0d0;
+  border-style: solid;
+}
+.poster-big {
+  width: 180px;
   margin: 0 15px 0 15px;
   border-color: #d0d0d0;
   border-style: solid;

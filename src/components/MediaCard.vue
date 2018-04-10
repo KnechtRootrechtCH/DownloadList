@@ -1,6 +1,6 @@
 <template>
-  <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }" v-on:click.stop="cardClicked()">
-    <div class="card-img-top">
+  <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }">
+    <div class="card-img-top" v-on:click.stop="cardClicked()">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
         <overlay v-bind:item="item" v-bind:editMode="editModeActive" v-bind:showPriorityControls="showPriorityControls" v-bind:showReDownloadControls="showReDownloadControls" ></overlay>
@@ -182,12 +182,21 @@ export default {
   },
   methods: {
     cardClicked () {
-      // open item detail page
+      if (this.editModeActive) {
+        return
+      }
+      this.openInformationUrl()
     },
     openInformationUrl () {
       this.destroyTooltips()
-      var url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
-      var win = window.open(url, '_blank')
+      let target = this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
+      this.$router.push({
+        path: target
+      })
+    },
+    openMovieDbUrl () {
+      let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
+      let win = window.open(url, '_self')
       win.focus()
     },
     toggleItem () {
@@ -225,7 +234,7 @@ export default {
             remove: 'Aus Downloadliste entfernen',
             editPriority: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
-            info: 'Zusätzliche Informationen von "TheMovieDB.org"'
+            info: 'Zusätzliche Informationen'
           },
           movie: {
             dateNotFound: '-'
@@ -242,7 +251,7 @@ export default {
             remove: 'Remove from download list',
             editPriority: 'Change priority',
             downloaded: 'Downloaded',
-            info: 'Additional information from "TheMovieDB.org"'
+            info: 'Additional information'
           },
           movie: {
             dateNotFound: '-'

@@ -15,6 +15,7 @@ export const store = new Vuex.Store({
     _fallbackTvBackdrop: '',
     _locale: 'en',
     _user: null,
+    _dataUserId: null,
 
     _items: {},
     _suggestionDetails: null,
@@ -34,6 +35,10 @@ export const store = new Vuex.Store({
     setLocale: state => { state._locale = navigator.language.trim().substring(0, 2) },
     setUser: state => {
       state._user = firebase.authentication.currentUser
+      state._dataUserId = firebase.authentication.currentUser.uid
+    },
+    setDataUserId: (state, uid) => {
+      state._dataUserId = uid
     },
 
     setItems (state, items) { state._items = items },
@@ -115,40 +120,33 @@ export const store = new Vuex.Store({
     },
     getFirebaseUserData: (context) => {
       let time = new Date()
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/access/').push(time.toString())
-      firebase.database.ref('data/' + uid + '/mail').set(context.getters.user.email)
-      firebase.database.ref('data/' + uid + '/items/').on('value', (snapshot) => {
+      firebase.database.ref('data/' + context.getters.dataUserId + '/access/').push(time.toString())
+      firebase.database.ref('data/' + context.getters.dataUserId + '/mail').set(context.getters.user.email)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/').on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
       })
     },
 
     addItem: (context, item) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/items/' + item.key).set(item)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
     updateItem: (context, item) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/items/' + item.key).set(item)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
     removeItem: (context, key) => {
-      let uid = context.getters.user.uid
       context.commit('removeItem', key)
-      firebase.database.ref('data/' + uid + '/items/' + key).set(null)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).set(null)
     },
     setItemPriority: (context, payload) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/items/' + payload.key).update({
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'priority': payload.priority
       })
     },
     addItemComment: (context, payload) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/items/' + payload.key + '/comments/').push(payload.comment)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key + '/comments/').push(payload.comment)
     },
     setItemDownloaded: (context, payload) => {
-      let uid = context.getters.user.uid
-      firebase.database.ref('data/' + uid + '/items/' + payload.key).update({
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'downloaded': payload.downloaded
       })
     },
@@ -227,6 +225,7 @@ export const store = new Vuex.Store({
     test: (state) => { return state._test },
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
+    dataUserId: (state) => { return state._dataUserId },
 
     items: (state) => { return state._items },
     item: (state) => (key) => { return state._items !== null ? state._items[key] : null },

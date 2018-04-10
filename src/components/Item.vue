@@ -19,13 +19,6 @@
               <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @addComment="addComment"></item-actions>
             </b-col>
           </b-row>
-          <!--
-          <b-row class="d-md-none">
-            <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
-              <item-information v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-information>
-            </b-col>
-          </b-row>
-          -->
           <b-row>
             <b-col cols="12" md="12" xl="12" id="cast" class="content-section">
               <item-cast v-bind:cast="cast"></item-cast>
@@ -33,7 +26,7 @@
           </b-row>
           <b-row v-if="details.seasons">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <item-seasons v-bind:item="item" v-bind:seasons="details.seasons"></item-seasons>
+              <!--<item-seasons v-bind:item="item" v-bind:seasons="details.seasons"></item-seasons>-->
             </b-col>
           </b-row>
           <b-row>

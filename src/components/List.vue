@@ -120,7 +120,8 @@ export default {
   },
   computed: {
     items () {
-      return this.$store.getters.itemsArray
+      let items = this.$store.getters.itemsArray
+      return items.filter(item => item.priority > 0)
     },
     searchIcon () {
       return searchIcon
@@ -166,7 +167,7 @@ export default {
         priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
         sort: 'Sortierung',
-        edit: 'Priorität Editieren',
+        edit: 'Editieren',
         rating: 'Bewertung',
         title: 'Titel',
         popularity: 'Beliebtheit',
@@ -187,7 +188,7 @@ export default {
         priority3: 'Low',
         downloaded: 'Downloaded',
         sort: 'Sort',
-        edit: 'Edit Priority',
+        edit: 'Quickedit',
         rating: 'Rating',
         title: 'Title',
         popularity: 'Popularity',
