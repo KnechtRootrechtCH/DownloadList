@@ -83,8 +83,8 @@
 </template>
 
 <script>
-import ItemAction from './ItemAction'
-import ItemPriority from './ItemPriority'
+import ItemAction from './Action'
+import ItemPriority from './Priority'
 
 export default {
   name: 'ItemActions',
@@ -162,7 +162,7 @@ export default {
       }
     },
     addComment () {
-      alert('comming soon')
+      this.$emit('addComment')
     }
   },
   i18n: {

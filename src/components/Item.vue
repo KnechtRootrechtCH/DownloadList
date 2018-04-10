@@ -16,7 +16,7 @@
             </b-col>
             <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
               <!--<h5 class="label d-md-none">{{ $t('item.actions')}}</h5>-->
-              <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-actions>
+              <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @addComment="addComment"></item-actions>
             </b-col>
           </b-row>
           <!--
@@ -36,6 +36,11 @@
               <item-seasons v-bind:item="item" v-bind:seasons="details.seasons"></item-seasons>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
+              <item-comments v-bind:item="item" v-bind:editMode="commentsEditMode" @addCommentDone="addCommentDone"></item-comments>
+            </b-col>
+          </b-row>
         </b-container>
       </div>
     </div>
@@ -46,18 +51,19 @@
 </template>
 
 <script>
-import ItemHeader from './ItemHeader'
-import ItemInformation from './ItemInformation'
-import ItemActions from './ItemActions'
-import ItemCast from './ItemCast'
-import ItemSeasons from './ItemSeasons'
-import ItemEpisodeList from './ItemEpisodeList'
+import ItemHeader from './item/Header'
+import ItemInformation from './item/Information'
+import ItemActions from './item/Actions'
+import ItemCast from './item/Cast'
+import ItemSeasons from './item/Seasons'
+import ItemComments from './item/Comments'
 
 export default {
   name: 'Item',
   props: ['id', 'mediaType'],
   data () {
     return {
+      commentsEditMode: false
     }
   },
   components: {
@@ -66,7 +72,7 @@ export default {
     'item-actions': ItemActions,
     'item-cast': ItemCast,
     'item-seasons': ItemSeasons,
-    'item-episode-list': ItemEpisodeList
+    'item-comments': ItemComments
   },
   computed: {
     key () {
@@ -90,6 +96,12 @@ export default {
     }
   },
   methods: {
+    addComment () {
+      this.commentsEditMode = true
+    },
+    addCommentDone () {
+      this.commentsEditMode = false
+    }
   },
   created () {
     this.$store.dispatch('getSuggestionDetails', {

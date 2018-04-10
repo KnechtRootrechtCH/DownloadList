@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import ItemSeason from './ItemSeason'
+import ItemSeason from './Season'
 
 export default {
   name: 'ItemSeasons',

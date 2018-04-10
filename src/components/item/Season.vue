@@ -1,6 +1,6 @@
 <template>
   <b-list-group-item class="season" variant="dark">
-    
+
     <span class="label">{{ season.name }}</span>
     <div class="air-date">
       <span class="episodes">Aired {{ airDate }}</span>
@@ -19,7 +19,6 @@
       <h5 class="label">{{ season.name }}</h5>
       <div class="content"><span class="label">{{ $t('item.season.airDate')}}:&nbsp;</span>{{ airDate }}</div>
       <div class="content"><span class="label">{{ $t('item.season.episodes')}}:&nbsp;</span>{{ season.episode_count }}</div>
-      
     </div>
     -->
   </b-list-group-item>
@@ -72,7 +71,7 @@ export default {
     messages: {
       de: {
         item: {
-          
+
           season: {
             airDate: 'Ausstrahlung',
             episodes: 'Episoden'

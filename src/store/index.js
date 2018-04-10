@@ -142,6 +142,10 @@ export const store = new Vuex.Store({
         'priority': payload.priority
       })
     },
+    addItemComment: (context, payload) => {
+      let uid = context.getters.user.uid
+      firebase.database.ref('data/' + uid + '/items/' + payload.key + '/comments/').push(payload.comment)
+    },
     setItemDownloaded: (context, payload) => {
       let uid = context.getters.user.uid
       firebase.database.ref('data/' + uid + '/items/' + payload.key).update({

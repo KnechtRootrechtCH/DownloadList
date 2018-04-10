@@ -25,6 +25,7 @@
         <li><a href="https://developers.themoviedb.org/3" target="_blank">firebase</a></li>
         <li><a href="https://developers.themoviedb.org/3" target="_blank">the movie database</a></li>
         <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
+        <li><a href="https://surmon-china.github.io/vue-awesome-swiper/" target="_blank">vue-awesome-swiper</a></li>
       </ul>
   </div>
 </template>
