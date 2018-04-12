@@ -5,23 +5,14 @@
       v-bind:label="$t('item.action.netflix')"
       v-bind:isClickable="true"
       v-bind:isActive="false"
-      v-bind:colorVariant="netflixRed"
+      v-bind:color="constants.COLOR.NETFLIX_RED"
       icon="netflix"
       @click.native="open(details.homepage)"></action>
-    <!--
-    <action
-      v-if="downloaded"
-      v-bind:label="$t('item.action.downloaded')"
-      v-bind:isClickable="false"
-      v-bind:isActive="true"
-      v-bind:colorVariant="green"
-      icon="downloaded"></action>
-    -->
     <priority
       v-if="selected && !downloaded"
       v-bind:label="$t('item.action.priority')"
       v-bind:isClickable="true"
-      v-bind:colorVariant="purple"
+      v-bind:color="constants.COLOR.PURPLE"
       v-bind:itemKey="item.key"
       v-bind:current="item.priority"
       icon="star"
@@ -30,77 +21,51 @@
       v-if="!selected"
       v-bind:label="$t('item.action.select')"
       v-bind:isClickable="true"
-      v-bind:colorVariant="blue"
+      v-bind:color="constants.COLOR.BLUE"
       icon="add"
       @click.native="setSelected(true)"></action>
     <action
       v-if="selected && !downloaded"
       v-bind:label="$t('item.action.markDownloaded' + mediaType)"
       v-bind:isClickable="true"
-      v-bind:colorVariant="green"
+      v-bind:color="constants.COLOR.GREEN"
       icon="downloaded"
       @click.native="setDownloaded(true)"></action>
     <action
       v-if="selected && downloaded"
       v-bind:label="$t('item.action.redownload')"
       v-bind:isClickable="true"
-      v-bind:colorVariant="purple"
+      v-bind:color="constants.COLOR.PURPLE"
       icon="redownload"
       @click.native="setDownloaded(false)"></action>
     <action
       v-if="selected && !downloaded"
       v-bind:label="$t('item.action.deselect')"
       v-bind:isClickable="true"
-      v-bind:colorVariant="red"
+      v-bind:color="constants.COLOR.RED"
       icon="remove"
       @click.native="setSelected(false)"></action>
     <action
       v-if="selected"
       v-bind:label="$t('item.action.comment')"
       v-bind:isClickable="true"
-      v-bind:colorVariant="grey"
+      v-bind:color="constants.COLOR.DARKGREY"
       icon="comment"
       @click.native="addComment()"></action>
-      <!--
-    <action
-      v-if="details.homepage && !isAvailableOnNetflix"
-      v-bind:label="$t('item.action.homepage')"
-      v-bind:isClickable="true"
-      v-bind:isActive="false"
-      v-bind:colorVariant="blue"
-      icon="globe"
-      @click.native="open(details.homepage)"></action>
-    <action
-      v-if="movieDbUrl"
-      v-bind:label="$t('item.action.moviedb')"
-      v-bind:isClickable="true"
-      v-bind:isActive="false"
-      v-bind:colorVariant="blue"
-      icon="info"
-      @click.native="open(movieDbUrl)"></action>
-      -->
   </b-list-group>
 </template>
 
 <script>
 import ItemAction from './Action'
 import ItemPriority from './Priority'
+import UtilMixins from '../../mixins/utils'
 
 export default {
   name: 'ItemActions',
   props: ['item', 'details', 'mediaType'],
+  mixins: [UtilMixins],
   data () {
     return {
-      lowestPriority: 3,
-      defaultPriority: 2,
-      green: '#339933',
-      blue: '#444499',
-      red: '#CC3333',
-      purple: '#CC22BB',
-      darkgrey: '#333333',
-      grey: '#666666',
-      netflixRed: '#B9090B',
-      gold: '#dd9c25'
     }
   },
   components: {
@@ -139,7 +104,7 @@ export default {
   },
   methods: {
     open (url) {
-      var win = window.open(url, '_blank')
+      let win = window.open(url, '_blank')
       win.focus()
     },
     setSelected (select) {
@@ -148,7 +113,7 @@ export default {
         this.item.priority = 0
         this.$store.dispatch('updateItem', this.item)
       } else {
-        this.details.priority = this.defaultPriority
+        this.details.priority = this.constants.PRIORITY.DEFAULT
         this.details.media_type = this.mediaType
         this.details.key = this.mediaType + ':' + this.details.id
         this.$store.dispatch('updateItem', this.details)

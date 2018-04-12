@@ -2,7 +2,7 @@
   <div class="navigation">
     <b-navbar variant="dark" type="dark" toggleable="sm" fixed="top">
       <b-navbar-brand to="/">
-        <img src="../assets/logo.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
+        <img src="../assets/imgs/logo.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
       </b-navbar-brand>
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav_collapse">

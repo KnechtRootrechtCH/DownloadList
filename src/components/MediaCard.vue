@@ -71,6 +71,7 @@ import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
 
 import MediaCardEditOverlay from './MediaCardOverlay'
+import UtilsMixin from '../mixins/utils'
 
 export default {
   name: 'MediaCard',
@@ -81,6 +82,7 @@ export default {
     'showPriorityControls',
     'showReDownloadControls',
     'detailsRouterPrefix'],
+  mixins: [UtilsMixin],
   data () {
     return {
       editModeInternal: false,
@@ -169,11 +171,11 @@ export default {
       }
     },
     selected () {
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       return selectedItem && selectedItem.priority > 0
     },
     downloaded () {
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         return selectedItem.downloaded
       }
@@ -196,13 +198,12 @@ export default {
     },
     openMovieDbUrl () {
       let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
-      let win = window.open(url, '_self')
-      win.focus()
+      this.open(url, '_blank')
     },
     toggleItem () {
       this.destroyTooltips()
 
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem && selectedItem.priority > 0) {
         if (selectedItem.downloaded) {
           return

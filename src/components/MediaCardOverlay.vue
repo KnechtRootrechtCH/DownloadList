@@ -82,7 +82,7 @@ export default {
       return redownloadIcon
     },
     downloaded () {
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         return selectedItem.downloaded
       }
@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     hasPriority (priority) {
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         return selectedItem.priority <= priority
       }
@@ -100,7 +100,7 @@ export default {
     setPriority (priority) {
       this.destroyTooltips()
 
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         this.$store.dispatch('setItemPriority', {
           key: selectedItem.key,
@@ -113,7 +113,7 @@ export default {
     setDownloaded (downloaded) {
       this.destroyTooltips()
 
-      var selectedItem = this.$store.getters.item(this.item.key)
+      let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         this.$store.dispatch('setItemDownloaded', {
           key: selectedItem.key,

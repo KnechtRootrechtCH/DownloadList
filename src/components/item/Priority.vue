@@ -2,11 +2,8 @@
   <b-list-group-item
     button
     class="action"
-    @mouseenter="hover = true"
-    @mouseleave="hover = false"
     @click="increase()"
-    v-bind:class="{ active : isActive, 'clickable' : isClickable }"
-    v-bind:style="{ color : this.color, background : this.colorInverted }">
+    v-bind:class="[{ active : isActive, 'clickable' : isClickable, 'inverted' : this.isActive }, 'button-' + this.color]">
     <font-awesome-icon
       :icon="actionIcon"
       class="icon clickable"
@@ -43,10 +40,9 @@ import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
   name: 'ItemPriority',
-  props: ['itemKey', 'current', 'label', 'icon', 'isClickable', 'isActive', 'colorVariant'],
+  props: ['itemKey', 'current', 'label', 'icon', 'isClickable', 'isActive', 'color'],
   data () {
     return {
-      hover: false,
       min: 3,
       priority: 10
     }
@@ -68,20 +64,6 @@ export default {
         case 'downloaded': return downloadedIcon
         case 'redownload': return redownloadIcon
         default: return defaultIcon
-      }
-    },
-    color () {
-      if (this.isActive || this.hover) {
-        return '#f0f0f0'
-      } else {
-        return this.colorVariant
-      }
-    },
-    colorInverted () {
-      if (this.isActive || this.hover) {
-        return this.colorVariant
-      } else {
-        return '#f0f0f0'
       }
     }
   },

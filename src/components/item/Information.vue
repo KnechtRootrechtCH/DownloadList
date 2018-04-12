@@ -142,10 +142,6 @@ export default {
     }
   },
   methods: {
-    open (url) {
-      var win = window.open(url, '_blank')
-      win.focus()
-    }
   },
   i18n: {
     messages: {

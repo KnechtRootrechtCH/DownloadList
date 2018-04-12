@@ -108,9 +108,9 @@ export default {
       })
     },
     handleScroll () {
-      var d = document.documentElement
-      var offset = d.scrollTop + window.innerHeight
-      var height = d.offsetHeight
+      let d = document.documentElement
+      let offset = d.scrollTop + window.innerHeight
+      let height = d.offsetHeight
 
       if (offset === height) {
         this.infiniteScroll()

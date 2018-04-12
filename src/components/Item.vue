@@ -84,7 +84,7 @@ export default {
       return crew
     },
     item () {
-      var item = this.$store.getters.item(this.key)
+      let item = this.$store.getters.item(this.key)
       return item
     }
   },

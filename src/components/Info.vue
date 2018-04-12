@@ -1,6 +1,6 @@
 <template>
   <div class="info">
-    <!--<img class="app_logo" src="../assets/logo.png"/>-->
+    <!--<img class="app_logo" src="../assets/imgs/logo.png"/>-->
     <h2>Author</h2>
     <ul>
       <li><a href="https://github.com/KnechtRootrechtCH" target="_blank">KnechtRootrechtCH</a></li>

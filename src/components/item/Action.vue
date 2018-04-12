@@ -2,11 +2,7 @@
   <b-list-group-item
     button
     class="action"
-    @mouseenter="hover = true"
-    @mouseleave="hover = false"
-    @click="hover = false"
-    v-bind:class="{ active : isActive, 'clickable' : isClickable }"
-    v-bind:style="{ color : this.color, background : this.colorInverted }">
+    v-bind:class="[{ active : isActive, 'clickable' : isClickable, 'inverted' : this.isActive }, 'button-' + this.color]">
     <font-awesome-icon
       :icon="actionIcon"
       class="icon"
@@ -39,10 +35,9 @@ import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
 export default {
   name: 'ItemAction',
-  props: ['label', 'icon', 'isActive', 'isClickable', 'colorVariant'],
+  props: ['label', 'icon', 'isActive', 'isClickable', 'color'],
   data () {
     return {
-      hover: false
     }
   },
   components: {
@@ -68,20 +63,6 @@ export default {
     },
     internalIcon () {
       return false // return this.icon === 'netflix'
-    },
-    color () {
-      if (this.isActive || this.hover) {
-        return '#f0f0f0'
-      } else {
-        return this.colorVariant
-      }
-    },
-    colorInverted () {
-      if (this.isActive || this.hover) {
-        return this.colorVariant
-      } else {
-        return '#f0f0f0'
-      }
     }
   }
 }

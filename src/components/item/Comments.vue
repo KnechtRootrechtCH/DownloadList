@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import ItemAction from './Action'
 
 export default {
   name: 'ItemComments',
@@ -45,7 +44,6 @@ export default {
     }
   },
   components: {
-    'action': ItemAction
   },
   computed: {
     commentStringEntered () {
