@@ -52,9 +52,12 @@
 </template>
 
 <script>
+import UtilsMixin from '../../mixins/utils'
+
 export default {
   name: 'ItemInformation',
   props: ['item', 'details', 'crew', 'mediaType'],
+  mixins: [UtilsMixin],
   data () {
     return {
     }
@@ -63,38 +66,13 @@ export default {
   },
   computed: {
     title () {
-      if (this.mediaType === 'movie') {
-        return this.details.title
-      } else if (this.mediaType === 'tv') {
-        return this.details.name
-      }
+      return this.getTitle(this.details)
     },
     originalTitle () {
-      if (this.mediaType === 'movie') {
-        return this.details.original_title
-      } else if (this.mediaType === 'tv') {
-        return this.details.original_name
-      }
-    },
-    release () {
-      let date = null
-      if (this.mediaType === 'movie') {
-        date = this.details.release_date
-      } else if (this.mediaType === 'tv') {
-        date = this.details.first_air_date
-      }
-      if (date) {
-        return this.$moment(date)
-      }
-      return null
+      return this.getOriginalTitle(this.details)
     },
     releaseDate () {
-      let date = this.release
-      if (date) {
-        return date.format('DD.MM.YYYY')
-      } else {
-        return '?'
-      }
+      return this.getReleaseDateFormated(this.details, 'DD.MM.YYYY')
     },
     rating () {
       return this.details.vote_average
@@ -109,35 +87,30 @@ export default {
       }
       let director = null
       this.crew.forEach(c => {
-        if (c.job === 'Director') {
+        if (c.job.toLowerCase() === this.constants.JOB.DIRECTOR) {
           director = c
         }
       })
       return director
     },
-    movieDbUrl () {
-      return 'https://www.themoviedb.org/' + this.mediaType + '/' + this.details.id
-    },
     homepage () {
       return this.details.homepage
     },
-    isAvailableOnNetflix () {
-      if (this.details.homepage) {
-        return this.details.homepage.includes('www.netflix.com/')
-      }
-      return false
-    },
     links () {
       let links = []
-      if (this.isAvailableOnNetflix) {
-        let netflixLink = { name: this.$t('item.netflix'), url: this.homepage }
+      let movieDbLink = { name: this.$t('item.movieDb'), url: this.getMovieDbUrl(this.details) }
+      links.push(movieDbLink)
+
+      if (this.isAvailableOnNetflix(this.details)) {
+        let netflixLink = { name: this.$t('item.netflix'), url: this.getNetflixUrl(this.details) }
         links.push(netflixLink)
       } else if (this.details.homepage) {
         let homepage = { name: this.$t('item.homepage'), url: this.homepage }
         links.push(homepage)
+        let netflixSearch = { name: this.$t('item.netflixSearch'), url: 'https://www.netflix.com/search?q=' + this.title }
+        links.push(netflixSearch)
       }
-      let movieDbLink = { name: this.$t('item.movieDb'), url: this.movieDbUrl }
-      links.push(movieDbLink)
+
       return links
     }
   },
@@ -162,6 +135,7 @@ export default {
           runtime: 'Laufzeit',
           links: 'Links',
           netflix: 'Netflix',
+          netflixSearch: 'Netflix Suche',
           homepage: 'Homepage',
           movieDb: 'The Movie DB'
         }
@@ -183,6 +157,7 @@ export default {
           runtime: 'Runtime',
           links: 'Links',
           netflix: 'Netflix',
+          netflixSearch: 'Netflix search',
           homepage: 'Homepage',
           movieDb: 'The Movie DB'
         }

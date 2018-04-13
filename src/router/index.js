@@ -68,7 +68,7 @@ let router = new Router({
     },
     {
       path: '/browse/:mediaType/:id',
-      name: 'Item',
+      name: 'DiscoverItem',
       component: Item,
       meta: {
         requiresAuth: true

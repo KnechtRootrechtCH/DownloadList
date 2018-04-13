@@ -68,9 +68,6 @@ export default {
     'item-comments': ItemComments
   },
   computed: {
-    key () {
-      return this.mediaType + ':' + this.id
-    },
     details () {
       let details = this.$store.getters.suggestionDetails
       return details
@@ -84,7 +81,7 @@ export default {
       return crew
     },
     item () {
-      let item = this.$store.getters.item(this.key)
+      let item = this.$store.getters.item(this.details.key)
       return item
     }
   },

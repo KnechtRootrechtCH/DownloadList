@@ -18,7 +18,7 @@
           <b-nav-item v-on:click="signOut" class="d-sm-none">{{ $t("nav.signout") }}</b-nav-item>
           <b-nav-item-dropdown right class="d-none d-sm-inline" no-caret>
             <template slot="button-content">
-              <font-awesome-icon :icon="dropdownIcon" class="navigation-icon"/>
+              <font-awesome-icon :icon="icon('cog')" class="navigation-icon"/>
             </template>
             <b-dropdown-item to="/info">{{ $t("nav.about") }}</b-dropdown-item>
             <b-dropdown-item v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
@@ -31,18 +31,14 @@
 
 <script>
 import firebase from 'firebase'
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import dropdownIcon from '@fortawesome/fontawesome-free-solid/faCog'
+import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'Navigation',
+  mixins: [IconsMixin],
   components: {
-    FontAwesomeIcon
   },
   computed: {
-    dropdownIcon () {
-      return dropdownIcon
-    }
   },
   methods: {
     signOut () {

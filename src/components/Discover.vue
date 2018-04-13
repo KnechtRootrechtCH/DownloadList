@@ -14,7 +14,7 @@
           </b-input-group-prepend>-->
           <b-form-input class="discover-search-input" v-model="searchString" v-bind:placeholder="$t('searchPlaceholder.' + mode)"></b-form-input>
           <b-input-group-append is-text v-on:click="clearSearch">
-              <font-awesome-icon :icon="crossIcon" class="discover-search-clear"/>
+              <font-awesome-icon :icon="icon('times')" class="discover-search-clear"/>
           </b-input-group-append>
         </b-input-group>
       </b-collapse>
@@ -33,15 +33,13 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import searchIcon from '@fortawesome/fontawesome-free-solid/faSearch'
-import crossIcon from '@fortawesome/fontawesome-free-solid/faTimes'
-
 import MediaGrid from './MediaGrid'
+import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'discover',
   props: ['mode', 'header', 'inputPlaceholder'],
+  mixins: [IconsMixin],
   data () {
     return {
       queryType: 'popular',
@@ -50,19 +48,12 @@ export default {
     }
   },
   components: {
-    FontAwesomeIcon,
     'mediaGrid': MediaGrid
   },
   computed: {
     items () {
       let items = this.$store.getters.suggestionsArray
       return items
-    },
-    searchIcon () {
-      return searchIcon
-    },
-    crossIcon () {
-      return crossIcon
     }
   },
   methods: {

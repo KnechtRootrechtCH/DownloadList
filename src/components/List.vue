@@ -13,15 +13,15 @@
             <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
               <span class="checklist-navigation-item" @click="editModeActive = !editModeActive" v-bind:class="{ active: editModeActive }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
-                <font-awesome-icon :icon="editIcon" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="icon('edit')" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
-                <font-awesome-icon :icon="sortIcon" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="filterPanelActive = !filterPanelActive, sortPanelActive = false" v-bind:class="{ active: filterPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('filter') }}</span>
-                <font-awesome-icon :icon="filterIcon" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="icon('filter')" class="checklist-navigation-icon"/>
               </span>
             </b-col>
           </b-row>
@@ -83,19 +83,13 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import searchIcon from '@fortawesome/fontawesome-free-solid/faSearch'
-import crossIcon from '@fortawesome/fontawesome-free-solid/faTimes'
-import filterIcon from '@fortawesome/fontawesome-free-solid/faFilter'
-import sortIcon from '@fortawesome/fontawesome-free-solid/faSort'
-import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
-import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
-
 import MediaGrid from './MediaGrid'
+import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'Browse',
   props: ['mode', 'header', 'inputPlaceholder'],
+  mixins: [IconsMixin],
   data () {
     return {
       filter: {
@@ -115,31 +109,12 @@ export default {
     }
   },
   components: {
-    FontAwesomeIcon,
     'mediaGrid': MediaGrid
   },
   computed: {
     items () {
       let items = this.$store.getters.itemsArray
       return items.filter(item => item.priority > 0)
-    },
-    searchIcon () {
-      return searchIcon
-    },
-    crossIcon () {
-      return crossIcon
-    },
-    filterIcon () {
-      return filterIcon
-    },
-    sortIcon () {
-      return sortIcon
-    },
-    editIcon () {
-      return editIcon
-    },
-    priorityIcon () {
-      return priorityIcon
     }
   },
   methods: {

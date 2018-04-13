@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import firebase from '../firebase'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import Constants from '../constants'
 
 Vue.use(Vuex)
 Vue.use(VueAxios, axios)
@@ -42,9 +43,6 @@ export const store = new Vuex.Store({
     },
 
     setItems (state, items) { state._items = items },
-    removeItem (state, key) {
-      delete state._items[key]
-    },
     resetSuggestions (state) {
       state._suggestionsCount = 0
       state._suggestionsPage = 0
@@ -53,7 +51,10 @@ export const store = new Vuex.Store({
     },
     setSuggestionDetails (state, payload) {
       if (payload) {
-        state._suggestionDetails = payload.data
+        let details = payload.data
+        details.media_type = payload.media_type
+        details.key = payload.media_type + ':' + details.id
+        state._suggestionDetails = details
       } else {
         state._suggestionDetails = null
       }
@@ -84,10 +85,10 @@ export const store = new Vuex.Store({
           item.media_type = payload.media_type
         }
         item.key = item.media_type + ':' + item.id
-        if (item.media_type === 'movie' || item.media_type === 'tv') {
+        if (item.media_type === Constants.MEDIA_TYPE.MOVIE || item.media_type === Constants.MEDIA_TYPE.TV) {
           Vue.set(state._suggestions, item.key, item)
           // state._suggestions[item.key] = item
-        } else if (item.media_type === 'person') {
+        } else if (item.media_type === Constants.MEDIA_TYPE.PERSON) {
           item.known_for.forEach(knownFor => {
             knownFor.key = knownFor.media_type + ':' + knownFor.id
             Vue.set(state._suggestions, knownFor.key, knownFor)
@@ -132,10 +133,6 @@ export const store = new Vuex.Store({
     },
     updateItem: (context, item) => {
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
-    },
-    removeItem: (context, key) => {
-      context.commit('removeItem', key)
-      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).set(null)
     },
     setItemPriority: (context, payload) => {
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
@@ -195,7 +192,8 @@ export const store = new Vuex.Store({
         (response) => {
           if (response.status === 200) {
             context.commit('setSuggestionDetails', {
-              'data': response.data
+              'data': response.data,
+              'media_type': parameters.media_type
             })
           }
         })

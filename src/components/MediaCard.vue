@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': selected, 'bg-dark text-light': !selected }">
+  <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': isSelected, 'bg-dark text-light': !isSelected }">
     <div class="card-img-top" v-on:click.stop="cardClicked()">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
@@ -9,17 +9,17 @@
     <div class="card-body">
       <div class="card-icons container-fluid">
         <div class="row">
-          <div class="card-title col-xs-12">{{ title }}</div>
+          <div class="card-title col-xs-12">{{ getTitle(item) }}</div>
         </div>
         <div class="row">
-          <div class="card-release col-xs-12">{{ releaseDate }}</div>
+          <div class="card-release col-xs-12">{{ getReleaseDateFormated(item, 'YYYY') }}</div>
         </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-            <router-link v-bind:to="'/' + detailsRouterPrefix + '/' + item.media_type + '/' + item.id">
+            <router-link v-bind:to="infoUrl">
               <font-awesome-icon
                 v-b-tooltip
-                :icon="infoIcon"
+                :icon="icon('info')"
                 class="card-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
@@ -27,29 +27,29 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-b-tooltip
-              v-if="showEditButton && selected"
-              :icon="editIcon"
+              v-if="showEditButton && isSelected"
+              :icon="icon('edit')"
               class="card-icon"
               @click.stop="editModeInternal = !editModeInternal, destroyTooltips()"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="selected && !downloaded"
-              :icon="removeIcon"
+              v-if="isSelected && !isDownloaded"
+              :icon="icon('minus')"
               class="card-icon"
               @click.stop="toggleItem"
               v-bind:title="$t('mediaCard.tooltip.remove')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="!selected && !downloaded"
-              :icon="addIcon"
+              v-if="!isSelected && !isDownloaded"
+              :icon="icon('plus')"
               class="card-icon"
               @click.stop="toggleItem"
               v-bind:title="$t('mediaCard.tooltip.add')"/>
             <font-awesome-icon
               v-b-tooltip
-              v-if="downloaded"
-              :icon="downloadedIcon"
+              v-if="isDownloaded"
+              :icon="icon('check')"
               class="card-icon check-icon"
               v-bind:title="$t('mediaCard.tooltip.downloaded')"/>
           </div>
@@ -60,18 +60,9 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-
-import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
-import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
-import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
-import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
-import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
-import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
-
 import MediaCardEditOverlay from './MediaCardOverlay'
 import UtilsMixin from '../mixins/utils'
+import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCard',
@@ -82,15 +73,13 @@ export default {
     'showPriorityControls',
     'showReDownloadControls',
     'detailsRouterPrefix'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
-      editModeInternal: false,
-      defaultPriority: 2
+      editModeInternal: false
     }
   },
   components: {
-    FontAwesomeIcon,
     'overlay': MediaCardEditOverlay
   },
   computed: {
@@ -99,87 +88,43 @@ export default {
         case 'internal':
           return this.editModeInternal
         case 'selected':
-          return this.selected
+          return this.isSelected
         case 'external':
           return this.editMode || this.editModeInternal
         default:
           return this.editModeInternal
       }
     },
-    title () {
-      if (this.item.media_type === 'movie') {
-        return this.item.title
-      } else if (this.item.media_type === 'tv') {
-        return this.item.name
-      }
-    },
-    releaseDate () {
-      let date = null
-      if (this.item.media_type === 'movie') {
-        date = this.item.release_date
-      } else if (this.item.media_type === 'tv') {
-        date = this.item.first_air_date
-      }
-
-      if (!date) {
-        return this.$i18n.t('mediaCard.' + this.item.media_type + '.dateNotFound')
-      }
-      let moment = this.$moment(date)
-      let formated = moment.format('YYYY')
-      if (formated) {
-        return formated
-      } else {
-        return this.$i18n.t('mediaCard.' + this.item.media_type + '.dateNotFound')
-      }
-    },
     rating () {
       return this.item.vote_average
     },
     backdrop () {
-      if (this.item.backdrop_path) {
-        return 'https://image.tmdb.org/t/p/w500' + this.item.backdrop_path
-      } else {
-        return ''
-      }
-    },
-    addIcon () {
-      return addIcon
-    },
-    downloadedIcon () {
-      return downloadedIcon
-    },
-    removeIcon () {
-      return removeIcon
-    },
-    infoIcon () {
-      return infoIcon
-    },
-    priorityIcon () {
-      return priorityIcon
-    },
-    editIcon () {
-      return editIcon
-    },
-    redownloadIcon () {
-      return redownloadIcon
+      return this.getBackdrop(this.item, 'w500')
     },
     backdropPlaceholder () {
-      if (this.item.media_type === 'movie') {
-        return this.$store.getters.fallbackMovieBackdrop
-      } else if (this.item.media_type === 'tv') {
-        return this.$store.getters.fallbackTvBackdrop
-      }
+      return this.getBackdropPlaceholder(this.item.media_type)
     },
-    selected () {
+    selectedItem () {
       let selectedItem = this.$store.getters.item(this.item.key)
-      return selectedItem && selectedItem.priority > 0
+      return selectedItem
     },
-    downloaded () {
+    isSelected () {
+      return this.selectedItem && this.selectedItem.priority > 0
+    },
+    isDownloaded () {
       let selectedItem = this.$store.getters.item(this.item.key)
       if (selectedItem) {
         return selectedItem.downloaded
       }
       return false
+    },
+    infoUrl () {
+      let infoUrl = '/' + this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
+      return infoUrl
+    },
+    movieDbUrl () {
+      let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
+      return url
     }
   },
   methods: {
@@ -187,42 +132,16 @@ export default {
       if (this.editModeActive) {
         return
       }
-      this.openInformationUrl()
-    },
-    openInformationUrl () {
       this.destroyTooltips()
-      let target = this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
-      this.$router.push({
-        path: target
-      })
-    },
-    openMovieDbUrl () {
-      let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
-      this.open(url, '_blank')
+      this.routeTo(this.infoUrl)
     },
     toggleItem () {
       this.destroyTooltips()
-
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem && selectedItem.priority > 0) {
-        if (selectedItem.downloaded) {
-          return
-        }
-        // this.$store.dispatch('removeItem', selectedItem.key)
-        selectedItem.priority = 0
-        this.$store.dispatch('updateItem', selectedItem)
-        this.editModeInternal = false
+      this.editModeInternal = false
+      if (this.isSelected) {
+        this.removeItem(this.item.key)
       } else {
-        this.item.priority = this.defaultPriority
-        this.$store.dispatch('addItem', this.item)
-      }
-    },
-    destroyTooltips () {
-      // quite a hack, but works
-      let tooltips = document.getElementsByClassName('tooltip')
-      for (let i = tooltips.length - 1; i >= 0; i--) {
-        // Remove first element (at [0]) repeatedly
-        tooltips[0].parentNode.removeChild(tooltips[0])
+        this.addItem(this.item)
       }
     }
   },
@@ -236,12 +155,6 @@ export default {
             editPriority: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
             info: 'Zusätzliche Informationen'
-          },
-          movie: {
-            dateNotFound: '-'
-          },
-          tv: {
-            dateNotFound: '-'
           }
         }
       },
@@ -253,12 +166,6 @@ export default {
             editPriority: 'Change priority',
             downloaded: 'Downloaded',
             info: 'Additional information'
-          },
-          movie: {
-            dateNotFound: '-'
-          },
-          tv: {
-            dateNotFound: '-'
           }
         }
       }

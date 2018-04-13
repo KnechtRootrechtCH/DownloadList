@@ -17,49 +17,21 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-
-import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
-import linkIcon from '@fortawesome/fontawesome-free-solid/faLink'
-import globeIcon from '@fortawesome/fontawesome-free-solid/faGlobe'
-import movieIcon from '@fortawesome/fontawesome-free-solid/faFilm'
-import tvIcon from '@fortawesome/fontawesome-free-solid/faTv'
-import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
-import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
-import starIcon from '@fortawesome/fontawesome-free-solid/faStar'
-import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
-import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
-import netflixIcon from '@fortawesome/fontawesome-free-solid/faPlayCircle'
-import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemAction',
-  props: ['label', 'icon', 'isActive', 'isClickable', 'color'],
+  props: ['label', 'iconType', 'isActive', 'isClickable', 'color'],
+  mixins: [IconsMixin],
   data () {
     return {
     }
   },
   components: {
-    FontAwesomeIcon
   },
   computed: {
     actionIcon () {
-      switch (this.icon) {
-        case 'info': return infoIcon
-        case 'link': return linkIcon
-        case 'globe': return globeIcon
-        case 'movie': return movieIcon
-        case 'tv': return tvIcon
-        case 'add': return addIcon
-        case 'remove': return removeIcon
-        case 'star': return starIcon
-        case 'downloaded': return downloadedIcon
-        case 'redownload': return redownloadIcon
-        case 'comment': return commentIcon
-        case 'netflix': return netflixIcon
-        default: return defaultIcon
-      }
+      return this.icon(this.iconType)
     },
     internalIcon () {
       return false // return this.icon === 'netflix'

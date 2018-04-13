@@ -3,7 +3,7 @@
     <b-container fluid class="media-container">
       <transition-group name="media-grid" tag="div" class="row media-row">
         <b-col
-        v-for="(item) in sortedItems" :key="item.id"
+        v-for="item in sortedItems" :key="item.id"
         cols="12" sm="12" md="4" lg="3" xl="3"
         class="media-item">
           <mediaCard
@@ -23,9 +23,11 @@
 
 <script>
 import MediaCard from './MediaCard'
+import UtilsMixin from '../mixins/utils'
 
 export default {
   name: 'MediaGrid',
+  mixins: [UtilsMixin],
   props: ['items',
     'sort',
     'filter',
@@ -64,10 +66,10 @@ export default {
       if (this.filter === null) {
         return true
       }
-      if (!this.filter.movie && item.media_type === 'movie') {
+      if (!this.filter.movie && this.isMovie(item)) {
         return false
       }
-      if (!this.filter.tv && item.media_type === 'tv') {
+      if (!this.filter.tv && this.isTv(item)) {
         return false
       }
 
@@ -130,23 +132,6 @@ export default {
       if (titleA > titleB) return 1
       if (titleA < titleB) return -1
       return 0
-    },
-    getReleaseDateMoment (item) {
-      let date = null
-      if (item.media_type === 'movie') {
-        date = item.release_date
-      } else if (item.media_type === 'tv') {
-        date = item.first_air_date
-      }
-      let moment = this.$moment(date)
-      return moment
-    },
-    getTitle (item) {
-      if (item.media_type === 'movie') {
-        return item.title
-      } else if (item.media_type === 'tv') {
-        return item.name
-      }
     }
   },
   i18n: {

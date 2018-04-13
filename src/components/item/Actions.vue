@@ -1,56 +1,55 @@
 <template>
   <b-list-group>
       <action
-      v-if="details.homepage && isAvailableOnNetflix"
+      v-if="isAvailableOnNetflix(details)"
       v-bind:label="$t('item.action.netflix')"
       v-bind:isClickable="true"
       v-bind:isActive="false"
       v-bind:color="constants.COLOR.NETFLIX_RED"
-      icon="netflix"
-      @click.native="open(details.homepage)"></action>
+      iconType="play"
+      @click.native="openNetflixUrl()"></action>
     <priority
-      v-if="selected && !downloaded"
+      v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.priority')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.PURPLE"
       v-bind:itemKey="item.key"
       v-bind:current="item.priority"
-      icon="star"
-      @click.native="setDownloaded(false)"></priority>
+      iconType="star"></priority>
     <action
-      v-if="!selected"
+      v-if="!isSelected"
       v-bind:label="$t('item.action.select')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.BLUE"
-      icon="add"
-      @click.native="setSelected(true)"></action>
+      iconType="plus"
+      @click.native="addItem(details, mediaType)"></action>
     <action
-      v-if="selected && !downloaded"
+      v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.markDownloaded' + mediaType)"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.GREEN"
-      icon="downloaded"
-      @click.native="setDownloaded(true)"></action>
+      iconType="check"
+      @click.native="setDownloaded(item.key, true)"></action>
     <action
-      v-if="selected && downloaded"
+      v-if="isSelected && isDownloaded"
       v-bind:label="$t('item.action.redownload')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.PURPLE"
-      icon="redownload"
-      @click.native="setDownloaded(false)"></action>
+      iconType="redo"
+      @click.native="setDownloaded(item.key, false)"></action>
     <action
-      v-if="selected && !downloaded"
+      v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.deselect')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.RED"
-      icon="remove"
-      @click.native="setSelected(false)"></action>
+      iconType="minus"
+      @click.native="removeItem(item.key)"></action>
     <action
-      v-if="selected"
+      v-if="isSelected"
       v-bind:label="$t('item.action.comment')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.DARKGREY"
-      icon="comment"
+      iconType="comment"
       @click.native="addComment()"></action>
   </b-list-group>
 </template>
@@ -76,58 +75,27 @@ export default {
     priority () {
       if (this.item) {
         return this.item.priority
-      } else {
-        return 0
       }
     },
-    selected () {
+    isSelected () {
       return this.item && this.item.priority > 0
     },
-    downloaded () {
+    isDownloaded () {
       if (this.item) {
         return this.item.downloaded
-      }
-      return false
-    },
-    movieDbUrl () {
-      return 'https://www.themoviedb.org/' + this.mediaType + '/' + this.details.id
-    },
-    homepage () {
-      return this.details.homepage
-    },
-    isAvailableOnNetflix () {
-      if (this.details.homepage) {
-        return this.details.homepage.includes('www.netflix.com/')
       }
       return false
     }
   },
   methods: {
-    open (url) {
-      let win = window.open(url, '_blank')
-      win.focus()
-    },
-    setSelected (select) {
-      if (!select) {
-        // this.$store.dispatch('removeItem', this.item.key)
-        this.item.priority = 0
-        this.$store.dispatch('updateItem', this.item)
-      } else {
-        this.details.priority = this.constants.PRIORITY.DEFAULT
-        this.details.media_type = this.mediaType
-        this.details.key = this.mediaType + ':' + this.details.id
-        this.$store.dispatch('updateItem', this.details)
-      }
-    },
-    setDownloaded (downloaded) {
-      if (this.item) {
-        this.$store.dispatch('setItemDownloaded', {
-          key: this.item.key,
-          downloaded: downloaded})
-      }
-    },
     addComment () {
       this.$emit('addComment')
+    },
+    openNetflixUrl () {
+      let netflixUrl = this.getNetflixUrl(this.details)
+      if (netflixUrl) {
+        this.openUrl(netflixUrl)
+      }
     }
   },
   i18n: {

@@ -1,67 +1,46 @@
 <template>
   <div class="overlay" v-bind:class="{ 'overlay-active' : editMode }">
-    <div class="overlay-content">{{ $t('mediaCard.changepriority') }}</div>
-    <div class="overlay-content">
+    <div v-if="showPriorityControls" class="overlay-content">{{ $t('mediaCard.changepriority') }}</div>
+    <div v-if="showPriorityControls" class="overlay-content">
         <font-awesome-icon
-          v-if="showPriorityControls"
-          :icon="priorityIcon"
+          v-for="p in priorities"
+          :key="p"
+          :icon="icon('star')"
           class="overlay-icon"
-          v-bind:class="{ 'inactive': !hasPriority(3), 'highlight': hoverPriorityIcon(3) }"
-          @click.stop="setPriority(3)" @mouseover="hoverPriority = 3" @mouseout="hoverPriority = 4"
-          v-bind:title="$t('mediaCard.tooltip.priority3')"/>
-        <font-awesome-icon
-          v-if="showPriorityControls"
-          :icon="priorityIcon"
-          class="overlay-icon"
-          v-bind:class="{ 'inactive': !hasPriority(2), 'highlight': hoverPriorityIcon(2) }"
-          @click.stop="setPriority(2)" @mouseover="hoverPriority = 2" @mouseout="hoverPriority = 4"
-          v-bind:title="$t('mediaCard.tooltip.priority2')"/>
-        <font-awesome-icon
-          v-if="showPriorityControls"
-          :icon="priorityIcon"
-          class="overlay-icon"
-          v-bind:class="{ 'inactive': !hasPriority(1), 'highlight': hoverPriorityIcon(1) }"
-          @click.stop="setPriority(1)" @mouseover="hoverPriority = 1" @mouseout="hoverPriority = 4"
-          v-bind:title="$t('mediaCard.tooltip.priority1')"/>
+          v-bind:class="{ 'inactive': !hasPriority(p), 'highlight': hoverPriorityIcon(p) }"
+          @click.stop="setPriority(item.key, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
     </div>
     <div v-if="showReDownloadControls && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
     <div v-if="showReDownloadControls && !downloaded" class="overlay-content">
       <font-awesome-icon
-        :icon="downloadedIcon"
+        :icon="icon('check')"
         class="card-icon overlay-icon"
-        @click.stop="setDownloaded(true)"
-        v-bind:title="$t('mediaCard.markAsDownloaded')"/>
+        @click.stop="setDownloaded(item.key, true)"/>
     </div>
     <div v-if="showReDownloadControls && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
     <div v-if="showReDownloadControls && downloaded" class="overlay-content">
       <font-awesome-icon
-        :icon="redownloadIcon"
+        :icon="icon('redo')"
         class="card-icon overlay-icon"
-        @click.stop="setDownloaded(false)"
-        v-bind:title="$t('mediaCard.redownload')"/>
+        @click.stop="setDownloaded(item.key, false)"/>
     </div>
   </div>
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-
-import priorityIcon from '@fortawesome/fontawesome-free-solid/faStar'
-import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import UtilsMixin from '../mixins/utils'
+import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCardEditOverlay',
   props: ['item', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
+  mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
-      lowestPriority: 3,
-      defaultPriority: 2,
-      hoverPriority: 10
+      hoverPriority: 100
     }
   },
   components: {
-    FontAwesomeIcon
   },
   computed: {
     priority () {
@@ -69,17 +48,8 @@ export default {
       if (selectedItem) {
         return selectedItem.priority
       } else {
-        return 0
+        return this.constants.PRIORITY.NONE
       }
-    },
-    downloadedIcon () {
-      return downloadedIcon
-    },
-    priorityIcon () {
-      return priorityIcon
-    },
-    redownloadIcon () {
-      return redownloadIcon
     },
     downloaded () {
       let selectedItem = this.$store.getters.item(this.item.key)
@@ -87,6 +57,10 @@ export default {
         return selectedItem.downloaded
       }
       return false
+    },
+    selectedItem () {
+      let selectedItem = this.$store.getters.item(this.item.key)
+      return selectedItem
     }
   },
   methods: {
@@ -97,50 +71,14 @@ export default {
       }
       return false
     },
-    setPriority (priority) {
-      this.destroyTooltips()
-
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        this.$store.dispatch('setItemPriority', {
-          key: selectedItem.key,
-          priority: priority})
-      } else {
-        this.item.priority = priority
-        this.$store.dispatch('addItem', this.item)
-      }
-    },
-    setDownloaded (downloaded) {
-      this.destroyTooltips()
-
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        this.$store.dispatch('setItemDownloaded', {
-          key: selectedItem.key,
-          downloaded: downloaded})
-      }
-    },
     hoverPriorityIcon (priority) {
       return priority >= this.hoverPriority
-    },
-    destroyTooltips () {
-      // quite a hack, but works
-      let tooltips = document.getElementsByClassName('tooltip')
-      for (let i = tooltips.length - 1; i >= 0; i--) {
-        // Remove first element (at [0]) repeatedly
-        tooltips[0].parentNode.removeChild(tooltips[0])
-      }
     }
   },
   i18n: {
     messages: {
       de: {
         mediaCard: {
-          tooltip: {
-            priority3: 'Tief',
-            priority2: 'Mittel',
-            priority1: 'Hoch'
-          },
           changepriority: 'Priorität',
           redownload: 'Erneut Herunterladen',
           markAsDownloaded: 'Als heruntergeladen markieren'
@@ -148,11 +86,6 @@ export default {
       },
       en: {
         mediaCard: {
-          tooltip: {
-            priority3: 'Low',
-            priority2: 'Medium',
-            priority1: 'High'
-          },
           changepriority: 'Priority',
           redownload: 'Mark for Re-Download',
           markAsDownloaded: 'Mark as downloaded'

@@ -3,86 +3,49 @@
     button
     class="action"
     @click="increase()"
-    v-bind:class="[{ active : isActive, 'clickable' : isClickable, 'inverted' : this.isActive }, 'button-' + this.color]">
+    v-bind:class="[{ 'clickable' : isClickable, 'inverted' : this.isActive }, 'button-' + this.color]">
     <font-awesome-icon
+      v-for="p in priorities"
+      :key="p"
       :icon="actionIcon"
       class="icon clickable"
-      v-bind:class="[{ 'highlighted' : has(3) }, icon]"
-      @click.stop="set(3)" @mouseover="priority = 3" @mouseout="priority = 4"/>
-    <font-awesome-icon
-      :icon="actionIcon"
-      class="icon clickable"
-      v-bind:class="[{ 'highlighted' : has(2) }, icon]"
-      @click.stop="set(2)" @mouseover="priority = 2" @mouseout="priority = 3"/>
-    <font-awesome-icon
-      :icon="actionIcon"
-      class="icon clickable"
-      v-bind:class="[{ 'highlighted' : has(1) }, icon]"
-      @click.stop="set(1)" @mouseover="priority = 1" @mouseout="priority = 2"/>
+      v-bind:class="[{ 'highlighted' : has(p) }, icon]"
+      @click.stop="setPriority(itemKey, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
       <span class="label">{{ label.toUpperCase() }}</span>
   </b-list-group-item>
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-
-import infoIcon from '@fortawesome/fontawesome-free-solid/faInfoCircle'
-import linkIcon from '@fortawesome/fontawesome-free-solid/faLink'
-import globeIcon from '@fortawesome/fontawesome-free-solid/faGlobe'
-import movieIcon from '@fortawesome/fontawesome-free-solid/faFilm'
-import tvIcon from '@fortawesome/fontawesome-free-solid/faTv'
-import addIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
-import removeIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
-import starIcon from '@fortawesome/fontawesome-free-solid/faStar'
-import redownloadIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
-import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
+import UtilsMixin from '../../mixins/utils'
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemPriority',
-  props: ['itemKey', 'current', 'label', 'icon', 'isClickable', 'isActive', 'color'],
+  props: ['itemKey', 'current', 'label', 'iconType', 'isClickable', 'isActive', 'color'],
+  mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
-      min: 3,
-      priority: 10
+      hoverPriority: 10
     }
   },
   components: {
-    FontAwesomeIcon
   },
   computed: {
     actionIcon () {
-      switch (this.icon) {
-        case 'info': return infoIcon
-        case 'link': return linkIcon
-        case 'globe': return globeIcon
-        case 'movie': return movieIcon
-        case 'tv': return tvIcon
-        case 'add': return addIcon
-        case 'remove': return removeIcon
-        case 'star': return starIcon
-        case 'downloaded': return downloadedIcon
-        case 'redownload': return redownloadIcon
-        default: return defaultIcon
-      }
+      return this.icon(this.iconType)
     }
   },
   methods: {
     has (priority) {
-      return this.current <= priority || this.priority <= priority
-    },
-    set (priority) {
-      this.$store.dispatch('setItemPriority', {
-        key: this.itemKey,
-        priority: priority})
-      this.priority = 4
+      return this.current <= priority || this.hoverPriority <= priority
     },
     increase () {
       let priority = this.current - 1
-      if (priority === 0) {
-        priority = this.min
+      if (priority < this.constants.PRIORITY.MAX) {
+        priority = this.constants.PRIORITY.MIN
       }
-      this.set(priority)
+      this.setPriority(this.itemKey, priority)
+      this.hoverPriority = this.constants.PRIORITY.MIN + 1
     }
   }
 }

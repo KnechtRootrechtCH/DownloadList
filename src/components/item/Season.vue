@@ -8,7 +8,7 @@
     <div class="download-status">
       <span class="episodes">0/{{ season.episode_count }} downloaded</span>
       <font-awesome-icon
-      :icon="todoIcon"
+      :icon="icon('exclamation')"
       class="icon todo"/>
     </div>
     <!--
@@ -25,29 +25,20 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-
-import todoIcon from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
-import doneIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemSeason',
   props: ['item', 'season'],
+  mixins: [IconsMixin],
   data () {
     return {
       filterSpecials: true
     }
   },
   components: {
-    FontAwesomeIcon
   },
   computed: {
-    todoIcon () {
-      return todoIcon
-    },
-    doneIcon () {
-      return doneIcon
-    },
     poster () {
       if (this.season.poster_path) {
         return 'https://image.tmdb.org/t/p/w185' + this.season.poster_path
