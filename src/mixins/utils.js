@@ -108,8 +108,8 @@ export default {
       // https://dummyimage.com/200x300/CC0000/ffffff&text=dummyimage.com+rocks!
       return 'https://dummyimage.com/' + size.width + 'x' + size.height + '/' + background + '/' + textColor + '&text=' + text
     },
-    getMovieDbUrl (mediaType, id) {
-      let url = 'https://www.themoviedb.org/' + mediaType + '/' + id
+    getMovieDbUrl (item) {
+      let url = 'https://www.themoviedb.org/' + item.media_type + '/' + item.id
       return url
     },
     isAvailableOnNetflix (item) {
