@@ -6,12 +6,7 @@
     <font-awesome-icon
       :icon="actionIcon"
       class="icon"
-      v-if="!internalIcon"
       v-bind:class="icon"/>
-    <!-- NETFLIX CUSTOM ICON
-      <img v-if="icon === 'netflix' && hover" src="../assets/netflix-white.svg" class="icon">
-    <img v-if="icon === 'netflix' && !hover" src="../assets/netflix-red.svg" class="icon">
-    -->
     <span class="label">{{ label }}</span>
   </b-list-group-item>
 </template>
@@ -32,9 +27,6 @@ export default {
   computed: {
     actionIcon () {
       return this.icon(this.iconType)
-    },
-    internalIcon () {
-      return false // return this.icon === 'netflix'
     }
   }
 }

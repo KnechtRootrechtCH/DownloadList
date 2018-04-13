@@ -71,17 +71,42 @@ export default {
         tooltips[0].parentNode.removeChild(tooltips[0])
       }
     },
-    getBackdrop (item, size) {
-      if (this.item.backdrop_path) {
-        return 'https://image.tmdb.org/t/p/' + size + item.backdrop_path
+    getBackdropImage (item, size) {
+      if (item && item.backdrop_path) {
+        return this.getMovieDbImage(item.backdrop_path, size)
+      } else {
+        return this.getBackdropPlaceholder(size)
       }
     },
-    getBackdropPlaceholder (mediaType) {
-      if (mediaType === this.constants.MEDIA_TYPE.MOVIE) {
-        return this.$store.getters.fallbackMovieBackdrop
-      } else if (mediaType === this.constants.MEDIA_TYPE.TV) {
-        return this.$store.getters.fallbackTvBackdrop
+    getProfileImage (person, size) {
+      if (person && person.profile_path) {
+        return this.getMovieDbImage(person.profile_path, size)
+      } else {
+        return this.getProfilePlaceholder(size)
       }
+    },
+    getPosterImage (item, size) {
+      if (item && item.poster_path) {
+        return this.getMovieDbImage(item.poster_path, size)
+      } else {
+        return this.getPosterPlaceholder(item.media_type, size)
+      }
+    },
+    getMovieDbImage (path, size) {
+      return 'https://image.tmdb.org/t/p/' + size.key + path
+    },
+    getBackdropPlaceholder (size) {
+      return this.getPlaceholderImage(size, '+', '444499', 'ededed')
+    },
+    getProfilePlaceholder (size) {
+      return this.getPlaceholderImage(size, '??', '444499', 'ededed')
+    },
+    getPosterPlaceholder (size) {
+      return this.getPlaceholderImage(size, '+', '495057', 'ededed')
+    },
+    getPlaceholderImage (size, text, background, textColor) {
+      // https://dummyimage.com/200x300/CC0000/ffffff&text=dummyimage.com+rocks!
+      return 'https://dummyimage.com/' + size.width + 'x' + size.height + '/' + background + '/' + textColor + '&text=' + text
     },
     getMovieDbUrl (mediaType, id) {
       let url = 'https://www.themoviedb.org/' + mediaType + '/' + id

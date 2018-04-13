@@ -3,14 +3,14 @@
     <div class="content" v-if="cast && castFiltered.length > 0">
       <h5 class="label">{{ $t('item.cast')}}</h5>
       <swiper :options="swiperOptions" ref="mySwiper">
-        <swiper-slide v-for="(person) in castFiltered" :key="person.credit_id">
+        <swiper-slide v-for="(person) in cast" :key="person.credit_id">
           <div class="card border-dark media-card bg-dark text-faded">
               <div class="card-body">
                 <div class="actor"><a v-bind:href="'https://www.themoviedb.org/person/' + person.id" target="_blank">{{ person.name }}</a></div>
                 <div class="character">{{ person.character }}</div>
               </div>
               <div class="card-img-bottom">
-                <progressive-img class="photo" v-bind:src="picture(person)" :blur="10"></progressive-img>
+                <progressive-img class="photo" v-bind:src="picture(person)" v-bind:fallback="picturePlaceholder" :blur="10"></progressive-img>
               </div>
             </div>
         </swiper-slide>
@@ -24,9 +24,12 @@
 </template>
 
 <script>
+import UtilsMixin from '../../mixins/utils'
+
 export default {
   name: 'ItemCast',
   props: ['cast'],
+  mixins: [UtilsMixin],
   data () {
     return {
       swiperOptions: {
@@ -74,6 +77,9 @@ export default {
     castFiltered () {
       let filtered = this.cast.filter(c => c.profile_path !== null)
       return filtered
+    },
+    picturePlaceholder () {
+      return this.getProfilePlaceholder(this.constants.IMAGESIZE.PROFILE.W185)
     }
   },
   methods: {
@@ -82,11 +88,7 @@ export default {
       win.focus()
     },
     picture (person) {
-      if (person.profile_path) {
-        return 'https://image.tmdb.org/t/p/w185' + person.profile_path
-      } else {
-        return ''
-      }
+      return this.getProfileImage(person, this.constants.IMAGESIZE.PROFILE.W185)
     }
   },
   i18n: {

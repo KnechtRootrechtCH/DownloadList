@@ -99,10 +99,10 @@ export default {
       return this.item.vote_average
     },
     backdrop () {
-      return this.getBackdrop(this.item, 'w500')
+      return this.getBackdropImage(this.item, this.constants.IMAGESIZE.BACKDROP.W500)
     },
     backdropPlaceholder () {
-      return this.getBackdropPlaceholder(this.item.media_type)
+      return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W500)
     },
     selectedItem () {
       let selectedItem = this.$store.getters.item(this.item.key)

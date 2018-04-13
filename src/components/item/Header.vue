@@ -9,7 +9,7 @@
         <font-awesome-icon
         v-b-tooltip
         v-if="downloaded"
-        :icon="downloadedIcon"
+        :icon="icon('check')"
         class="icon"
         v-bind:title="$t('item.downloaded')"/>
       </div>
@@ -25,97 +25,46 @@
 </template>
 
 <script>
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import downloadedIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
+import UtilsMixin from '../../mixins/utils'
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemHeader',
   props: ['item', 'details', 'mediaType'],
+  mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
     }
   },
   components: {
-    FontAwesomeIcon
   },
   computed: {
-    downloadedIcon () {
-      return downloadedIcon
-    },
     title () {
-      if (this.mediaType === 'movie') {
-        return this.details.title
-      } else if (this.mediaType === 'tv') {
-        return this.details.name
-      }
+      return this.getTitle(this.details)
     },
     originalTitle () {
-      if (this.mediaType === 'movie') {
-        return this.details.original_title
-      } else if (this.mediaType === 'tv') {
-        return this.details.original_name
-      }
-    },
-    release () {
-      let date = null
-      if (this.mediaType === 'movie') {
-        date = this.details.release_date
-      } else if (this.mediaType === 'tv') {
-        date = this.details.first_air_date
-      }
-      if (date) {
-        return this.$moment(date)
-      }
-      return null
+      return this.getOriginalTitle(this.details)
     },
     releaseYear () {
-      let date = this.release
-      if (date) {
-        return date.format('YYYY')
-      }
+      return this.getReleaseDateFormated('YYYY')
     },
     poster () {
-      // https://image.tmdb.org/t/p/w300_and_h450_bestv2/rzRwTcFvttcN1ZpX2xv4j3tSdJu.jpg
-      if (this.details.poster_path) {
-        return 'https://image.tmdb.org/t/p/w185' + this.details.poster_path
-      } else {
-        return ''
-      }
+      return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
     },
     posterPlaceholder () {
-      // TODO: get correct placeholder (poster)
-      return null
-      /*
-      if (this.mediaType === 'movie') {
-        return this.$store.getters.fallbackMovieBackdrop
-      } else if (this.mediaType === 'tv') {
-        return this.$store.getters.fallbackTvBackdrop
-      }
-      */
+      return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
     },
     backdrop () {
-      // TODO: get correct placeholder (size)
-      if (this.details.backdrop_path) {
-        return 'https://image.tmdb.org/t/p/w1400_and_h450_face' + this.details.backdrop_path
-      } else {
-        return ''
-      }
+      return this.getBackdropImage(this.details, this.constants.IMAGESIZE.BACKDROP.W1400)
     },
     backdropPlaceholder () {
-      if (this.mediaType === 'movie') {
-        return this.$store.getters.fallbackMovieBackdrop
-      } else if (this.mediaType === 'tv') {
-        return this.$store.getters.fallbackTvBackdrop
-      }
+      return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W1400)
     },
     downloaded () {
       if (this.item) {
         return this.item.downloaded
       }
       return false
-    },
-    isAvailableOnNetflix () {
-      return this.details.homepage.includes('www.netflix.com/')
     }
   },
   methods: {

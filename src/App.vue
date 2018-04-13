@@ -113,16 +113,16 @@ a:hover {
   background: #CC22BB;
 }
 .button-darkgrey {
-  color: rgb(73, 80, 87);
+  color: #495057;
   background: #f0f0f0;
 }
 .button-darkgrey.inverted {
   color:#f0f0f0;
-  background: rgb(73, 80, 87);
+  background: #495057;
 }
 .button-darkgrey:hover {
   color:#f0f0f0;
-  background: rgb(73, 80, 87);
+  background: #495057;
 }
 .button-grey {
   color: #666666;
