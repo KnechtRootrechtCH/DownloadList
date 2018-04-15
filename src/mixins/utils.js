@@ -146,10 +146,10 @@ export default {
           this.$warn('Unable to generate key for item', item)
         }
       }
-      this.$store.dispatch('updateItem', item)
+      this.$store.dispatch('addItem', item)
     },
     removeItem (key) {
-      this.setPriority(key, this.constants.PRIORITY.NONE)
+      this.$store.dispatch('removeItem', key)
     }
   }
 }

@@ -4,6 +4,7 @@ import firebase from '../firebase'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Constants from '../constants'
+import Helpers from '../helpers'
 
 Vue.use(Vuex)
 Vue.use(VueAxios, axios)
@@ -110,29 +111,52 @@ export const store = new Vuex.Store({
       })
     },
     getFirebaseUserData: (context) => {
-      let time = new Date()
-      firebase.database.ref('data/' + context.getters.dataUserId + '/access/').push(time.toString())
+      let dateString = Helpers.getDateString()
+      let timeString = Helpers.getTimeString()
+      firebase.database.ref('data/' + context.getters.dataUserId + '/access/' + dateString + '/' + timeString).set(new Date().toString())
       firebase.database.ref('data/' + context.getters.dataUserId + '/mail').set(context.getters.user.email)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/').on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
       })
     },
 
+    logAction: (context, payload) => {
+      let dateString = Helpers.getDateString()
+      let timeString = Helpers.getTimeString()
+      firebase.database.ref('data/' + context.getters.dataUserId + '/actions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
+    },
     addItem: (context, item) => {
+      let change = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
+      context.dispatch('logAction', change)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
     updateItem: (context, item) => {
+      let change = {time: new Date().toString(), action: 'updateItem', payload: item, key: item.key}
+      context.dispatch('logAction', change)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
+    removeItem: (context, key) => {
+      let change = {time: new Date().toString(), action: 'removeItem', payload: null, key: key}
+      context.dispatch('logAction', change)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).update({
+        'priority': Constants.PRIORITY.NONE
+      })
+    },
     setItemPriority: (context, payload) => {
+      let change = {time: new Date().toString(), action: 'setItemPriority', payload: payload.priority, key: payload.key}
+      context.dispatch('logAction', change)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'priority': payload.priority
       })
     },
     addItemComment: (context, payload) => {
+      let change = {time: new Date().toString(), action: 'addItemComment', payload: payload.comment, key: payload.key}
+      context.dispatch('logAction', change)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key + '/comments/').push(payload.comment)
     },
     setItemDownloaded: (context, payload) => {
+      let change = {time: new Date().toString(), action: 'setItemDownloaded', payload: payload.downloaded, key: payload.key}
+      context.dispatch('logAction', change)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'downloaded': payload.downloaded
       })
