@@ -57,106 +57,106 @@ body {
 .app-content {
   padding-top:58px;
 }
-a {
+.app-content a {
   color: #ffbf58;
 }
-a:hover {
+.app-content a:hover {
   color: #ffbf58;
 }
 
-.button-green {
+.app-content .button-green {
   color: #339933;
   background: #f0f0f0;
 }
-.button-green.inverted {
+.app-content .button-green.inverted {
   color:#f0f0f0;
   background: #339933;
 }
-.button-green:hover {
+.app-content .button-green:hover {
   color:#f0f0f0;
   background: #339933;
 }
-.button-blue {
+.app-content .button-blue {
   color: #444499;
   background: #f0f0f0;
 }
-.button-blue.inverted {
+.app-content .button-blue.inverted {
   color:#f0f0f0;
   background: #444499;
 }
-.button-blue:hover {
+.app-content .button-blue:hover {
   color:#f0f0f0;
   background: #444499;
 }
-.button-red {
+.app-content .button-red {
   color: #CC3333;
   background: #f0f0f0;
 }
-.button-red.inverted {
+.app-content .button-red.inverted {
   color:#f0f0f0;
   background: #CC3333;
 }
-.button-red:hover {
+.app-content .button-red:hover {
   color:#f0f0f0;
   background: #CC3333;
 }
-.button-purple {
+.app-content .button-purple {
   color: #CC22BB;
   background: #f0f0f0;
 }
-.button-purple.inverted {
+.app-content .button-purple.inverted {
   color:#f0f0f0;
   background: #CC22BB;
 }
-.button-purple:hover {
+.app-content .button-purple:hover {
   color:#f0f0f0;
   background: #CC22BB;
 }
-.button-darkgrey {
+.app-content .button-darkgrey {
   color: #495057;
   background: #f0f0f0;
 }
-.button-darkgrey.inverted {
+.app-content .button-darkgrey.inverted {
   color:#f0f0f0;
   background: #495057;
 }
-.button-darkgrey:hover {
+.app-content .button-darkgrey:hover {
   color:#f0f0f0;
   background: #495057;
 }
-.button-grey {
+.app-content .button-grey {
   color: #666666;
   background: #f0f0f0;
 }
-.button-grey.inverted {
+.app-content .button-grey.inverted {
   color:#f0f0f0;
   background: #666666;
 }
-.button-grey:hover {
+.app-content .button-grey:hover {
   color:#f0f0f0;
   background: #666666;
 }
-.button-netflix-red {
+.app-content .button-netflix-red {
   color: #B9090B;
   background: #f0f0f0;
 }
-.button-netflix-red.inverted {
+.app-content .button-netflix-red.inverted {
   color:#f0f0f0;
   background: #B9090B;
 }
-.button-netflix-red:hover {
+.app-content .button-netflix-red:hover {
   color:#f0f0f0;
   background: #B9090B;
 }
-.button-gold {
+.app-content .button-gold {
   color: #dd9c25;
   background: #f0f0f0;
 }
-.button-gold.inverted {
+.app-content .button-gold.inverted {
   color:#f0f0f0;
   background: #dd9c25;
 }
-.button-gold:hover {
+.app-content .button-gold:hover {
   color:#f0f0f0;
   background: #dd9c25;
 }

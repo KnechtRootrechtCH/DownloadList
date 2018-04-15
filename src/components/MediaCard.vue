@@ -20,7 +20,7 @@
               <font-awesome-icon
                 v-b-tooltip
                 :icon="icon('info')"
-                class="card-icon"
+                class="card-icon info-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
           </div>
