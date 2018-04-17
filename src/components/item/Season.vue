@@ -1,44 +1,62 @@
 <template>
-  <b-list-group-item class="season" variant="dark">
-
-    <span class="label">{{ season.name }}</span>
-    <div class="air-date">
-      <span class="episodes">Aired {{ airDate }}</span>
-    </div>
-    <div class="download-status">
-      <span class="episodes">0/{{ season.episode_count }} downloaded</span>
-      <font-awesome-icon
-      :icon="icon('exclamation')"
-      class="icon todo"/>
-    </div>
-    <!--
-    <div class="poster-section">
-      <progressive-img class="poster" v-bind:src="poster" :blur="10"></progressive-img>
-    </div>
-    <div class="content-section">
-      <h5 class="label">{{ season.name }}</h5>
-      <div class="content"><span class="label">{{ $t('item.season.airDate')}}:&nbsp;</span>{{ airDate }}</div>
-      <div class="content"><span class="label">{{ $t('item.season.episodes')}}:&nbsp;</span>{{ season.episode_count }}</div>
-    </div>
-    -->
-  </b-list-group-item>
+  <div>
+    <b-list-group-item class="season" variant="dark" @click="expanded = !expanded">
+      <span class="label">{{ season.name }}</span>
+      <span class="episodes"> (0/{{ episodeCount }}<span class="d-none d-md-inline">&nbsp;{{ $t('item.season.downloaded')}}</span>)</span>
+      <span class="actions">
+        <font-awesome-icon
+          :icon="icon('check')"
+          @click="toggleSeason"
+          class="icon todo"/>
+        <font-awesome-icon
+          :icon="icon(chevronIcon)"
+          class="icon"/>
+      </span>
+      <!--
+      <div class="poster-section">
+        <progressive-img class="poster" v-bind:src="poster" :blur="10"></progressive-img>
+      </div>
+      <div class="content-section">
+        <h5 class="label">{{ season.name }}</h5>
+        <div class="content"><span class="label">{{ $t('item.season.airDate')}}:&nbsp;</span>{{ airDate }}</div>
+        <div class="content"><span class="label">{{ $t('item.season.episodes')}}:&nbsp;</span>{{ season.episode_count }}</div>
+      </div>
+      -->
+    </b-list-group-item>
+  </div>
 </template>
 
 <script>
 import IconsMixin from '../../mixins/icons'
+import ItemEpisodeList from './EpisodeList'
 
 export default {
   name: 'ItemSeason',
-  props: ['item', 'season'],
+  props: ['id', 'item', 'season'],
   mixins: [IconsMixin],
   data () {
     return {
-      filterSpecials: true
+      expanded: false
     }
   },
   components: {
+    'episode-list': ItemEpisodeList
   },
   computed: {
+    chevronIcon () {
+      if (this.expanded) {
+        return 'chevron-up'
+      } else {
+        return 'chevron-down'
+      }
+    },
+    episodeCount () {
+      if (this.season.episode_count) {
+        return this.season.episode_count
+      } else if (this.season.episodes) {
+        return this.season.episodes.length
+      }
+    },
     poster () {
       if (this.season.poster_path) {
         return 'https://image.tmdb.org/t/p/w185' + this.season.poster_path
@@ -57,6 +75,18 @@ export default {
     }
   },
   methods: {
+    toggleSeason () {
+      console.log('toggle season')
+    }
+  },
+  created () {
+    this.$store.dispatch('getSuggestionSeason', {
+      'id': this.id,
+      'season_number': this.season.season_number
+    })
+    if (this.season.season_number === 1) {
+      this.expanded = true
+    }
   },
   i18n: {
     messages: {
@@ -65,7 +95,8 @@ export default {
 
           season: {
             airDate: 'Ausstrahlung',
-            episodes: 'Episoden'
+            episodes: 'Episoden',
+            downloaded: 'heruntergeladen'
           }
         }
       },
@@ -73,7 +104,8 @@ export default {
         item: {
           season: {
             airDate: 'Air Date',
-            episodes: 'Episodes'
+            episodes: 'Episodes',
+            downloaded: 'downloaded'
           }
         }
       }
@@ -102,12 +134,12 @@ export default {
 .season .label {
   text-transform: uppercase;
 }
-.season .download-status {
-  /* float: right; */
+.season .actions {
+  float: right;
 }
 .season .icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 .season .icon.todo {
   color: darkred;

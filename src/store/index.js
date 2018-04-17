@@ -70,6 +70,16 @@ export const store = new Vuex.Store({
         state._suggestionCrew = null
       }
     },
+    setSuggestionSeason (state, payload) {
+      if (payload.data && payload.data.season_number) {
+        let index = state._suggestionDetails.seasons.findIndex((s) => {
+          return s.season_number === payload.data.season_number
+        })
+        if (index >= 0) {
+          state._suggestionDetails.seasons[index] = payload.data
+        }
+      }
+    },
     setSuggestions (state, payload) {
       state._suggestionsCount = payload.count
       state._suggestionsPage = payload.page
@@ -120,43 +130,45 @@ export const store = new Vuex.Store({
       })
     },
 
-    logAction: (context, payload) => {
+    transactionLog: (context, payload) => {
       let dateString = Helpers.getDateString()
       let timeString = Helpers.getTimeString()
-      firebase.database.ref('data/' + context.getters.dataUserId + '/actions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/transaction').set(payload)
     },
+
     addItem: (context, item) => {
-      let change = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
     updateItem: (context, item) => {
-      let change = {time: new Date().toString(), action: 'updateItem', payload: item, key: item.key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'updateItem', payload: item, key: item.key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
     },
     removeItem: (context, key) => {
-      let change = {time: new Date().toString(), action: 'removeItem', payload: null, key: key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'removeItem', payload: null, key: key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).update({
         'priority': Constants.PRIORITY.NONE
       })
     },
     setItemPriority: (context, payload) => {
-      let change = {time: new Date().toString(), action: 'setItemPriority', payload: payload.priority, key: payload.key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'setItemPriority', payload: payload.priority, key: payload.key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'priority': payload.priority
       })
     },
     addItemComment: (context, payload) => {
-      let change = {time: new Date().toString(), action: 'addItemComment', payload: payload.comment, key: payload.key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'addItemComment', payload: payload.comment, key: payload.key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key + '/comments/').push(payload.comment)
     },
     setItemDownloaded: (context, payload) => {
-      let change = {time: new Date().toString(), action: 'setItemDownloaded', payload: payload.downloaded, key: payload.key}
-      context.dispatch('logAction', change)
+      let transaction = {time: new Date().toString(), action: 'setItemDownloaded', payload: payload.downloaded, key: payload.key}
+      context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
         'downloaded': payload.downloaded
       })
@@ -227,6 +239,21 @@ export const store = new Vuex.Store({
               'data': response.data
             })
             context.commit('setSuggestionCrew', {
+              'data': response.data
+            })
+          }
+        })
+    },
+    getSuggestionSeason: (context, parameters) => {
+      let query = null
+      query = 'https://api.themoviedb.org/3/tv/' + parameters.id + '/season/' + parameters.season_number + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+
+      // console.log(parameters, query)
+
+      axios.get(query).then(
+        (response) => {
+          if (response.status === 200) {
+            context.commit('setSuggestionSeason', {
               'data': response.data
             })
           }

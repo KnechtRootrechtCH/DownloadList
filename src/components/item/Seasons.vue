@@ -3,15 +3,8 @@
     <div class="content">
       <h5 class="label">{{ $t('item.episodeList')}}</h5>
       <b-list-group>
-        <item-season v-for="season in filteredSeasons" :key="season.id" v-bind:item="item" v-bind:season="season"></item-season>
+        <item-season v-for="season in this.details.seasons" :key="season.id" v-bind:id="details.id" v-bind:item="item" v-bind:season="season"></item-season>
       </b-list-group>
-      <!--
-      <b-container fluid>
-        <b-row v-for="season in filteredSeasons" :key="season.id" class="season-row">
-          <item-season v-bind:item="item" v-bind:season="season"></item-season>
-        </b-row>
-      </b-container>
-      -->
     </div>
   </div>
 </template>
@@ -21,22 +14,16 @@ import ItemSeason from './Season'
 
 export default {
   name: 'ItemSeasons',
-  props: ['item', 'seasons'],
+  props: ['item', 'details'],
   data () {
     return {
-      filterSpecials: true
+
     }
   },
   components: {
     'item-season': ItemSeason
   },
   computed: {
-    filteredSeasons () {
-      if (!this.filterSpecials) {
-        return this.seasons
-      }
-      return this.seasons.filter(s => s.season_number > 0)
-    }
   },
   methods: {
 

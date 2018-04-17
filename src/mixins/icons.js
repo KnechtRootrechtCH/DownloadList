@@ -21,6 +21,8 @@ import sortIcon from '@fortawesome/fontawesome-free-solid/faSort'
 import exclamationIcon from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 import playIcon from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
+import chevronUpIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleUp'
+import chevronDownIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleDown'
 
 export default {
   methods: {
@@ -45,6 +47,8 @@ export default {
         case 'exclamation': return exclamationIcon
         case 'play': return playIcon
         case 'comment': return commentIcon
+        case 'chevron-up': return chevronUpIcon
+        case 'chevron-down': return chevronDownIcon
         default: return defaultIcon
       }
     }

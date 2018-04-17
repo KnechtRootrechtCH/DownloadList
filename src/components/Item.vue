@@ -26,7 +26,7 @@
           </b-row>
           <b-row v-if="details.seasons">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <!--<item-seasons v-bind:item="item" v-bind:seasons="details.seasons"></item-seasons>-->
+              <item-seasons v-bind:item="item" v-bind:details="details"></item-seasons>
             </b-col>
           </b-row>
           <b-row>
