@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <b-list-group flush>
 
-  </div>
+  </b-list-group>
 </template>
 
 <script>

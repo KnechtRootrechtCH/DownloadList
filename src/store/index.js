@@ -21,6 +21,7 @@ export const store = new Vuex.Store({
     _suggestionDetails: null,
     _suggestionCast: null,
     _suggestionCrew: null,
+    _suggestionSeasons: {},
     _suggestions: {},
     _suggestionsPage: 0,
     _suggestionsPages: 0,
@@ -71,13 +72,9 @@ export const store = new Vuex.Store({
       }
     },
     setSuggestionSeason (state, payload) {
-      if (payload.data && payload.data.season_number) {
-        let index = state._suggestionDetails.seasons.findIndex((s) => {
-          return s.season_number === payload.data.season_number
-        })
-        if (index >= 0) {
-          state._suggestionDetails.seasons[index] = payload.data
-        }
+      if (payload.data && payload.data.season_number >= 0) {
+        // state._suggestionSeasons.set('season_' + payload.data.season_number, payload.data)
+        Vue.set(state._suggestionSeasons, 'season_' + payload.data.season_number, payload.data)
       }
     },
     setSuggestions (state, payload) {
@@ -280,6 +277,8 @@ export const store = new Vuex.Store({
     suggestionDetails: (state) => { return state._suggestionDetails },
     suggestionCast: (state) => { return state._suggestionCast },
     suggestionCrew: (state) => { return state._suggestionCrew },
+    suggestionSeasons: (state) => { return state._suggestionSeasons },
+    suggestionSeason: (state) => (number) => { return state._suggestionSeasons !== null ? state._suggestionSeasons['season_' + number] : null },
     suggestions: (state) => { return state._suggestions },
     suggestionsArray: (state) => {
       let array = []

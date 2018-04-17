@@ -1,17 +1,25 @@
 <template>
   <div>
-    <b-list-group-item class="season" variant="dark" @click="expanded = !expanded">
-      <span class="label">{{ season.name }}</span>
-      <span class="episodes"> (0/{{ episodeCount }}<span class="d-none d-md-inline">&nbsp;{{ $t('item.season.downloaded')}}</span>)</span>
-      <span class="actions">
-        <font-awesome-icon
-          :icon="icon('check')"
-          @click="toggleSeason"
-          class="icon todo"/>
-        <font-awesome-icon
-          :icon="icon(chevronIcon)"
-          class="icon"/>
-      </span>
+    <b-card no-body class="season" bg-variant="dark" v-if="season">
+      <b-card-header header-tag="header" class="season-header" @click="expanded = !expanded">
+        <span class="label">{{ season.name }}</span>
+        <!--<span class="episodes"> (0/{{ episodeCount }}<span class="d-none d-md-inline">&nbsp;{{ $t('item.season.downloaded')}}</span>)</span>-->
+        <span class="actions">
+          <!--
+          <font-awesome-icon
+            :icon="icon('check')"
+            @click="toggleSeason"
+            class="icon todo"/>-->
+          <font-awesome-icon
+            :icon="icon(chevronIcon)"
+            class="icon"/>
+        </span>
+      </b-card-header>
+      <b-collapse v-model="expanded" v-bind:id="'season-collpase-' + season.season_number">
+        <b-list-group flush>
+          <episode v-for="episode in season.episodes" :key="episode.id" v-bind:id="id" v-bind:item="item" v-bind:episode="episode"></episode>
+        </b-list-group>
+        <!--<episode-list v-bind:id="id" v-bind:item="item" v-bind:episodes="season.episodes"></episode-list>-->
       <!--
       <div class="poster-section">
         <progressive-img class="poster" v-bind:src="poster" :blur="10"></progressive-img>
@@ -22,17 +30,18 @@
         <div class="content"><span class="label">{{ $t('item.season.episodes')}}:&nbsp;</span>{{ season.episode_count }}</div>
       </div>
       -->
-    </b-list-group-item>
+      </b-collapse>
+    </b-card>
   </div>
 </template>
 
 <script>
 import IconsMixin from '../../mixins/icons'
-import ItemEpisodeList from './EpisodeList'
+import ItemEpisode from './Episode'
 
 export default {
   name: 'ItemSeason',
-  props: ['id', 'item', 'season'],
+  props: ['id', 'item', 'seasonNumber'],
   mixins: [IconsMixin],
   data () {
     return {
@@ -40,9 +49,13 @@ export default {
     }
   },
   components: {
-    'episode-list': ItemEpisodeList
+    'episode': ItemEpisode
   },
   computed: {
+    season () {
+      let season = this.$store.getters.suggestionSeason(this.seasonNumber)
+      return season
+    },
     chevronIcon () {
       if (this.expanded) {
         return 'chevron-up'
@@ -82,17 +95,13 @@ export default {
   created () {
     this.$store.dispatch('getSuggestionSeason', {
       'id': this.id,
-      'season_number': this.season.season_number
+      'season_number': this.seasonNumber
     })
-    if (this.season.season_number === 1) {
-      this.expanded = true
-    }
   },
   i18n: {
     messages: {
       de: {
         item: {
-
           season: {
             airDate: 'Ausstrahlung',
             episodes: 'Episoden',
@@ -122,6 +131,7 @@ export default {
   cursor: pointer;
 }
 .season {
+  /*
   font-size: 18px;
   border-color: #f0f0f0;
   background-color: darkgrey;
@@ -130,6 +140,13 @@ export default {
   border-width: 2px;
   border-radius: 0;
   margin-bottom: 5px;
+  */
+}
+.season .poster {
+  width: 150px;
+}
+.season .info-section {
+  float: right;
 }
 .season .label {
   text-transform: uppercase;
@@ -143,9 +160,6 @@ export default {
 }
 .season .icon.todo {
   color: darkred;
-}
-.season .icon.in-progress {
-  color: black;
 }
 .season .icon.done {
   color: green;

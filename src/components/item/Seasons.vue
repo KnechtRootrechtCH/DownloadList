@@ -2,9 +2,9 @@
   <div>
     <div class="content">
       <h5 class="label">{{ $t('item.episodeList')}}</h5>
-      <b-list-group>
-        <item-season v-for="season in this.details.seasons" :key="season.id" v-bind:id="details.id" v-bind:item="item" v-bind:season="season"></item-season>
-      </b-list-group>
+      <div role="tablist">
+        <item-season v-for="season in details.seasons" :key="season.id" v-bind:id="details.id" v-bind:item="item" v-bind:seasonNumber="season.season_number"></item-season>
+      </div>
     </div>
   </div>
 </template>
