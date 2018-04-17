@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-card no-body class="season" bg-variant="dark" v-if="season">
-      <b-card-header header-tag="header" class="season-header" @click="expanded = !expanded">
+      <b-card-header header-tag="header" class="season-header" @click="expanded = !expanded" role="tab">
         <span class="label">{{ season.name }}</span>
         <!--<span class="episodes"> (0/{{ episodeCount }}<span class="d-none d-md-inline">&nbsp;{{ $t('item.season.downloaded')}}</span>)</span>-->
         <span class="actions">
@@ -15,7 +15,7 @@
             class="icon"/>
         </span>
       </b-card-header>
-      <b-collapse v-model="expanded" v-bind:id="'season-collpase-' + season.season_number">
+      <b-collapse v-model="expanded" v-bind:id="'season-collpase-' + season.season_number" role="tabpanel" accordion="seasons-accordion">
         <b-list-group flush>
           <episode v-for="episode in season.episodes" :key="episode.id" v-bind:id="id" v-bind:item="item" v-bind:episode="episode"></episode>
         </b-list-group>
