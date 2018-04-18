@@ -18,7 +18,6 @@
           <div class='col-xs-6'>
             <router-link v-bind:to="infoUrl">
               <font-awesome-icon
-                v-b-tooltip
                 :icon="icon('info')"
                 class="card-icon info-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
@@ -26,28 +25,24 @@
           </div>
           <div class='col-xs-6'>
             <font-awesome-icon
-              v-b-tooltip
               v-if="showEditButton && isSelected"
               :icon="icon('edit')"
               class="card-icon"
               @click.stop="editModeInternal = !editModeInternal, destroyTooltips()"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
-              v-b-tooltip
               v-if="isSelected && !isDownloaded"
               :icon="icon('minus')"
               class="card-icon"
               @click.stop="toggleItem"
               v-bind:title="$t('mediaCard.tooltip.remove')"/>
             <font-awesome-icon
-              v-b-tooltip
               v-if="!isSelected && !isDownloaded"
               :icon="icon('plus')"
               class="card-icon"
               @click.stop="toggleItem"
               v-bind:title="$t('mediaCard.tooltip.add')"/>
             <font-awesome-icon
-              v-b-tooltip
               v-if="isDownloaded"
               :icon="icon('check')"
               class="card-icon check-icon"
@@ -132,11 +127,11 @@ export default {
       if (this.editModeActive) {
         return
       }
-      this.destroyTooltips()
+      // this.destroyTooltips()
       this.routeTo(this.infoUrl)
     },
     toggleItem () {
-      this.destroyTooltips()
+      // this.destroyTooltips()
       this.editModeInternal = false
       if (this.isSelected) {
         this.removeItem(this.item.key)

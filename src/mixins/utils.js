@@ -114,12 +114,12 @@ export default {
     },
     isAvailableOnNetflix (item) {
       if (item.homepage) {
-        return item.homepage.includes('www.netflix.com/')
+        return item.homepage.indexOf('www.netflix.com/') > -1
       }
       return false
     },
     getNetflixUrl (item) {
-      if (item.homepage && item.homepage.includes('www.netflix.com/')) {
+      if (item.homepage && item.homepage.indexOf('www.netflix.com/') > -1) {
         return item.homepage
       }
     },

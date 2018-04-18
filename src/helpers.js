@@ -2,7 +2,9 @@
 export default Object.freeze({
   padNumber: function (number) {
     let s = number + ''
-    s = s.padStart(2, '0')
+    while (s.length < 2) {
+      s = '0' + s
+    }
     return s
   },
   getDateString: function () {

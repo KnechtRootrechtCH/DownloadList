@@ -33,8 +33,13 @@ export const store = new Vuex.Store({
 
     setLocale: state => { state._locale = navigator.language.trim().substring(0, 2) },
     setUser: state => {
-      state._user = firebase.authentication.currentUser
-      state._dataUserId = firebase.authentication.currentUser.uid
+      if (firebase.authentication && firebase.authentication.currentUser) {
+        state._user = firebase.authentication.currentUser
+        state._dataUserId = firebase.authentication.currentUser.uid
+      } else {
+        state._user = null
+        state._dataUserId = null
+      }
     },
     setDataUserId: (state, uid) => {
       state._dataUserId = uid
