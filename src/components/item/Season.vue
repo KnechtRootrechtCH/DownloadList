@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     toggleSeason () {
-      console.log('toggle season')
+
     }
   },
   created () {

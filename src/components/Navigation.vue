@@ -2,7 +2,8 @@
   <div class="navigation">
     <b-navbar variant="dark" type="dark" toggleable="sm" fixed="top">
       <b-navbar-brand to="/">
-        <img src="../assets/imgs/diamond.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
+        <img src="../assets/imgs/firebase.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
+        Varda
       </b-navbar-brand>
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav_collapse">

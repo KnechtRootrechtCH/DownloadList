@@ -1,26 +1,54 @@
 <template>
-  <div class="header" v-bind:style="{ backgroundImage: 'url(' + backdrop + ')' }">
+  <div class="header" v-bind:style="{ backgroundImage: 'url(' + backdrop + ')', height: shrinkedHeight + 'px' }" v-bind:class=" { 'shrinked' : shrinked, 'expanded' : !shrinked }">
+    <!--
     <div class="poster-section">
       <progressive-img class="poster-small d-md-none" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
       <progressive-img class="poster-big d-none d-md-block" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
+    </div>-->
+    <div class="title">
+        {{ title }}
+
     </div>
-    <div class="icons-section">
-      <div class="header-icons">
-        <font-awesome-icon
-        v-b-tooltip
-        v-if="downloaded"
+
+    <!--
+    <div class="actions">
+      <font-awesome-icon
+        v-if="isDownloaded"
         :icon="icon('check')"
         class="icon"
         v-bind:title="$t('item.downloaded')"/>
-      </div>
-    </div>
-    <div class="title-section">
-        <h2 class="header-title d-none d-lg-inline">{{ title }}&nbsp;</h2>
-        <h3 class="header-title d-none d-md-inline d-lg-none">{{ title }}&nbsp;</h3>
-        <h5 class="header-title d-md-none">{{ title }}&nbsp;</h5>
-        <span class="header-year">{{ releaseYear }}</span>
-        <div class="header-tagline d-none d-md-block" v-if="details.tagline">{{ details.tagline}}</div>
-    </div>
+      <font-awesome-icon
+        v-if="!isDownloaded && isSelected"
+        :icon="icon('edit')"
+        class="icon"
+        v-bind:title="$t('item.downloaded')"/>
+      <font-awesome-icon
+        v-if="!isSelected"
+        :icon="icon('plus')"
+        class="icon"
+        v-bind:title="$t('item.downloaded')"/>
+    </div>-->
+    <!--
+    <div class="title-section small d-md-none">
+        <span class="title">{{ title }}&nbsp;</span>
+        <span class="actions">
+          <font-awesome-icon
+            v-if="isDownloaded"
+            :icon="icon('check')"
+            class="icon"
+            v-bind:title="$t('item.downloaded')"/>
+          <font-awesome-icon
+            v-if="!isDownloaded && isSelected"
+            :icon="icon('edit')"
+            class="icon"
+            v-bind:title="$t('item.downloaded')"/>
+          <font-awesome-icon
+            v-if="!isSelected"
+            :icon="icon('plus')"
+            class="icon"
+            v-bind:title="$t('item.downloaded')"/>
+        </span>
+    </div>-->
   </div>
 </template>
 
@@ -30,15 +58,27 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemHeader',
-  props: ['item', 'details', 'mediaType'],
+  props: ['item', 'details', 'shrink'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
+      minHeight: 50,
+      maxHeight: 150,
+      threshold: 80
     }
   },
   components: {
   },
   computed: {
+    shrinkedHeight () {
+      let height = this.maxHeight - this.minHeight
+      height = height / 100 * (100 - this.shrink)
+      height = height + this.minHeight
+      return height
+    },
+    shrinked () {
+      return this.shrink >= this.threshold
+    },
     title () {
       return this.getTitle(this.details)
     },
@@ -46,7 +86,7 @@ export default {
       return this.getOriginalTitle(this.details)
     },
     releaseYear () {
-      return this.getReleaseDateFormated('YYYY')
+      return this.getReleaseDateFormated(this.details, 'YYYY')
     },
     poster () {
       return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
@@ -60,7 +100,10 @@ export default {
     backdropPlaceholder () {
       return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W1400)
     },
-    downloaded () {
+    isSelected () {
+      return this.item && this.item.priority > 0
+    },
+    isDownloaded () {
       if (this.item) {
         return this.item.downloaded
       }
@@ -68,10 +111,7 @@ export default {
     }
   },
   methods: {
-    open (url) {
-      let win = window.open(url, '_blank')
-      win.focus()
-    }
+
   },
   i18n: {
     messages: {
@@ -92,52 +132,93 @@ export default {
 
 <style scoped>
 .header {
+    position: fixed;
     width: 100%;
-    height: 200px;
     background-size: cover;
     background-position: center;
     padding: 30px 0 0 0;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    -ms-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+    z-index: 100;
 }
-.poster-section {
-  float: left;
+.header.shrinked:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /*background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.6), rgba(254, 190, 86, 0.9));*/
+  background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
 }
-.icons-section {
-  padding: 130px 15px 0 0;
-  height: 180px;
+.header.expanded:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(to bottom,rgba(0,0,0,0), rgba(0, 0, 0, 0.8));
 }
-.title-section {
-  overflow: hidden;
+.title {
+  position: absolute;
+  bottom: 0px;
+  padding: 0 0 0 15px;
+  z-index: 201;
+  text-shadow: black 1px 0 10px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.header-icons {
+@media screen and (min-width: 768px) {
+  .title {
+    font-size: 28px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 20px;
+  }
+}
+/*
+.poster-section {
   float: right;
 }
-.header-title {
-  overflow: hidden;
-  text-overflow: wrap;
-  white-space: pre-wrap;
+.title.small {
+  margin-top: 150px;
+  font-weight: bold;
+  font-size: 18px;
 }
-.header-tagline {
-  font-style: italic;
+.title-section .icon {
+  width: 50px;
+  height: 50px;
+  float: right;
+  color: skyblue;
 }
-.header-year {
-  opacity: 0.8;
-}
+
 .poster-small {
-  width: 150px;
+  width: 130px;
   margin: 20px 15px 0 15px;
   border-color: #d0d0d0;
   border-style: solid;
 }
 .poster-big {
-  width: 180px;
+  width: 160px;
   margin: 0 15px 0 15px;
   border-color: #d0d0d0;
   border-style: solid;
 }
-.icon {
-  width: 28px;
-  height: 28px;
-  color: lime;
-}
+
+.header::after {
+  display: block;
+  position: relative;
+  background-image: linear-gradient(to bottom, transparent 0%, white 100%);
+  margin-top: -150px;
+  height: 150px;
+  width: 100%;
+  content: '';
+}*/
 </style>

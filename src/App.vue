@@ -55,7 +55,7 @@ body {
   color: #ddd;
 }
 .app-content {
-  padding-top:58px;
+  padding-top:56px;
 }
 .app-content a {
   color: #ffbf58;

@@ -2,21 +2,16 @@
   <div class="item">
     <div v-if="details">
       <div id="content">
-        <div id= "header" class="header-section">
-          <item-header v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"></item-header>
-        </div>
-        <b-container fluid>
+        <item-header v-bind:item="item" v-bind:details="details" v-bind:shrink="headerShrink"></item-header>
+        <b-container fluid class="content-container">
           <b-row>
-            <b-col cols="12" md="6" xl="8" id="overview" class="content-section">
-              <div class="content">
-                <p class="tagline d-md-none" v-if="details.tagline">{{ details.tagline}}</p>
-                <p>{{ details.overview}}</p>
-              </div>
-              <item-information class="" v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
+            <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
+              <item-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
+              <item-synopsis v-bind:details="details"></item-synopsis>
             </b-col>
-            <b-col cols="12" md="6" xl="4" id="actions" class="content-section">
-              <!--<h5 class="label d-md-none">{{ $t('item.actions')}}</h5>-->
-              <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @addComment="addComment"></item-actions>
+            <b-col cols="12" md="12" xl="12" id="actions" class="content-section">
+              <item-edit v-bind:item="item" v-bind:details="details" v-bind:vOffset="headerShrink"></item-edit>
+              <!--<item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @addComment="addComment"></item-actions>-->
             </b-col>
           </b-row>
           <b-row>
@@ -45,23 +40,34 @@
 
 <script>
 import ItemHeader from './item/Header'
+import ItemPoster from './item/Poster'
+import ItemEdit from './item/Edit'
 import ItemInformation from './item/Information'
+import ItemSynopsis from './item/Synopsis'
 import ItemActions from './item/Actions'
 import ItemCast from './item/Cast'
 import ItemSeasons from './item/Seasons'
 import ItemComments from './item/Comments'
+import UtilsMixin from '../mixins/utils'
 
 export default {
   name: 'Item',
   props: ['id', 'mediaType'],
+  mixins: [UtilsMixin],
   data () {
     return {
-      commentsEditMode: false
+      commentsEditMode: false,
+      headerShrink: 0,
+      shrinkStart: 0,
+      shrinkEnd: 150
     }
   },
   components: {
     'item-header': ItemHeader,
+    'item-poster': ItemPoster,
+    'item-edit': ItemEdit,
     'item-information': ItemInformation,
+    'item-synopsis': ItemSynopsis,
     'item-actions': ItemActions,
     'item-cast': ItemCast,
     'item-seasons': ItemSeasons,
@@ -88,9 +94,23 @@ export default {
   methods: {
     addComment () {
       window.scrollTo(0, document.body.scrollHeight)
+    },
+    handleScroll (event) {
+      let scroll = document.documentElement.scrollTop
+      let shrink = 0
+      if (scroll >= this.shrinkStart) {
+        scroll = scroll - this.shrinkStart
+        let max = this.shrinkEnd - this.shrinkStart
+        shrink = 100 / max * scroll
+      }
+      if (shrink > 100) {
+        shrink = 100
+      }
+      this.headerShrink = shrink
     }
   },
   created () {
+    window.addEventListener('scroll', this.handleScroll)
     this.$store.dispatch('getSuggestionDetails', {
       'media_type': this.mediaType,
       'id': this.id
@@ -99,6 +119,9 @@ export default {
       'media_type': this.mediaType,
       'id': this.id
     })
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   },
   i18n: {
     messages: {
@@ -126,17 +149,14 @@ export default {
 </script>
 
 <style scoped>
-.header-section {
-  height: 300px;
+.content-container {
+  position: absolute;
+  top: 200px;
 }
 .content-section {
   padding: 15px;
 }
-.spacer {
-  margin-top: 15px;
-}
-.tagline {
-  font-style: italic;
-  font-weight: bold;
+.poster-section {
+  float: left;
 }
 </style>

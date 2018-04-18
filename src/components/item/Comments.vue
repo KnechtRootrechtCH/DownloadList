@@ -56,7 +56,6 @@ export default {
     },
     addComment () {
       if (!this.commentStringEntered) {
-        console.log('nope')
         return
       }
       let comment = {}
