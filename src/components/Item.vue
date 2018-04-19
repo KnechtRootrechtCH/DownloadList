@@ -2,16 +2,15 @@
   <div class="item">
     <div v-if="details">
       <div id="content">
-        <item-header v-bind:item="item" v-bind:details="details" v-bind:shrink="headerShrink"></item-header>
+        <item-header v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink"></item-header>
+        <item-poster v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink"></item-poster>
+        <item-edit v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></item-edit>
+        <item-dialog v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"  @addComment="addComment" ref="dialog"></item-dialog>
         <b-container fluid class="content-container">
           <b-row>
             <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
               <item-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
               <item-synopsis v-bind:details="details"></item-synopsis>
-            </b-col>
-            <b-col cols="12" md="12" xl="12" id="actions" class="content-section">
-              <item-edit v-bind:item="item" v-bind:details="details" v-bind:vOffset="headerShrink"></item-edit>
-              <!--<item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @addComment="addComment"></item-actions>-->
             </b-col>
           </b-row>
           <b-row>
@@ -41,7 +40,8 @@
 <script>
 import ItemHeader from './item/Header'
 import ItemPoster from './item/Poster'
-import ItemEdit from './item/Edit'
+import ItemEditIcon from './item/EditIcon'
+import ItemEditDialog from './item/EditDialog'
 import ItemInformation from './item/Information'
 import ItemSynopsis from './item/Synopsis'
 import ItemActions from './item/Actions'
@@ -57,7 +57,7 @@ export default {
   data () {
     return {
       commentsEditMode: false,
-      headerShrink: 0,
+      shrink: 0,
       shrinkStart: 0,
       shrinkEnd: 150
     }
@@ -65,7 +65,8 @@ export default {
   components: {
     'item-header': ItemHeader,
     'item-poster': ItemPoster,
-    'item-edit': ItemEdit,
+    'item-edit': ItemEditIcon,
+    'item-dialog': ItemEditDialog,
     'item-information': ItemInformation,
     'item-synopsis': ItemSynopsis,
     'item-actions': ItemActions,
@@ -94,6 +95,10 @@ export default {
   methods: {
     addComment () {
       window.scrollTo(0, document.body.scrollHeight)
+      console.log('add comment')
+    },
+    showEditDialog () {
+      this.$refs.dialog.show()
     },
     handleScroll (event) {
       let scroll = document.documentElement.scrollTop
@@ -106,7 +111,7 @@ export default {
       if (shrink > 100) {
         shrink = 100
       }
-      this.headerShrink = shrink
+      this.shrink = shrink
     }
   },
   created () {
@@ -151,7 +156,7 @@ export default {
 <style scoped>
 .content-container {
   position: absolute;
-  top: 200px;
+  top: 300px;
 }
 .content-section {
   padding: 15px;

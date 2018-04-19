@@ -1,54 +1,8 @@
 <template>
-  <div class="header" v-bind:style="{ backgroundImage: 'url(' + backdrop + ')', height: shrinkedHeight + 'px' }" v-bind:class=" { 'shrinked' : shrinked, 'expanded' : !shrinked }">
-    <!--
-    <div class="poster-section">
-      <progressive-img class="poster-small d-md-none" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
-      <progressive-img class="poster-big d-none d-md-block" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
-    </div>-->
-    <div class="title">
+  <div class="header" v-bind:style="{ backgroundImage: 'url(' + backdrop + ')', height: calculatedHeight + 'px' }" v-bind:class=" { 'shrinked' : shrinked, 'expanded' : !shrinked }">
+    <div class="title" v-bind:style="calculatedStyle">
         {{ title }}
-
     </div>
-
-    <!--
-    <div class="actions">
-      <font-awesome-icon
-        v-if="isDownloaded"
-        :icon="icon('check')"
-        class="icon"
-        v-bind:title="$t('item.downloaded')"/>
-      <font-awesome-icon
-        v-if="!isDownloaded && isSelected"
-        :icon="icon('edit')"
-        class="icon"
-        v-bind:title="$t('item.downloaded')"/>
-      <font-awesome-icon
-        v-if="!isSelected"
-        :icon="icon('plus')"
-        class="icon"
-        v-bind:title="$t('item.downloaded')"/>
-    </div>-->
-    <!--
-    <div class="title-section small d-md-none">
-        <span class="title">{{ title }}&nbsp;</span>
-        <span class="actions">
-          <font-awesome-icon
-            v-if="isDownloaded"
-            :icon="icon('check')"
-            class="icon"
-            v-bind:title="$t('item.downloaded')"/>
-          <font-awesome-icon
-            v-if="!isDownloaded && isSelected"
-            :icon="icon('edit')"
-            class="icon"
-            v-bind:title="$t('item.downloaded')"/>
-          <font-awesome-icon
-            v-if="!isSelected"
-            :icon="icon('plus')"
-            class="icon"
-            v-bind:title="$t('item.downloaded')"/>
-        </span>
-    </div>-->
   </div>
 </template>
 
@@ -63,18 +17,41 @@ export default {
   data () {
     return {
       minHeight: 50,
-      maxHeight: 150,
-      threshold: 80
+      maxHeight: 180,
+      minPosition: 0,
+      maxPosition: 150,
+      threshold: 50
     }
   },
   components: {
   },
   computed: {
-    shrinkedHeight () {
+    calculatedHeight () {
       let height = this.maxHeight - this.minHeight
       height = height / 100 * (100 - this.shrink)
       height = height + this.minHeight
       return height
+    },
+    calculatedTitlePosition () {
+      if (this.shrink > this.threshold) {
+        return this.minPosition
+      } else {
+        return this.maxPosition
+      }
+    },
+    calculatedStyle () {
+      let left = this.calculatedTitlePosition + 'px'
+      if (this.shrink > (this.threshold + 20)) {
+        return {
+          'white-space': 'nowrap',
+          'overflow': 'hidden',
+          'text-overflow': 'ellipsis',
+          left: left
+        }
+      }
+      return {
+        left: left
+      }
     },
     shrinked () {
       return this.shrink >= this.threshold
@@ -137,11 +114,6 @@ export default {
     background-size: cover;
     background-position: center;
     padding: 30px 0 0 0;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    -o-transition: all .2s ease-in-out;
-    -ms-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
     z-index: 100;
 }
 .header.shrinked:before {
@@ -152,7 +124,7 @@ export default {
   bottom: 0;
   left: 0;
   /*background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.6), rgba(254, 190, 86, 0.9));*/
-  background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
+  background-image: linear-gradient(to bottom,rgba(0, 0, 100, 0.7), rgba(0, 0, 100, 0.9));
 }
 .header.expanded:before {
   content: '';
@@ -169,56 +141,27 @@ export default {
   padding: 0 0 0 15px;
   z-index: 201;
   text-shadow: black 1px 0 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding-right: 55px;
+  -webkit-transition: all .5s ease-in-out;
+  -moz-transition: all .5s ease-in-out;
+  -o-transition: all .5s ease-in-out;
+  -ms-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
 }
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 767.99px) {
   .title {
     font-size: 28px;
   }
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767.99px) {
   .title {
     font-size: 20px;
   }
 }
-/*
-.poster-section {
-  float: right;
+@media screen and (max-width: 575.99px) {
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+  }
 }
-.title.small {
-  margin-top: 150px;
-  font-weight: bold;
-  font-size: 18px;
-}
-.title-section .icon {
-  width: 50px;
-  height: 50px;
-  float: right;
-  color: skyblue;
-}
-
-.poster-small {
-  width: 130px;
-  margin: 20px 15px 0 15px;
-  border-color: #d0d0d0;
-  border-style: solid;
-}
-.poster-big {
-  width: 160px;
-  margin: 0 15px 0 15px;
-  border-color: #d0d0d0;
-  border-style: solid;
-}
-
-.header::after {
-  display: block;
-  position: relative;
-  background-image: linear-gradient(to bottom, transparent 0%, white 100%);
-  margin-top: -150px;
-  height: 150px;
-  width: 100%;
-  content: '';
-}*/
 </style>

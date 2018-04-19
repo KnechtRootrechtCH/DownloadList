@@ -8,13 +8,44 @@
       v-bind:color="constants.COLOR.NETFLIX_RED"
       iconType="play"
       @click.native="openNetflixUrl()"></action>
-    <priority
+    <!--<priority
       v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.priority')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.PURPLE"
       v-bind:itemKey="item.key"
       v-bind:current="item.priority"
+      v-bind:isReactive="true"
+      iconType="star"></priority>-->
+    <priority
+      v-if="isSelected && !isDownloaded"
+      v-bind:label="$t('item.action.priority1')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.PURPLE"
+      v-bind:itemKey="item.key"
+      v-bind:current="1"
+      v-bind:isReactive="false"
+      @updated="$emit('close')"
+      iconType="star"></priority>
+    <priority
+      v-if="isSelected && !isDownloaded"
+      v-bind:label="$t('item.action.priority2')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.PURPLE"
+      v-bind:itemKey="item.key"
+      v-bind:current="2"
+      v-bind:isReactive="false"
+      @updated="$emit('close')"
+      iconType="star"></priority>
+    <priority
+      v-if="isSelected && !isDownloaded"
+      v-bind:label="$t('item.action.priority3')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.PURPLE"
+      v-bind:itemKey="item.key"
+      v-bind:current="3"
+      v-bind:isReactive="false"
+      @updated="$emit('close')"
       iconType="star"></priority>
     <action
       v-if="!isSelected"
@@ -22,28 +53,36 @@
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.BLUE"
       iconType="plus"
-      @click.native="addItem(details, mediaType)"></action>
+      @click.native="add"></action>
     <action
       v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.markDownloaded' + mediaType)"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.GREEN"
       iconType="check"
-      @click.native="setDownloaded(item.key, true)"></action>
+      @click.native="markDownloaded(true)"></action>
     <action
       v-if="isSelected && isDownloaded"
       v-bind:label="$t('item.action.redownload')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.PURPLE"
       iconType="redo"
-      @click.native="setDownloaded(item.key, false)"></action>
+      @click.native="markDownloaded(false)"></action>
     <action
       v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.deselect')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.RED"
       iconType="minus"
-      @click.native="removeItem(item.key)"></action>
+      @click.native="remove"></action>
+    <!--<action
+      v-bind:label="$t('item.action.close')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.DARKGREY"
+      type="center"
+      iconType="times"
+      @click.native="$emit('close')"></action>-->
+   <!--
     <action
       v-if="isSelected"
       v-bind:label="$t('item.action.comment')"
@@ -51,6 +90,7 @@
       v-bind:color="constants.COLOR.DARKGREY"
       iconType="comment"
       @click.native="addComment()"></action>
+      -->
   </b-list-group>
 </template>
 
@@ -88,14 +128,29 @@ export default {
     }
   },
   methods: {
-    addComment () {
-      this.$emit('addComment')
+    add () {
+      this.$emit('close')
+      this.addItem(this.details, this.mediaType)
+    },
+    remove () {
+      this.$emit('close')
+      this.removeItem(this.item.key)
+    },
+    markDownloaded (downloaded) {
+      if (downloaded) {
+        this.$emit('close')
+      }
+      this.setDownloaded(this.item.key, downloaded)
     },
     openNetflixUrl () {
+      this.$emit('close')
       let netflixUrl = this.getNetflixUrl(this.details)
       if (netflixUrl) {
         this.openUrl(netflixUrl)
       }
+    },
+    addComment () {
+      this.$emit('addComment')
     }
   },
   i18n: {
@@ -110,10 +165,14 @@ export default {
             markDownloadedtv: 'Als erledigt markieren',
             redownload: 'Erneut herunterladen',
             priority: 'Priorität',
+            priority1: 'Hohe Priorität',
+            priority2: 'Mittlere Priorität',
+            priority3: 'Tiefe Priorität',
             comment: 'Kommentar hinzufügen',
             moviedb: 'The Movie Db',
             homepage: 'Homepage',
-            netflix: 'Auf Netflix abspielen'
+            netflix: 'Auf Netflix abspielen',
+            close: 'Schliessen'
           }
         }
       },
@@ -127,10 +186,14 @@ export default {
             markDownloadedtv: 'Mark as done',
             redownload: 'Mark for redownload',
             priority: 'Priority',
+            priority1: 'High priority',
+            priority2: 'Medium priority',
+            priority3: 'Low priority',
             comment: 'Add comment',
             moviedb: 'The Movie Db',
             homepage: 'Homepage',
-            netflix: 'Watch on Netflix'
+            netflix: 'Watch on Netflix',
+            close: 'Close'
           }
         }
       }

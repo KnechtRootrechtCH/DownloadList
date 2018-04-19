@@ -2,7 +2,7 @@
   <b-list-group-item
     button
     class="action"
-    @click="increase()"
+    @click="clicked()"
     v-bind:class="[{ 'clickable' : isClickable, 'inverted' : this.isActive }, 'button-' + this.color]">
     <font-awesome-icon
       v-for="p in priorities"
@@ -10,7 +10,7 @@
       :icon="actionIcon"
       class="icon clickable"
       v-bind:class="[{ 'highlighted' : has(p) }, icon]"
-      @click.stop="setPriority(itemKey, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
       <span class="label">{{ label.toUpperCase() }}</span>
   </b-list-group-item>
 </template>
@@ -21,7 +21,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemPriority',
-  props: ['itemKey', 'current', 'label', 'iconType', 'isClickable', 'isActive', 'color'],
+  props: ['itemKey', 'current', 'label', 'iconType', 'isClickable', 'isActive', 'color', 'isReactive'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -37,7 +37,19 @@ export default {
   },
   methods: {
     has (priority) {
-      return this.current <= priority || this.hoverPriority <= priority
+      if (this.isReactive) {
+        return this.current <= priority || this.hoverPriority <= priority
+      } else {
+        return priority >= this.current
+      }
+    },
+    clicked () {
+      if (this.isReactive) {
+        this.increase()
+      } else {
+        this.setPriority(this.itemKey, this.current)
+      }
+      this.$emit('updated')
     },
     increase () {
       let priority = this.current - 1
@@ -46,6 +58,14 @@ export default {
       }
       this.setPriority(this.itemKey, priority)
       this.hoverPriority = this.constants.PRIORITY.MIN + 1
+    },
+    setItemPriority (p) {
+      if (this.isReactive) {
+        this.setPriority(this.itemKey, p)
+      } else {
+        this.setPriority(this.itemKey, this.current)
+      }
+      this.$emit('updated')
     }
   }
 }

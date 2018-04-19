@@ -39,6 +39,9 @@
         <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < links.length">,&nbsp;</span>
       </span>
     </div>
+    <!-- PRIORITY -->
+    <!-- TODO: visual priority display (stars)-->
+    <div class="content" v-if="item && item.priority && item.priority > 0"><span class="label">{{ $t('item.priority')}}:&nbsp;</span>{{ $t('item.priority' + item.priority) }}</div>
     <!-- PRODUCTION -->
     <!--
     <div class="content">
@@ -137,7 +140,11 @@ export default {
           netflix: 'Netflix',
           netflixSearch: 'Netflix Suche',
           homepage: 'Homepage',
-          movieDb: 'The Movie DB'
+          movieDb: 'The Movie DB',
+          priority: 'Download Priorität',
+          priority1: 'hoch',
+          priority2: 'mittel',
+          priority3: 'tief'
         }
       },
       en: {
@@ -159,7 +166,11 @@ export default {
           netflix: 'Netflix',
           netflixSearch: 'Netflix search',
           homepage: 'Homepage',
-          movieDb: 'The Movie DB'
+          movieDb: 'The Movie DB',
+          priority: 'Download priority',
+          priority1: 'high',
+          priority2: 'medium',
+          priority3: 'low'
         }
       }
     }
