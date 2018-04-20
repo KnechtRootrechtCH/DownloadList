@@ -1,6 +1,6 @@
 <template>
-  <div class="poster" v-bind:style=" { top: calculatedPosition + 'px', opacity: calculatedOpacity } ">
-    <progressive-img class="image" v-bind:src="poster" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
+  <div class="poster" v-bind:style=" { left: calculatedPosition + 'px', opacity: calculatedOpacity } ">
+    <progressive-img class="image" v-bind:src="poster" v-bind:fallback="placeholder" :blur="10"></progressive-img>
   </div>
 </template>
 
@@ -9,13 +9,13 @@ import UtilsMixin from '../../mixins/utils'
 
 export default {
   name: 'Poster',
-  props: ['item', 'details', 'shrink'],
+  props: ['poster', 'placeholder', 'shrink'],
   mixins: [UtilsMixin],
   data () {
     return {
-      minPosition: 80, // -50,
-      maxPosition: 80,
-      threshold: 50
+      minPosition: -300,
+      maxPosition: 15,
+      threshold: 0
     }
   },
   components: {
@@ -33,12 +33,6 @@ export default {
       } else {
         return 1
       }
-    },
-    poster () {
-      return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
-    },
-    posterPlaceholder () {
-      return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
     }
   },
   methods: {
@@ -62,6 +56,7 @@ export default {
 .poster {
   position: fixed;
   left: 15px;
+  top: 80px;
   z-index: 300;
   -webkit-transition: all .5s ease-in-out;
   -moz-transition: all .5s ease-in-out;
@@ -69,14 +64,8 @@ export default {
   -ms-transition: all .5s ease-in-out;
   transition: all .5s ease-in-out;
 }
-.poster .small {
-  width: 100px;
-  margin: 0 15px 15px 0;
-  border-color: #d0d0d0;
-  border-style: solid;
-}
 .poster .image {
-  width: 140px;
+  width: 150px;
   margin: 0 15px 15px 0;
   border-color: #d0d0d0;
   border-style: solid;

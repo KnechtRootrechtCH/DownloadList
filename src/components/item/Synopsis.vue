@@ -19,12 +19,6 @@ export default {
   components: {
   },
   computed: {
-    poster () {
-      return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
-    },
-    posterPlaceholder () {
-      return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
-    }
   },
   methods: {
   },

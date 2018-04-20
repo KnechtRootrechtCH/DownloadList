@@ -6,6 +6,7 @@ import SignUp from '@/components/SignUp'
 import List from '@/components/List'
 import Discover from '@/components/Discover'
 import Item from '@/components/Item'
+import Season from '@/components/Season'
 import Info from '@/components/Info'
 
 import firebase from 'firebase'
@@ -68,8 +69,17 @@ let router = new Router({
     },
     {
       path: '/browse/:mediaType/:id',
-      name: 'DiscoverItem',
+      name: 'ItemDetails',
       component: Item,
+      meta: {
+        requiresAuth: true
+      },
+      props: true
+    },
+    {
+      path: '/browse/tv/:id/season/:seasonNumber',
+      name: 'SeasonDetails',
+      component: Season,
       meta: {
         requiresAuth: true
       },

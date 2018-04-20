@@ -30,7 +30,7 @@ export default {
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
-      minPosition: 65,
+      minPosition: 63,
       maxPosition: 190
     }
   },
@@ -56,7 +56,6 @@ export default {
   methods: {
     add () {
       this.addItem(this.details)
-      this.$emit('edit')
     },
     edit () {
       this.$emit('edit')

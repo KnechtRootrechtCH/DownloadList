@@ -12,15 +12,16 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemHeader',
-  props: ['item', 'details', 'shrink'],
+  props: ['title', 'backdrop', 'backdropPlaceholder', 'shrink'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
       minHeight: 50,
       maxHeight: 180,
       minPosition: 0,
-      maxPosition: 150,
-      threshold: 50
+      maxPosition: 160,
+      titleThreshold: 0,
+      backgroundThreshold: 80
     }
   },
   components: {
@@ -33,7 +34,7 @@ export default {
       return height
     },
     calculatedTitlePosition () {
-      if (this.shrink > this.threshold) {
+      if (this.shrink > this.titleThreshold) {
         return this.minPosition
       } else {
         return this.maxPosition
@@ -41,7 +42,7 @@ export default {
     },
     calculatedStyle () {
       let left = this.calculatedTitlePosition + 'px'
-      if (this.shrink > (this.threshold + 20)) {
+      if (this.shrink > (this.titleThreshold + 20)) {
         return {
           'white-space': 'nowrap',
           'overflow': 'hidden',
@@ -54,37 +55,7 @@ export default {
       }
     },
     shrinked () {
-      return this.shrink >= this.threshold
-    },
-    title () {
-      return this.getTitle(this.details)
-    },
-    originalTitle () {
-      return this.getOriginalTitle(this.details)
-    },
-    releaseYear () {
-      return this.getReleaseDateFormated(this.details, 'YYYY')
-    },
-    poster () {
-      return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
-    },
-    posterPlaceholder () {
-      return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
-    },
-    backdrop () {
-      return this.getBackdropImage(this.details, this.constants.IMAGESIZE.BACKDROP.W1400)
-    },
-    backdropPlaceholder () {
-      return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W1400)
-    },
-    isSelected () {
-      return this.item && this.item.priority > 0
-    },
-    isDownloaded () {
-      if (this.item) {
-        return this.item.downloaded
-      }
-      return false
+      return this.shrink >= this.backgroundThreshold
     }
   },
   methods: {
@@ -123,8 +94,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
-  /*background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.6), rgba(254, 190, 86, 0.9));*/
-  background-image: linear-gradient(to bottom,rgba(0, 0, 100, 0.7), rgba(0, 0, 100, 0.9));
+  background-image: linear-gradient(to bottom,rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
 }
 .header.expanded:before {
   content: '';

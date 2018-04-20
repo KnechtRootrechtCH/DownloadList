@@ -15,7 +15,7 @@
             class="icon"/>
         </span>
       </b-card-header>
-      <b-collapse v-model="expanded" v-bind:id="'season-collpase-' + season.season_number" role="tabpanel" accordion="seasons-accordion">
+      <b-collapse v-model="expanded" v-bind:id="'season-collpase-' + season.season_number">
         <b-list-group flush>
           <episode v-for="episode in season.episodes" :key="episode.id" v-bind:id="id" v-bind:item="item" v-bind:episode="episode"></episode>
         </b-list-group>

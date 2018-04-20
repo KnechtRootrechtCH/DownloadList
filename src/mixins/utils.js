@@ -29,10 +29,15 @@ export default {
     isTv (item) {
       return item && item.media_type === this.constants.MEDIA_TYPE.TV
     },
+    isTvSeason (item) {
+      return item && item.episode_count !== null
+    },
     getTitle (item) {
       if (this.isMovie(item)) {
         return item.title
       } else if (this.isTv(item)) {
+        return item.name
+      } else if (this.isTvSeason(item)) {
         return item.name
       }
     },
@@ -49,6 +54,8 @@ export default {
         date = item.release_date
       } else if (this.isTv(item)) {
         date = item.first_air_date
+      } else if (this.isTvSeason(item)) {
+        date = item.air_date
       }
       if (date) {
         let moment = this.$moment(date)
@@ -89,7 +96,7 @@ export default {
       if (item && item.poster_path) {
         return this.getMovieDbImage(item.poster_path, size)
       } else {
-        return this.getPosterPlaceholder(item.media_type, size)
+        return this.getPosterPlaceholder(size)
       }
     },
     getMovieDbImage (path, size) {

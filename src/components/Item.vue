@@ -2,28 +2,28 @@
   <div class="item">
     <div v-if="details">
       <div id="content">
-        <item-header v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink"></item-header>
-        <item-poster v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink"></item-poster>
+        <item-header v-bind:title="title" v-bind:backdrop="backdrop" v-bind:backdropPlaceholder="backdropPlaceholder" v-bind:shrink="shrink"></item-header>
+        <item-poster v-bind:poster="poster" v-bind:placeholder="posterPlaceholder" v-bind:shrink="shrink"></item-poster>
         <item-edit v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></item-edit>
         <item-dialog v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"  @addComment="addComment" ref="dialog"></item-dialog>
         <b-container fluid class="content-container">
           <b-row>
-            <b-col cols="12" md="12" xl="12" id="overview" class="content-section">
+            <b-col id="overview" cols="12" md="12" xl="12" class="content-section">
               <item-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
               <item-synopsis v-bind:details="details"></item-synopsis>
             </b-col>
           </b-row>
+          <b-row id="seasons" v-if="details.seasons">
+            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
+              <item-seasons v-bind:item="item" v-bind:details="details" v-bind:includeSpecials="true"></item-seasons>
+            </b-col>
+          </b-row>
           <b-row>
-            <b-col cols="12" md="12" xl="12" id="cast" class="content-section">
+            <b-col id="cast" cols="12" md="12" xl="12" class="content-section">
               <item-cast v-bind:cast="cast"></item-cast>
             </b-col>
           </b-row>
-          <b-row v-if="details.seasons">
-            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <item-seasons v-bind:item="item" v-bind:details="details"></item-seasons>
-            </b-col>
-          </b-row>
-          <b-row>
+          <b-row id="comments">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
               <item-comments v-bind:item="item"></item-comments>
             </b-col>
@@ -90,6 +90,21 @@ export default {
     item () {
       let item = this.$store.getters.item(this.details.key)
       return item
+    },
+    title () {
+      return this.getTitle(this.details)
+    },
+    poster () {
+      return this.getPosterImage(this.details, this.constants.IMAGESIZE.POSTER.W185)
+    },
+    posterPlaceholder () {
+      return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
+    },
+    backdrop () {
+      return this.getBackdropImage(this.details, this.constants.IMAGESIZE.BACKDROP.W1400)
+    },
+    backdropPlaceholder () {
+      return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W1400)
     }
   },
   methods: {
@@ -132,20 +147,10 @@ export default {
     messages: {
       de: {
         item: {
-          overview: 'Handlung',
-          info: 'Details',
-          actions: 'Aktionen',
-          cast: 'Besetzung',
-          originalTitle: 'Originaltitel'
         }
       },
       en: {
         item: {
-          overview: 'Overview',
-          info: 'Details',
-          actions: 'Actions',
-          cast: 'Cast',
-          originalTitle: 'Original title'
         }
       }
     }
