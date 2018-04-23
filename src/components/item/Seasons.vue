@@ -8,6 +8,8 @@
               <div class="card-body">
                 <div class="info">
                   <router-link :to="details.id + '/season/' + season.season_number">{{ season.name }}</router-link>
+                </div>
+                <div class="info">{{ year(season) }}
                   <span class="download-count pull-right" v-if="isSelected">
                     {{ downloaded(season) }}/{{ episodes(season) }}
                     <span class="actions">
@@ -33,7 +35,6 @@
                         class="icon fa-hover-show"/>
                     </span>
                   </span></div>
-                  <div class="info">{{ year(season) }}</div>
               </div>
               <div class="card-img-bottom" @click="clicked(season)">
                 <progressive-img class="photo" v-bind:src="poster(season)" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>

@@ -1,0 +1,38 @@
+[debug] [2018-04-23T19:00:39.303Z] ----------------------------------------------------------------------
+[debug] [2018-04-23T19:00:39.305Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\tbu0328\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase deploy
+[debug] [2018-04-23T19:00:39.305Z] CLI Version:   3.18.4
+[debug] [2018-04-23T19:00:39.305Z] Platform:      win32
+[debug] [2018-04-23T19:00:39.305Z] Node Version:  v8.10.0
+[debug] [2018-04-23T19:00:39.305Z] Time:          Mon Apr 23 2018 21:00:39 GMT+0200 (W. Europe Summer Time)
+[debug] [2018-04-23T19:00:39.305Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-04-23T19:00:39.313Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-04-23T19:00:39.313Z] > authorizing via signed-in user
+[debug] [2018-04-23T19:00:39.315Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/downloadlist-7465c  
+  
+ Mon Apr 23 2018 21:00:39 GMT+0200 (W. Europe Summer Time)
+[debug] [2018-04-23T19:00:39.962Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-23T19:00:39.963Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/downloadlist-7465c/tokens  
+  
+ Mon Apr 23 2018 21:00:39 GMT+0200 (W. Europe Summer Time)
+[debug] [2018-04-23T19:00:40.646Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'downloadlist-7465c'...
+[info] 
+[info] i  deploying database, hosting
+[info] i  database: checking rules syntax...
+[debug] [2018-04-23T19:00:41.267Z] >>> HTTP REQUEST PUT https://downloadlist-7465c.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+ 
+ Mon Apr 23 2018 21:00:41 GMT+0200 (W. Europe Summer Time)
+[debug] [2018-04-23T19:00:41.798Z] <<< HTTP RESPONSE 200
+[info] +  database: rules syntax for database downloadlist-7465c is valid
+[info] i  hosting: preparing dist directory for upload...
+[debug] [2018-04-23T19:00:42.092Z] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/downloadlist-7465c/uploads/-LAnsHPLQw7mwKYa7O1T?fileCount=10&message=  
+  
+ Mon Apr 23 2018 21:00:42 GMT+0200 (W. Europe Summer Time)
