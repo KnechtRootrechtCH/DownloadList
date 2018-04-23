@@ -88,7 +88,7 @@ export default {
       return crew
     },
     item () {
-      let item = this.$store.getters.item(this.details.key)
+      let item = this.$store.getters.item(this.mediaType + ':' + this.id)
       return item
     },
     title () {

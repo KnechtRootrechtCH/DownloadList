@@ -6,8 +6,34 @@
         <swiper-slide v-for="(season) in seasons" :key="season.id">
           <div class="card border-dark media-card bg-dark text-faded">
               <div class="card-body">
-                <div class="info"><router-link :to="details.id + '/season/' + season.season_number">{{ season.name }}</router-link></div>
-                <div class="info">{{ year(season) }}</div>
+                <div class="info">
+                  <router-link :to="details.id + '/season/' + season.season_number">{{ season.name }}</router-link>
+                  <span class="download-count pull-right" v-if="isSelected">
+                    {{ downloaded(season) }}/{{ episodes(season) }}
+                    <span class="actions">
+                      <font-awesome-icon
+                        v-if="isDownloaded(season)"
+                        @click="setDownloaded(season, false)"
+                        :icon="icon('check')"
+                        class="icon downloaded fa-hover-hidden"/>
+                      <font-awesome-icon
+                        v-if="isDownloaded(season)"
+                        @click="setDownloaded(season, false)"
+                        :icon="icon('redo')"
+                        class="icon fa-hover-show"/>
+                      <font-awesome-icon
+                        v-if="!isDownloaded(season)"
+                        @click="setDownloaded(season, true)"
+                        :icon="icon('exclamation')"
+                        class="icon fa-hover-hidden"/>
+                      <font-awesome-icon
+                        v-if="!isDownloaded(season)"
+                        @click="setDownloaded(season, true)"
+                        :icon="icon('check')"
+                        class="icon fa-hover-show"/>
+                    </span>
+                  </span></div>
+                  <div class="info">{{ year(season) }}</div>
               </div>
               <div class="card-img-bottom" @click="clicked(season)">
                 <progressive-img class="photo" v-bind:src="poster(season)" v-bind:fallback="posterPlaceholder" :blur="10"></progressive-img>
@@ -24,7 +50,6 @@
 </template>
 
 <script>
-import ItemSeason from './Season'
 import UtilsMixin from '../../mixins/utils'
 import IconsMixin from '../../mixins/icons'
 
@@ -74,7 +99,6 @@ export default {
     }
   },
   components: {
-    'item-season': ItemSeason
   },
   computed: {
     seasons () {
@@ -87,6 +111,9 @@ export default {
     },
     posterPlaceholder () {
       return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
+    },
+    isSelected () {
+      return this.item && this.item.priority > 0
     }
   },
   methods: {
@@ -98,6 +125,35 @@ export default {
     },
     clicked (season) {
       this.routeTo(this.details.id + '/season/' + season.season_number)
+    },
+    episodes (season) {
+      if (season.episode_count) {
+        return season.episode_count
+      } else if (season.episodes) {
+        return season.episodes.length
+      }
+    },
+    downloaded (season) {
+      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
+      if (!count) {
+        return 0
+      }
+      return count
+    },
+    isDownloaded (season) {
+      if (this.isSelected) {
+        return this.downloaded(season) === this.episodes(season)
+      }
+      return false
+    },
+    setDownloaded (season, downloaded) {
+      let state = null
+      for (let i = 1; i <= this.episodes(season); i++) {
+        state = this.getEpisodeDownloadState(this.item, season.season_number, i)
+        if (state !== downloaded) {
+          this.updateEpisodeDownloadState(this.item.id, season.season_number, i, downloaded)
+        }
+      }
     }
   },
   i18n: {
@@ -141,6 +197,9 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.card-body .info .pull-right{
+  float: right;
+}
 .card-body .character {
   white-space: nowrap;
   overflow: hidden;
@@ -157,5 +216,21 @@ a:hover {
 }
 .swiper-scrollbar-drag {
   background: rgba(255, 255, 255, 0.5);
+}
+* > .fa-hover-show,
+.actions:hover .fa-hover-hidden {
+  display: none;
+}
+.actions:hover .fa-hover-show {
+  display: inline-block;
+}
+.photo {
+  cursor: pointer;
+}
+.icon {
+  cursor: pointer;
+}
+.icon.downloaded {
+  color: limegreen;
 }
 </style>

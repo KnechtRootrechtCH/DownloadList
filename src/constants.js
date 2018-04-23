@@ -43,6 +43,9 @@ export default Object.freeze({
       W45: { key: 'w45', width: 45, height: 68 },
       W185: { key: 'w185', width: 185, height: 278 },
       H632: { key: 'h632', width: 421, height: 632 }
+    },
+    STILL: {
+      W185: { key: 'w185', width: 185, height: 104 }
     }
   }
 })

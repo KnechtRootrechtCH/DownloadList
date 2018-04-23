@@ -1,9 +1,13 @@
 import Constants from '../constants'
+import Utils from '../helpers'
 
 export default {
   computed: {
     constants () {
       return Constants
+    },
+    utils () {
+      return Utils
     },
     priorities () {
       let priorities = []
@@ -99,6 +103,13 @@ export default {
         return this.getPosterPlaceholder(size)
       }
     },
+    getStillImage (item, size) {
+      if (item && item.still_path) {
+        return this.getMovieDbImage(item.still_path, size)
+      } else {
+        return this.getStillPlaceholder(size)
+      }
+    },
     getMovieDbImage (path, size) {
       return 'https://image.tmdb.org/t/p/' + size.key + path
     },
@@ -106,6 +117,9 @@ export default {
       return this.getPlaceholderImage(size, '+', '444499', 'ededed')
     },
     getProfilePlaceholder (size) {
+      return this.getPlaceholderImage(size, '??', '444499', 'ededed')
+    },
+    getStillPlaceholder (size) {
       return this.getPlaceholderImage(size, '??', '444499', 'ededed')
     },
     getPosterPlaceholder (size) {
@@ -157,6 +171,40 @@ export default {
     },
     removeItem (key) {
       this.$store.dispatch('removeItem', key)
+    },
+    getSeasonDownloadStates (item, seasonNumber) {
+      if (!item || !item.downloadedEpisodes) {
+        return null
+      }
+      return item.downloadedEpisodes[seasonNumber]
+    },
+    getEpisodeDownloadState (item, seasonNumber, episodeNumber) {
+      let season = this.getSeasonDownloadStates(item, seasonNumber)
+      if (!season) {
+        return null
+      }
+      let episode = season[episodeNumber]
+      return episode && episode.downloaded
+    },
+    getEpisodeDownloadCount (item, seasonNumber) {
+      let season = this.getSeasonDownloadStates(item, seasonNumber)
+      if (!season) {
+        return 0
+      }
+      let count = 0
+      season.forEach((s) => {
+        if (s.downloaded) {
+          count++
+        }
+      })
+      return count
+    },
+    updateEpisodeDownloadState (itemId, seasonNumber, episodeNumber, downloaded) {
+      this.$store.dispatch('setEpisodeDownloaded', {
+        itemId: itemId,
+        season: seasonNumber,
+        episode: episodeNumber,
+        downloaded: downloaded})
     }
   }
 }

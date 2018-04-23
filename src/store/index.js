@@ -175,6 +175,13 @@ export const store = new Vuex.Store({
         'downloaded': payload.downloaded
       })
     },
+    setEpisodeDownloaded: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'setEpisodeDownloaded', payload: payload.downloaded, key: 'tv:' + payload.itemId + ':' + payload.season + ':' + payload.episode}
+      context.dispatch('transactionLog', transaction)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/tv:' + payload.itemId + '/downloadedEpisodes/' + payload.season + '/' + payload.episode).update({
+        'downloaded': payload.downloaded
+      })
+    },
 
     getSuggestions: (context, parameters) => {
       if (context.state._suggestionsPage !== 0 && context.state._suggestionsPage === context.state._suggestionsPages) {

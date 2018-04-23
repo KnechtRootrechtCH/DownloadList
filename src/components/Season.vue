@@ -4,13 +4,20 @@
       <div id="content">
         <season-header v-bind:title="title" v-bind:backdrop="backdrop" v-bind:backdropPlaceholder="backdropPlaceholder" v-bind:shrink="shrink"></season-header>
         <season-poster v-bind:poster="poster" v-bind:placeholder="posterPlaceholder" v-bind:shrink="shrink"></season-poster>
-        <!-- <season-edit v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></season-edit> -->
-        <!-- <season-dialog v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"  @addComment="addComment" ref="dialog"></season-dialog> -->
+        <season-edit
+          v-bind:item="item"
+          v-bind:details="details"
+          v-bind:isSelected="isSelected"
+          v-bind:isDownloaded="isDownloaded"
+          v-bind:shrink="shrink"
+          @add="add"
+          @downloaded="markDownloaded(true)"
+          @redownload="markDownloaded(false)">
+        </season-edit>
         <b-container fluid class="content-container">
           <b-row>
             <b-col id="overview" cols="12" md="12" xl="12" class="content-section">
-              <season-synopsis v-bind:season="season"></season-synopsis>
-              <!-- <season-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></season-information> -->
+              <season-synopsis v-bind:season="season" v-bind:episodeCount="episodeCount" v-bind:downloadCount="downloadCount"></season-synopsis>
             </b-col>
           </b-row>
           <b-row>
@@ -23,36 +30,14 @@
     </div>
     <div v-if="!details || !season">
     </div>
-    <!--
-          <b-row>
-            <b-col id="overview" cols="12" md="12" xl="12" class="content-section">
-              <season-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></season-information>
-              <season-synopsis v-bind:details="details"></season-synopsis>
-            </b-col>
-          </b-row>
-          <b-row id="seasons" v-if="details.seasons">
-            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <season-seasons v-bind:item="item" v-bind:details="details" v-bind:includeSpecials="true"></season-seasons>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col id="cast" cols="12" md="12" xl="12" class="content-section">
-              <season-cast v-bind:cast="cast"></season-cast>
-            </b-col>
-          </b-row>
-          <b-row id="comments">
-            <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <season-comments v-bind:item="item"></season-comments>
-            </b-col>
-          </b-row>
-    -->
   </div>
 </template>
 
 <script>
-import SeasonHeader from './item/Header'
-import SeasonPoster from './item/Poster'
-import SeasonSynopsis from './season/Synopsis'
+import Header from './item/Header'
+import Poster from './item/Poster'
+import EditIcon from './season/EditIcon'
+import Information from './season/Information'
 import EpisodeList from './season/EpisodeList'
 import UtilsMixin from '../mixins/utils'
 
@@ -68,9 +53,10 @@ export default {
     }
   },
   components: {
-    'season-header': SeasonHeader,
-    'season-poster': SeasonPoster,
-    'season-synopsis': SeasonSynopsis,
+    'season-header': Header,
+    'season-poster': Poster,
+    'season-edit': EditIcon,
+    'season-synopsis': Information,
     'episode-list': EpisodeList
   },
   computed: {
@@ -89,6 +75,24 @@ export default {
       let season = this.$store.getters.suggestionSeason(this.seasonNumber)
       return season
     },
+    isSelected () {
+      return this.item && this.item.priority > 0
+    },
+    isDownloaded () {
+      return this.isSelected && this.downloadCount === this.episodeCount
+    },
+    downloadCount () {
+      if (!this.item) {
+        return 0
+      }
+      return this.getEpisodeDownloadCount(this.item, this.seasonNumber)
+    },
+    episodeCount () {
+      if (this.isSelected) {
+        return this.season.episodes.length
+      }
+      return -1
+    },
     poster () {
       return this.getPosterImage(this.season, this.constants.IMAGESIZE.POSTER.W185)
     },
@@ -103,12 +107,18 @@ export default {
     }
   },
   methods: {
-    addComment () {
-      window.scrollTo(0, document.body.scrollHeight)
-      console.log('add comment')
+    add () {
+      this.addItem(this.details)
     },
-    showEditDialog () {
-      this.$refs.dialog.show()
+    markDownloaded (downloaded) {
+      let episodes = this.season.episodes
+      let state = null
+      episodes.forEach(episode => {
+        state = this.getEpisodeDownloadState(this.item, this.seasonNumber, episode.episode_number)
+        if (state !== downloaded) {
+          this.updateEpisodeDownloadState(this.id, this.seasonNumber, episode.episode_number, downloaded)
+        }
+      })
     },
     handleScroll (event) {
       let scroll = document.documentElement.scrollTop

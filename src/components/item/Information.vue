@@ -1,5 +1,16 @@
 <template>
   <div>
+    <!-- PRIORITY -->
+    <!-- TODO: visual priority display (stars)-->
+    <div class="content" v-if="item && item.priority && item.priority > 0"><span class="label">{{ $t('item.priority')}}:&nbsp;</span>
+    <font-awesome-icon
+      v-for="p in priorities"
+      :key="p"
+      :icon="icon('star')"
+      class="priority-icon"
+      v-bind:class="[{ 'highlighted' : hasPriority(p) }, icon]"
+      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+    </div>
     <!-- ORIGINAL TITLE -->
     <div class="content" v-if="translated"><span class="label">{{ $t('item.originalTitle')}}:&nbsp;</span>{{ originalTitle }} ({{ details.original_language }})</div>
     <!-- RELEASE -->
@@ -39,9 +50,6 @@
         <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < links.length">,&nbsp;</span>
       </span>
     </div>
-    <!-- PRIORITY -->
-    <!-- TODO: visual priority display (stars)-->
-    <div class="content" v-if="item && item.priority && item.priority > 0"><span class="label">{{ $t('item.priority')}}:&nbsp;</span>{{ $t('item.priority' + item.priority) }}</div>
     <!-- PRODUCTION -->
     <!--
     <div class="content">
@@ -56,13 +64,15 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemInformation',
   props: ['item', 'details', 'crew', 'mediaType'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
+      hoverPriority: 10
     }
   },
   components: {
@@ -118,6 +128,12 @@ export default {
     }
   },
   methods: {
+    hasPriority (priority) {
+      return this.item.priority <= priority || this.hoverPriority <= priority
+    },
+    setItemPriority (p) {
+      this.setPriority(this.item.key, p)
+    }
   },
   i18n: {
     messages: {
@@ -141,7 +157,7 @@ export default {
           netflixSearch: 'Netflix Suche',
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
-          priority: 'Download Priorität',
+          priority: 'Priorität',
           priority1: 'hoch',
           priority2: 'mittel',
           priority3: 'tief'
@@ -167,7 +183,7 @@ export default {
           netflixSearch: 'Netflix search',
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
-          priority: 'Download priority',
+          priority: 'Priority',
           priority1: 'high',
           priority2: 'medium',
           priority3: 'low'
@@ -191,5 +207,11 @@ a {
 }
 a:hover {
   color: #ffbf58;
+}
+.priority-icon {
+  opacity: 0.5;
+}
+.priority-icon.highlighted {
+  opacity: 1;
 }
 </style>
