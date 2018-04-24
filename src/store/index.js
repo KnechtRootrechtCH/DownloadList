@@ -191,13 +191,15 @@ export const store = new Vuex.Store({
       context.dispatch('transactionLog', transaction)
       let seasons = {}
       let season = null
+      let length = 0
       payload.seasons.forEach(s => {
         season = {}
-        for (let i = 1; i <= s.episodes.length; i++) {
+        length = s.episodes ? s.episodes.length : s.episode_count
+        for (let i = 1; i <= length; i++) {
           season[i] = {}
           season[i]['downloaded'] = payload.downloaded
         }
-        seasons[s.season_number] = s
+        seasons[s.season_number] = season
       })
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/tv:' + payload.itemId + '/downloadedEpisodes').update(seasons)
     },

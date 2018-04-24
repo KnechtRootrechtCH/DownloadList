@@ -17,7 +17,7 @@
         <b-container fluid class="content-container">
           <b-row>
             <b-col id="overview" cols="12" md="12" xl="12" class="content-section">
-              <season-synopsis v-bind:season="season" v-bind:episodeCount="episodeCount" v-bind:downloadCount="downloadCount"></season-synopsis>
+              <season-synopsis v-bind:season="season" v-bind:isSelected="isSelected" v-bind:episodes="episodes" v-bind:downloaded="downloaded"></season-synopsis>
             </b-col>
           </b-row>
           <b-row>
@@ -81,13 +81,13 @@ export default {
     isDownloaded () {
       return this.isSelected && this.downloadCount === this.episodeCount
     },
-    downloadCount () {
+    downloaded () {
       if (!this.item) {
         return 0
       }
       return this.getEpisodeDownloadCount(this.item, this.seasonNumber)
     },
-    episodeCount () {
+    episodes () {
       if (this.isSelected) {
         return this.season.episodes.length
       }
@@ -111,14 +111,7 @@ export default {
       this.addItem(this.details)
     },
     markDownloaded (downloaded) {
-      let episodes = this.season.episodes
-      let state = null
-      episodes.forEach(episode => {
-        state = this.getEpisodeDownloadState(this.item, this.seasonNumber, episode.episode_number)
-        if (state !== downloaded) {
-          this.updateEpisodeDownloadState(this.id, this.seasonNumber, episode.episode_number, downloaded)
-        }
-      })
+      this.setSeasonDownloaded(this.item, this.season, downloaded)
     },
     handleScroll (event) {
       let scroll = document.documentElement.scrollTop

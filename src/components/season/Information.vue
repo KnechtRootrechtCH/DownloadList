@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="content" v-if="episodeCount > 0"><span class="label">{{ $t('item.downloaded')}}:&nbsp;</span>{{ downloadCount }}&nbsp;/&nbsp;{{ episodeCount }}</div>
+    <div class="content" v-if="isSelected"><span class="label">{{ $t('item.downloaded')}}:&nbsp;</span>{{ downloaded }}&nbsp;/&nbsp;{{ episodes }}</div>
     <div class="content"><span class="label">{{ $t('item.airDate')}}:&nbsp;</span>{{ date }}</div>
     <p>{{ season.overview }}</p>
   </div>
@@ -11,7 +11,7 @@ import UtilsMixin from '../../mixins/utils'
 
 export default {
   name: 'Overview',
-  props: ['season', 'episodeCount', 'downloadCount'],
+  props: ['season', 'isSelected', 'episodes', 'downloaded'],
   mixins: [UtilsMixin],
   data () {
     return {

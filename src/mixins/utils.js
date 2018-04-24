@@ -161,28 +161,19 @@ export default {
       }
     },
     setAllSeasonsDownloaded (item, seasons, downloaded) {
-      this.$store.commit('setLoading', true)
-      if (seasons) {
-        seasons.forEach(season => {
-          this.setSeasonDownloaded(item, season, downloaded)
-        })
-      }
-      this.$store.commit('setLoading', false)
+      this.$store.dispatch('setSeasonsDownloaded', {
+        itemId: item.id,
+        seasons: seasons,
+        downloaded: downloaded
+      })
     },
     setSeasonDownloaded (item, season, downloaded) {
-      let l = this.$store.getters.loading
-      if (!l) {
-        this.$store.commit('setLoading', true)
-      }
       this.$store.dispatch('setSeasonDownloaded', {
         itemId: item.id,
         season: season.season_number,
         episodeCount: this.episodeCount(season),
         downloaded: downloaded
       })
-      if (!l) {
-        this.$store.commit('setLoading', false)
-      }
     },
     addItem (item, mediaType) {
       item.priority = this.constants.PRIORITY.DEFAULT
