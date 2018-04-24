@@ -9,7 +9,7 @@
       <font-awesome-icon
         v-if="!isDownloaded && isSelected"
         @click="edit"
-        :icon="icon('exclamation')"
+        :icon="icon('clock')"
         class="icon"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"

@@ -9,13 +9,13 @@
       <font-awesome-icon
         v-if="!isDownloaded && isSelected"
         @click="edit"
-        :icon="icon('exclamation')"
-        class="icon"/>
+        :icon="icon('clock')"
+        class="icon edit"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"
         @click="add"
         :icon="icon('plus')"
-        class="icon"/>
+        class="icon add"/>
     </div>
   </div>
 </template>
@@ -82,10 +82,13 @@ export default {
   height: 40px;
   float: right;
   /*color: skyblue;*/
-  color: lightblue;
+  /*color: lightblue;*/
   cursor: pointer;
 }
-
+.actions .icon.add {
+  /*color: lightblue;*/
+  color: skyblue;
+}
 .actions .icon.downloaded {
   color: limegreen;
 }

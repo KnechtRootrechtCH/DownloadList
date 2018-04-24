@@ -17,7 +17,7 @@
               class="icon done"/>
             <font-awesome-icon
               v-if="!isDownloaded && isSelected"
-              :icon="icon('exclamation')"
+              :icon="icon('clock')"
               class="icon"/>
           </span>
         </span>
@@ -27,7 +27,8 @@
         <progressive-img class="still" v-bind:src="still" :blur="10"></progressive-img>
         <div>
           <div class="air-date">{{ airDate }}</div>
-          <div class="overview">{{ episode.overview }}</div>
+          <div class="overview" v-if="episode.overview">{{ episode.overview }}</div>
+          <div class="overview not-found" v-if="!episode.overview">{{ $t('episode.noOverview') }}</div>
         </div>
       </b-card-body>
     </b-card>
@@ -88,12 +89,14 @@ export default {
     messages: {
       de: {
         episode: {
-          airDate: 'Ausstrahlung'
+          airDate: 'Ausstrahlung',
+          noOverview: 'Keine Zusammenfassung verfügbar.'
         }
       },
       en: {
         episode: {
-          airDate: 'Air date'
+          airDate: 'Air date',
+          noOverview: 'No synopsis available.'
         }
       }
     }
@@ -139,5 +142,8 @@ export default {
   width: 20px;
   height: 20px;
   color: limegreen;
+}
+.not-found {
+  font-style: italic;
 }
 </style>

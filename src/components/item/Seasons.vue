@@ -21,7 +21,7 @@
                       <font-awesome-icon
                         v-if="!isDownloaded(season)"
                         @click="setSeasonDownloaded(item, season, true)"
-                        :icon="icon('exclamation')"
+                        :icon="icon('clock')"
                         class="icon"/>
                     </span>
                   </span></div>

@@ -79,7 +79,7 @@ export default {
       return this.item && this.item.priority > 0
     },
     isDownloaded () {
-      return this.isSelected && this.downloadCount === this.episodeCount
+      return this.isSelected && this.downloaded === this.episodes
     },
     downloaded () {
       if (!this.item) {

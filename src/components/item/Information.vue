@@ -131,7 +131,7 @@ export default {
       if (this.isDownloaded) {
         return this.icon('check')
       }
-      return this.icon('exclamation')
+      return this.icon('clock')
     },
     links () {
       let links = []

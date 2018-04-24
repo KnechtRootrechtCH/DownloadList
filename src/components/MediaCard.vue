@@ -26,8 +26,9 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-if="showEditButton && isSelected"
-              :icon="icon('edit')"
+              :icon="editIcon"
               class="card-icon"
+              v-bind:class="{ 'check-icon': isDownloaded }"
               @click.stop="editModeInternal = !editModeInternal, destroyTooltips()"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
@@ -42,11 +43,6 @@
               class="card-icon"
               @click.stop="toggleItem"
               v-bind:title="$t('mediaCard.tooltip.add')"/>
-            <font-awesome-icon
-              v-if="isDownloaded"
-              :icon="icon('check')"
-              class="card-icon check-icon"
-              v-bind:title="$t('mediaCard.tooltip.downloaded')"/>
           </div>
         </div>
       </div>
@@ -108,6 +104,7 @@ export default {
     },
     isDownloaded () {
       let selectedItem = this.$store.getters.item(this.item.key)
+      // TODO: downloaded state for tv shows?????
       if (selectedItem) {
         return selectedItem.downloaded
       }
@@ -120,6 +117,13 @@ export default {
     movieDbUrl () {
       let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
       return url
+    },
+    editIcon () {
+      if (this.isDownloaded) {
+        return this.icon('check')
+      } else {
+        return this.icon('clock')
+      }
     }
   },
   methods: {
@@ -209,7 +213,7 @@ export default {
   cursor: pointer;
 }
 .check-icon {
-  color: darkgreen;
+  color: green;
 }
 .overlay-container {
   width: 100%;

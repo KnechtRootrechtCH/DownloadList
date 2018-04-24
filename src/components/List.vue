@@ -13,7 +13,7 @@
             <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
               <span class="checklist-navigation-item" @click="editModeActive = !editModeActive" v-bind:class="{ active: editModeActive }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
-                <font-awesome-icon :icon="icon('edit')" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="icon('pencil')" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>

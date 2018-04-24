@@ -23,6 +23,8 @@ import playIcon from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
 import chevronUpIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleUp'
 import chevronDownIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleDown'
+import clockIcon from '@fortawesome/fontawesome-free-solid/faClock'
+import pencilIcon from '@fortawesome/fontawesome-free-solid/faPencilAlt'
 
 export default {
   methods: {
@@ -49,6 +51,8 @@ export default {
         case 'comment': return commentIcon
         case 'chevron-up': return chevronUpIcon
         case 'chevron-down': return chevronDownIcon
+        case 'clock': return clockIcon
+        case 'pencil': return pencilIcon
         default: return defaultIcon
       }
     }
