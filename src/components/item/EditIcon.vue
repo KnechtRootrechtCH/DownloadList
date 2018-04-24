@@ -26,7 +26,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'Edit',
-  props: ['details', 'item', 'shrink'],
+  props: ['details', 'isSelected', 'isDownloaded', 'shrink'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -37,15 +37,6 @@ export default {
   components: {
   },
   computed: {
-    isSelected () {
-      return this.item && this.item.priority > 0
-    },
-    isDownloaded () {
-      if (this.item) {
-        return this.item.downloaded
-      }
-      return false
-    },
     calculatedPosition () {
       let position = this.maxPosition - this.minPosition
       position = position / 100 * (100 - this.shrink)
@@ -92,7 +83,8 @@ export default {
   float: right;
   /*color: skyblue;*/
   color: lightblue;
-  }
+  cursor: pointer;
+}
 
 .actions .icon.downloaded {
   /*color: limegreen;*/

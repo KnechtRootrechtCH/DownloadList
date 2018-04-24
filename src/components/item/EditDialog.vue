@@ -4,7 +4,18 @@
    hide-header
    body-bg-variant="dark"
    v-bind:title="$t('item.dialog.title')">
-    <item-actions v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType" @close="hide" @addComment="addComment"></item-actions>
+    <item-actions
+      v-bind:item="item"
+      v-bind:details="details"
+      v-bind:seasons="seasons"
+      v-bind:mediaType="mediaType"
+      v-bind:isSelected="isSelected"
+      v-bind:isDownloaded="isDownloaded"
+      v-bind:totalDownloadedCount="totalDownloadedCount"
+      v-bind:totalEpisodeCount="totalEpisodeCount"
+      @close="hide"
+      @addComment="addComment">
+    </item-actions>
     <!--<b-btn class="mt-3" variant="secondary" block @click="hide">{{ $t('item.dialog.close') }}</b-btn>-->
   </b-modal>
 </template>
@@ -16,7 +27,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'Edit',
-  props: ['details', 'item', 'mediaType'],
+  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -26,15 +37,6 @@ export default {
     'item-actions': ItemActions
   },
   computed: {
-    isSelected () {
-      return this.item && this.item.priority > 0
-    },
-    isDownloaded () {
-      if (this.item) {
-        return this.item.downloaded
-      }
-      return false
-    }
   },
   methods: {
     show () {

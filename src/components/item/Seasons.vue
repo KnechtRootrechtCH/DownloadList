@@ -7,32 +7,22 @@
           <div class="card border-dark media-card bg-dark text-faded">
               <div class="card-body">
                 <div class="info">
-                  <router-link :to="details.id + '/season/' + season.season_number">{{ season.name }}</router-link>
+                  <router-link :to="id + '/season/' + season.season_number">{{ season.name }}</router-link>
                 </div>
                 <div class="info">{{ year(season) }}
                   <span class="download-count pull-right" v-if="isSelected">
-                    {{ downloaded(season) }}/{{ episodes(season) }}
+                    {{ downloadedCount(season) }}/{{ episodeCount(season) }}
                     <span class="actions">
                       <font-awesome-icon
                         v-if="isDownloaded(season)"
-                        @click="setDownloaded(season, false)"
+                        @click="setSeasonDownloaded(item, season, false)"
                         :icon="icon('check')"
-                        class="icon downloaded fa-hover-hidden"/>
-                      <font-awesome-icon
-                        v-if="isDownloaded(season)"
-                        @click="setDownloaded(season, false)"
-                        :icon="icon('redo')"
-                        class="icon fa-hover-show"/>
+                        class="icon downloaded"/>
                       <font-awesome-icon
                         v-if="!isDownloaded(season)"
-                        @click="setDownloaded(season, true)"
+                        @click="setSeasonDownloaded(item, season, true)"
                         :icon="icon('exclamation')"
-                        class="icon fa-hover-hidden"/>
-                      <font-awesome-icon
-                        v-if="!isDownloaded(season)"
-                        @click="setDownloaded(season, true)"
-                        :icon="icon('check')"
-                        class="icon fa-hover-show"/>
+                        class="icon"/>
                     </span>
                   </span></div>
               </div>
@@ -56,7 +46,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemSeasons',
-  props: ['item', 'details', 'includeSpecials'],
+  props: ['id', 'item', 'seasons'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -102,14 +92,6 @@ export default {
   components: {
   },
   computed: {
-    seasons () {
-      let seasons = this.details.seasons.filter((s) => s.season_number !== 0)
-      let specials = this.details.seasons.filter((s) => s.season_number === 0)
-      if (this.includeSpecials && specials && specials.length > 0) {
-        return seasons.concat(specials)
-      }
-      return seasons
-    },
     posterPlaceholder () {
       return this.getPosterPlaceholder(this.constants.IMAGESIZE.POSTER.W185)
     },
@@ -125,36 +107,13 @@ export default {
       return this.getReleaseDateFormated(season, 'YYYY')
     },
     clicked (season) {
-      this.routeTo(this.details.id + '/season/' + season.season_number)
-    },
-    episodes (season) {
-      if (season.episode_count) {
-        return season.episode_count
-      } else if (season.episodes) {
-        return season.episodes.length
-      }
-    },
-    downloaded (season) {
-      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
-      if (!count) {
-        return 0
-      }
-      return count
+      this.routeTo(this.id + '/season/' + season.season_number)
     },
     isDownloaded (season) {
       if (this.isSelected) {
-        return this.downloaded(season) === this.episodes(season)
+        return this.downloadedCount(season) === this.episodeCount(season)
       }
       return false
-    },
-    setDownloaded (season, downloaded) {
-      let state = null
-      for (let i = 1; i <= this.episodes(season); i++) {
-        state = this.getEpisodeDownloadState(this.item, season.season_number, i)
-        if (state !== downloaded) {
-          this.updateEpisodeDownloadState(this.item.id, season.season_number, i, downloaded)
-        }
-      }
     }
   },
   i18n: {
@@ -217,13 +176,6 @@ a:hover {
 }
 .swiper-scrollbar-drag {
   background: rgba(255, 255, 255, 0.5);
-}
-* > .fa-hover-show,
-.actions:hover .fa-hover-hidden {
-  display: none;
-}
-.actions:hover .fa-hover-show {
-  display: inline-block;
 }
 .photo {
   cursor: pointer;

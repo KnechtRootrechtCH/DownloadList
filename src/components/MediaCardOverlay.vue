@@ -15,14 +15,14 @@
       <font-awesome-icon
         :icon="icon('check')"
         class="card-icon overlay-icon"
-        @click.stop="setDownloaded(item.key, true)"/>
+        @click.stop="setDownloaded(item, true)"/>
     </div>
     <div v-if="showReDownloadControls && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
     <div v-if="showReDownloadControls && downloaded" class="overlay-content">
       <font-awesome-icon
         :icon="icon('redo')"
         class="card-icon overlay-icon"
-        @click.stop="setDownloaded(item.key, false)"/>
+        @click.stop="setDownloaded(item, false)"/>
     </div>
   </div>
 </template>

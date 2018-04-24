@@ -4,18 +4,36 @@
       <div id="content">
         <item-header v-bind:title="title" v-bind:backdrop="backdrop" v-bind:backdropPlaceholder="backdropPlaceholder" v-bind:shrink="shrink"></item-header>
         <item-poster v-bind:poster="poster" v-bind:placeholder="posterPlaceholder" v-bind:shrink="shrink"></item-poster>
-        <item-edit v-bind:item="item" v-bind:details="details" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></item-edit>
-        <item-dialog v-bind:item="item" v-bind:details="details" v-bind:mediaType="mediaType"  @addComment="addComment" ref="dialog"></item-dialog>
+        <item-edit v-bind:details="details" v-bind:isSelected="isSelected" v-bind:isDownloaded="isDownloaded" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></item-edit>
+        <item-dialog
+          ref="dialog"
+          v-bind:item="item"
+          v-bind:details="details"
+          v-bind:seasons="seasons"
+          v-bind:mediaType="mediaType"
+          v-bind:isSelected="isSelected"
+          v-bind:isDownloaded="isDownloaded"
+          v-bind:totalDownloadedCount="totalDownloadedCount"
+          v-bind:totalEpisodeCount="totalEpisodeCount"
+          @addComment="addComment">
+        </item-dialog>
         <b-container fluid class="content-container">
           <b-row>
             <b-col id="overview" cols="12" md="12" xl="12" class="content-section">
-              <item-information v-bind:item="item" v-bind:details="details" v-bind:crew="crew" v-bind:mediaType="mediaType"></item-information>
+              <item-information
+                v-bind:item="item"
+                v-bind:details="details"
+                v-bind:crew="crew"
+                v-bind:mediaType="mediaType"
+                v-bind:totalDownloadedCount="totalDownloadedCount"
+                v-bind:totalEpisodeCount="totalEpisodeCount"
+                @toggleDownloaded="toggleDownloadedState"></item-information>
               <item-synopsis v-bind:details="details"></item-synopsis>
             </b-col>
           </b-row>
           <b-row id="seasons" v-if="details.seasons">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <item-seasons v-bind:item="item" v-bind:details="details" v-bind:includeSpecials="false"></item-seasons>
+              <item-seasons v-bind:id="id" v-bind:item="item" v-bind:seasons="seasons"></item-seasons>
             </b-col>
           </b-row>
           <b-row>
@@ -59,7 +77,8 @@ export default {
       commentsEditMode: false,
       shrink: 0,
       shrinkStart: 0,
-      shrinkEnd: 150
+      shrinkEnd: 150,
+      includeSpecials: false
     }
   },
   components: {
@@ -105,6 +124,51 @@ export default {
     },
     backdropPlaceholder () {
       return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W1400)
+    },
+    isSelected () {
+      return this.item && this.item.priority > 0
+    },
+    isDownloaded () {
+      if (!this.isSelected) {
+        return false
+      }
+      if (this.isTv(this.item)) {
+        return this.totalDownloadedCount === this.totalEpisodeCount
+      } else {
+        return this.item.downloaded
+      }
+    },
+    totalDownloadedCount () {
+      let count = 0
+      if (this.isTv(this.item)) {
+        let seasons = this.seasons
+        if (seasons !== null) {
+          this.seasons.forEach(season => {
+            count += this.getDownloadedEpisodeCount(season)
+          })
+        }
+      }
+      return count
+    },
+    totalEpisodeCount () {
+      let count = 0
+      if (this.isTv(this.item)) {
+        let seasons = this.seasons
+        if (seasons !== null) {
+          this.seasons.forEach(season => {
+            count += this.getEpisodeCount(season)
+          })
+        }
+      }
+      return count
+    },
+    seasons () {
+      let seasons = this.details.seasons.filter((s) => s.season_number !== 0)
+      let specials = this.details.seasons.filter((s) => s.season_number === 0)
+      if (this.includeSpecials && specials && specials.length > 0) {
+        return seasons.concat(specials)
+      }
+      return seasons
     }
   },
   methods: {
@@ -127,6 +191,23 @@ export default {
         shrink = 100
       }
       this.shrink = shrink
+    },
+    getEpisodeCount (season) {
+      if (season.episode_count) {
+        return season.episode_count
+      } else if (season.episodes) {
+        return season.episodes.length
+      }
+    },
+    getDownloadedEpisodeCount (season) {
+      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
+      if (!count) {
+        return 0
+      }
+      return count
+    },
+    toggleDownloadedState () {
+      this.setDownloaded(this.item, !this.isDownloaded, this.seasons)
     }
   },
   created () {

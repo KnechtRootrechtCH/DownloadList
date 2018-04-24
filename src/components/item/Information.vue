@@ -1,7 +1,18 @@
 <template>
   <div>
+    <!-- DOWNLOADED -->
+    <div class="content" v-if="isSelected">
+      <span class="label">{{ $t('item.downloaded')}}:&nbsp;</span>
+      <font-awesome-icon
+          :icon="downloadedIcon"
+          class="icon"
+          @click="$emit('toggleDownloaded')"
+          v-bind:class="{ 'downloaded' : isDownloaded }"/>
+      <span v-if="isTv(item)">{{ totalDownloadedCount }}&nbsp;/&nbsp;{{ totalEpisodeCount }}</span>
+      <span v-if="isMovie(item)">{{ $t('item.' + item.downloaded) }}</span>
+    </div>
+    <div class="content" v-if="isSelected && isMovie(item)"></div>
     <!-- PRIORITY -->
-    <!-- TODO: visual priority display (stars)-->
     <div class="content" v-if="item && item.priority && item.priority > 0"><span class="label">{{ $t('item.priority')}}:&nbsp;</span>
     <font-awesome-icon
       v-for="p in priorities"
@@ -68,7 +79,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemInformation',
-  props: ['item', 'details', 'crew', 'mediaType'],
+  props: ['item', 'details', 'crew', 'mediaType', 'totalEpisodeCount', 'totalDownloadedCount'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -108,6 +119,19 @@ export default {
     },
     homepage () {
       return this.details.homepage
+    },
+    isSelected () {
+      return this.item && this.item.priority > 0
+    },
+    isDownloaded () {
+      return (this.isTv(this.item) && this.totalDownloadedCount === this.totalEpisodeCount) ||
+        (!this.isTv(this.item) && this.item.downloaded)
+    },
+    downloadedIcon () {
+      if (this.isDownloaded) {
+        return this.icon('check')
+      }
+      return this.icon('exclamation')
     },
     links () {
       let links = []
@@ -160,7 +184,10 @@ export default {
           priority: 'Priorität',
           priority1: 'hoch',
           priority2: 'mittel',
-          priority3: 'tief'
+          priority3: 'tief',
+          downloaded: 'Heruntergeladen',
+          true: 'Ja',
+          false: 'Nein'
         }
       },
       en: {
@@ -186,7 +213,10 @@ export default {
           priority: 'Priority',
           priority1: 'high',
           priority2: 'medium',
-          priority3: 'low'
+          priority3: 'low',
+          downloaded: 'Downloaded',
+          true: 'Yes',
+          false: 'No'
         }
       }
     }
@@ -210,8 +240,16 @@ a:hover {
 }
 .priority-icon {
   opacity: 0.5;
+  cursor: pointer;
 }
 .priority-icon.highlighted {
   opacity: 1;
+}
+.icon {
+  cursor: pointer;
+}
+.icon.downloaded {
+  opacity: 1;
+  color: limegreen;
 }
 </style>

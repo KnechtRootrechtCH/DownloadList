@@ -101,7 +101,7 @@ import UtilMixins from '../../mixins/utils'
 
 export default {
   name: 'ItemActions',
-  props: ['item', 'details', 'mediaType'],
+  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
   mixins: [UtilMixins],
   data () {
     return {
@@ -116,15 +116,6 @@ export default {
       if (this.item) {
         return this.item.priority
       }
-    },
-    isSelected () {
-      return this.item && this.item.priority > 0
-    },
-    isDownloaded () {
-      if (this.item) {
-        return this.item.downloaded
-      }
-      return false
     }
   },
   methods: {
@@ -137,10 +128,8 @@ export default {
       this.removeItem(this.item.key)
     },
     markDownloaded (downloaded) {
-      if (downloaded) {
-        this.$emit('close')
-      }
-      this.setDownloaded(this.item.key, downloaded)
+      this.$emit('close')
+      this.setDownloaded(this.item, downloaded, this.seasons)
     },
     openNetflixUrl () {
       this.$emit('close')

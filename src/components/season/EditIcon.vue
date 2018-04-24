@@ -5,22 +5,12 @@
         v-if="isDownloaded"
         @click="redownload"
         :icon="icon('check')"
-        class="icon downloaded fa-hover-hidden"/>
-      <font-awesome-icon
-        v-if="isDownloaded"
-        @click="redownload"
-        :icon="icon('redo')"
-        class="icon fa-hover-show"/>
+        class="icon downloaded"/>
       <font-awesome-icon
         v-if="!isDownloaded && isSelected"
         @click="edit"
         :icon="icon('exclamation')"
-        class="icon fa-hover-hidden"/>
-      <font-awesome-icon
-        v-if="!isDownloaded && isSelected"
-        @click="edit"
-        :icon="icon('check')"
-        class="icon fa-hover-show"/>
+        class="icon"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"
         @click="add"
@@ -77,14 +67,6 @@ export default {
 </script>
 
 <style scoped>
-* > .fa-hover-show,
-.actions:hover .fa-hover-hidden {
-  display: none;
-}
-.actions:hover .fa-hover-show {
-  display: inline-block;
-}
-
 .actions {
   position: fixed;
   right: 15px;
@@ -96,6 +78,7 @@ export default {
   height: 40px;
   float: right;
   /*color: skyblue;*/
+  cursor: pointer;
 }
 
 .actions .icon.downloaded {

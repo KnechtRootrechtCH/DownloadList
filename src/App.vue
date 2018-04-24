@@ -29,6 +29,9 @@ export default {
   computed: {
     movieDbConfig () {
       return this.$store.getters.movieDbConfiguration
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   },
   created: function () {

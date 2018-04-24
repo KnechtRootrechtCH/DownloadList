@@ -14,24 +14,11 @@
             <font-awesome-icon
               v-if="isDownloaded"
               :icon="icon('check')"
-              class="icon done fa-hover-hidden"/>
-            <font-awesome-icon
-              v-if="isDownloaded"
-              :icon="icon('redo')"
-              class="icon fa-hover-show"/>
+              class="icon done"/>
             <font-awesome-icon
               v-if="!isDownloaded && isSelected"
               :icon="icon('exclamation')"
-              class="icon fa-hover-hidden"/>
-            <font-awesome-icon
-              v-if="!isDownloaded && isSelected"
-              :icon="icon('check')"
-              class="icon fa-hover-show"/>
-            <!--<font-awesome-icon
-              v-if="!isDownloaded && !isSelected"
-              @click="add"
-              :icon="icon('plus')"
-              class="icon"/>-->
+              class="icon"/>
           </span>
         </span>
       </b-card-header>
@@ -116,7 +103,7 @@ export default {
 
 <style scoped>
 *:focus {
-    outline: none;
+  outline: none;
 }
 .card {
   margin-bottom: 10px;
@@ -152,12 +139,5 @@ export default {
   width: 20px;
   height: 20px;
   color: limegreen;
-}
-* > .fa-hover-show,
-.card-header:hover .actions .fa-hover-hidden {
-  display: none;
-}
-.card-header:hover .actions .fa-hover-show {
-  display: inline-block;
 }
 </style>

@@ -149,11 +149,39 @@ export default {
         key: key,
         priority: priority})
     },
-    setDownloaded (key, downloaded) {
-      if (this.item) {
+    setDownloaded (item, downloaded, seasons) {
+      if (!this.isTv(item)) {
         this.$store.dispatch('setItemDownloaded', {
-          key: this.item.key,
+          key: item.key,
           downloaded: downloaded})
+      } else if (seasons) {
+        this.setAllSeasonsDownloaded(item, seasons, downloaded)
+      } else {
+        this.$error('Unable to set downloaded state for item ' + item.key + '! Please provide seasons list')
+      }
+    },
+    setAllSeasonsDownloaded (item, seasons, downloaded) {
+      this.$store.commit('setLoading', true)
+      if (seasons) {
+        seasons.forEach(season => {
+          this.setSeasonDownloaded(item, season, downloaded)
+        })
+      }
+      this.$store.commit('setLoading', false)
+    },
+    setSeasonDownloaded (item, season, downloaded) {
+      let l = this.$store.getters.loading
+      if (!l) {
+        this.$store.commit('setLoading', true)
+      }
+      this.$store.dispatch('setSeasonDownloaded', {
+        itemId: item.id,
+        season: season.season_number,
+        episodeCount: this.episodeCount(season),
+        downloaded: downloaded
+      })
+      if (!l) {
+        this.$store.commit('setLoading', false)
       }
     },
     addItem (item, mediaType) {
@@ -205,6 +233,20 @@ export default {
         season: seasonNumber,
         episode: episodeNumber,
         downloaded: downloaded})
+    },
+    episodeCount (season) {
+      if (season.episode_count) {
+        return season.episode_count
+      } else if (season.episodes) {
+        return season.episodes.length
+      }
+    },
+    downloadedCount (season) {
+      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
+      if (!count) {
+        return 0
+      }
+      return count
     }
   }
 }

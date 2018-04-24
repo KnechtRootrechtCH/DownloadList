@@ -16,6 +16,7 @@ export const store = new Vuex.Store({
     _locale: 'en',
     _user: null,
     _dataUserId: null,
+    _loading: false,
 
     _items: {},
     _suggestionDetails: null,
@@ -44,15 +45,16 @@ export const store = new Vuex.Store({
     setDataUserId: (state, uid) => {
       state._dataUserId = uid
     },
+    setLoading: (state, loading) => { state._loading = loading },
 
-    setItems (state, items) { state._items = items },
-    resetSuggestions (state) {
+    setItems: (state, items) => { state._items = items },
+    resetSuggestions: (state) => {
       state._suggestionsCount = 0
       state._suggestionsPage = 0
       state._suggestionsPages = 0
       state._suggestions = []
     },
-    setSuggestionDetails (state, payload) {
+    setSuggestionDetails: (state, payload) => {
       if (payload) {
         let details = payload.data
         details.media_type = payload.media_type
@@ -62,27 +64,27 @@ export const store = new Vuex.Store({
         state._suggestionDetails = null
       }
     },
-    setSuggestionCast (state, payload) {
+    setSuggestionCast: (state, payload) => {
       if (payload) {
         state._suggestionCast = payload.data.cast
       } else {
         state.__suggestionCast = null
       }
     },
-    setSuggestionCrew (state, payload) {
+    setSuggestionCrew: (state, payload) => {
       if (payload) {
         state._suggestionCrew = payload.data.crew
       } else {
         state._suggestionCrew = null
       }
     },
-    setSuggestionSeason (state, payload) {
+    setSuggestionSeason: (state, payload) => {
       if (payload.data && payload.data.season_number >= 0) {
         // state._suggestionSeasons.set('season_' + payload.data.season_number, payload.data)
         Vue.set(state._suggestionSeasons, 'season_' + payload.data.season_number, payload.data)
       }
     },
-    setSuggestions (state, payload) {
+    setSuggestions: (state, payload) => {
       state._suggestionsCount = payload.count
       state._suggestionsPage = payload.page
       state._suggestionsPages = payload.pages
@@ -175,8 +177,33 @@ export const store = new Vuex.Store({
         'downloaded': payload.downloaded
       })
     },
+    setSeasonsDownloaded: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'setAllSeasonDownloaded', payload: payload, key: 'tv:' + payload.itemId}
+      context.dispatch('transactionLog', transaction)
+      let seasons = {}
+      let season = null
+      payload.seasons.forEach(s => {
+        season = {}
+        for (let i = 1; i <= s.episodes.length; i++) {
+          season[i] = {}
+          season[i]['downloaded'] = payload.downloaded
+        }
+        seasons[s.season_number] = s
+      })
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/tv:' + payload.itemId + '/downloadedEpisodes').update(seasons)
+    },
+    setSeasonDownloaded: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'setSeasonDownloaded', payload: payload, key: 'tv:' + payload.itemId}
+      context.dispatch('transactionLog', transaction)
+      let season = {}
+      for (let i = 1; i <= payload.episodeCount; i++) {
+        season[i] = {}
+        season[i]['downloaded'] = payload.downloaded
+      }
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/tv:' + payload.itemId + '/downloadedEpisodes/' + payload.season).update(season)
+    },
     setEpisodeDownloaded: (context, payload) => {
-      let transaction = {time: new Date().toString(), action: 'setEpisodeDownloaded', payload: payload.downloaded, key: 'tv:' + payload.itemId + ':' + payload.season + ':' + payload.episode}
+      let transaction = {time: new Date().toString(), action: 'setEpisodeDownloaded', payload: payload, key: 'tv:' + payload.itemId}
       context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/tv:' + payload.itemId + '/downloadedEpisodes/' + payload.season + '/' + payload.episode).update({
         'downloaded': payload.downloaded
@@ -274,6 +301,7 @@ export const store = new Vuex.Store({
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
     dataUserId: (state) => { return state._dataUserId },
+    loading: (state) => { return state._loading },
 
     items: (state) => { return state._items },
     item: (state) => (key) => { return state._items !== null ? state._items[key] : null },
