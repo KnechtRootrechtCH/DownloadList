@@ -19,6 +19,7 @@ export const store = new Vuex.Store({
     _loading: false,
 
     _items: {},
+    _comments: [],
     _suggestionDetails: null,
     _suggestionCast: null,
     _suggestionCrew: null,
@@ -48,6 +49,7 @@ export const store = new Vuex.Store({
     setLoading: (state, loading) => { state._loading = loading },
 
     setItems: (state, items) => { state._items = items },
+    setComments: (state, comments) => { state._comments = comments },
     resetSuggestions: (state) => {
       state._suggestionsCount = 0
       state._suggestionsPage = 0
@@ -165,10 +167,17 @@ export const store = new Vuex.Store({
         'priority': payload.priority
       })
     },
-    addItemComment: (context, payload) => {
-      let transaction = {time: new Date().toString(), action: 'addItemComment', payload: payload.comment, key: payload.key}
+    getComments: (context, key) => {
+      firebase.database.ref('comments/' + key).on('value', (snapshot) => {
+        context.commit('setComments', snapshot.val())
+      })
+    },
+    addComment: (context, payload) => {
+      console.log(payload)
+      let transaction = {time: new Date().toString(), action: 'addComment', payload: payload.comment, key: payload.key}
       context.dispatch('transactionLog', transaction)
-      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key + '/comments/').push(payload.comment)
+      console.log(transaction)
+      firebase.database.ref('comments/' + payload.key).push(payload.comment)
     },
     setItemDownloaded: (context, payload) => {
       let transaction = {time: new Date().toString(), action: 'setItemDownloaded', payload: payload.downloaded, key: payload.key}
@@ -313,6 +322,7 @@ export const store = new Vuex.Store({
       }
       return array
     },
+    comments: (state) => { return state._comments },
 
     suggestionDetails: (state) => { return state._suggestionDetails },
     suggestionCast: (state) => { return state._suggestionCast },

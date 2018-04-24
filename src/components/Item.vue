@@ -43,7 +43,7 @@
           </b-row>
           <b-row id="comments">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
-              <item-comments v-bind:item="item"></item-comments>
+              <item-comments v-bind:itemKey="itemKey"></item-comments>
             </b-col>
           </b-row>
         </b-container>
@@ -94,6 +94,9 @@ export default {
     'item-comments': ItemComments
   },
   computed: {
+    itemKey () {
+      return this.mediaType + ':' + this.id
+    },
     details () {
       let details = this.$store.getters.suggestionDetails
       return details
@@ -163,6 +166,9 @@ export default {
       return count
     },
     seasons () {
+      if (!this.isTv(this.details)) {
+        return null
+      }
       let seasons = this.details.seasons.filter((s) => s.season_number !== 0)
       let specials = this.details.seasons.filter((s) => s.season_number === 0)
       if (this.includeSpecials && specials && specials.length > 0) {

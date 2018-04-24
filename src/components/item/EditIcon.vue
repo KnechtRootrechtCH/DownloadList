@@ -9,7 +9,7 @@
       <font-awesome-icon
         v-if="!isDownloaded && isSelected"
         @click="edit"
-        :icon="icon('edit')"
+        :icon="icon('exclamation')"
         class="icon"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"
@@ -87,7 +87,6 @@ export default {
 }
 
 .actions .icon.downloaded {
-  /*color: limegreen;*/
-  color: lightblue;
+  color: limegreen;
 }
 </style>

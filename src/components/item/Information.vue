@@ -187,7 +187,8 @@ export default {
           priority3: 'tief',
           downloaded: 'Heruntergeladen',
           true: 'Ja',
-          false: 'Nein'
+          false: 'Nein',
+          undefined: 'Nein'
         }
       },
       en: {
@@ -216,7 +217,8 @@ export default {
           priority3: 'low',
           downloaded: 'Downloaded',
           true: 'Yes',
-          false: 'No'
+          false: 'No',
+          undefined: 'No'
         }
       }
     }

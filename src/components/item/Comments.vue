@@ -1,9 +1,9 @@
 <template>
   <div id="comments">
-    <div class="content" v-if="item">
+    <div class="content">
       <h5 class="label">{{ $t('item.comments')}}</h5>
-      <div v-if="item.comments">
-        <div v-for="comment in item.comments" :key="comment.id" class="comment">
+      <div v-if="comments">
+        <div v-for="comment in comments" :key="comment.id" class="comment">
           <b-card no-body bg-variant="dark" border-variant="dark">
             <b-card-header
               header-bg-variant="dark"
@@ -37,7 +37,7 @@
 
 export default {
   name: 'ItemComments',
-  props: ['item', 'details', 'mediaType'],
+  props: ['itemKey'],
   data () {
     return {
       commentText: ''
@@ -46,6 +46,9 @@ export default {
   components: {
   },
   computed: {
+    comments () {
+      return this.$store.getters.comments
+    },
     commentStringEntered () {
       return this.commentText !== null && this.commentText.length > 0
     }
@@ -60,14 +63,18 @@ export default {
       }
       let comment = {}
       let timestamp = this.$moment().format()
+      let key = this.itemKey
       comment.time = timestamp
       comment.author = this.$store.getters.user.email
       comment.text = this.commentText
-      this.$store.dispatch('addItemComment', {
-        key: this.item.key,
+      this.$store.dispatch('addComment', {
+        key: key,
         comment: comment})
       this.commentText = null
     }
+  },
+  created () {
+    this.$store.dispatch('getComments', this.itemKey)
   },
   i18n: {
     messages: {
