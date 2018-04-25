@@ -1,29 +1,51 @@
 <template>
   <div class="overlay" v-bind:class="{ 'overlay-active' : editMode }">
-    <div v-if="showPriorityControls" class="overlay-content">{{ $t('mediaCard.changepriority') }}</div>
-    <div v-if="showPriorityControls" class="overlay-content">
+    <b-list-group class="actions">
+      <b-list-group-item
+        button
+        @click.stop="incrementPriority()"
+        class="action button-blue">
         <font-awesome-icon
           v-for="p in priorities"
           :key="p"
           :icon="icon('star')"
-          class="overlay-icon"
+          class="icon priority-icon"
           v-bind:class="{ 'inactive': !hasPriority(p), 'highlight': hoverPriorityIcon(p) }"
-          @click.stop="setPriority(item.key, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
-    </div>
-    <div v-if="showReDownloadControls && !downloaded" class="overlay-content">{{ $t('mediaCard.markAsDownloaded') }}</div>
-    <div v-if="showReDownloadControls && !downloaded" class="overlay-content">
-      <font-awesome-icon
-        :icon="icon('check')"
-        class="card-icon overlay-icon"
-        @click.stop="setDownloaded(item, true)"/>
-    </div>
-    <div v-if="showReDownloadControls && downloaded" class="overlay-content">{{ $t('mediaCard.redownload') }}</div>
-    <div v-if="showReDownloadControls && downloaded" class="overlay-content">
-      <font-awesome-icon
-        :icon="icon('redo')"
-        class="card-icon overlay-icon"
-        @click.stop="setDownloaded(item, false)"/>
-    </div>
+          @click.stop="setPriority(item.key, p)"
+          @mouseover="hoverPriority = p"
+          @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+        <span class="label">{{ $t('overlay.priority') }}</span>
+      </b-list-group-item>
+      <b-list-group-item
+        button
+        v-if="!downloaded"
+        @click.stop="setDownloaded(item, true), $emit('close')"
+        class="action button-blue">
+        <font-awesome-icon
+          :icon="icon('check')"
+          class="icon"/>
+        <span class="label">{{ $t('overlay.check') }}</span>
+      </b-list-group-item>
+      <b-list-group-item
+        button
+        v-if="downloaded"
+        @click.stop="setDownloaded(item, false)"
+        class="action button-blue">
+        <font-awesome-icon
+          :icon="icon('redo')"
+          class="icon"/>
+        <span class="label">{{ $t('overlay.redo') }}</span>
+      </b-list-group-item>
+      <b-list-group-item
+        button
+        @click.stop="removeItem(item.key), $emit('close')"
+        class="action button-blue">
+        <font-awesome-icon
+          :icon="icon('minus')"
+          class="icon"/>
+        <span class="label">{{ $t('overlay.remove') }}</span>
+      </b-list-group-item>
+    </b-list-group>
   </div>
 </template>
 
@@ -73,11 +95,25 @@ export default {
     },
     hoverPriorityIcon (priority) {
       return priority >= this.hoverPriority
+    },
+    incrementPriority () {
+      let priority = this.selectedItem.priority - 1
+      if (priority < this.constants.PRIORITY.MAX) {
+        priority = this.constants.PRIORITY.MIN
+      }
+      this.setPriority(this.selectedItem.key, priority)
+      this.hoverPriority = this.constants.PRIORITY.MIN + 1
     }
   },
   i18n: {
     messages: {
       de: {
+        overlay: {
+          priority: 'Priorität',
+          check: 'Erledigt',
+          redo: 'Redownload',
+          remove: 'Entfernen'
+        },
         mediaCard: {
           changepriority: 'Priorität',
           redownload: 'Erneut Herunterladen',
@@ -85,6 +121,12 @@ export default {
         }
       },
       en: {
+        overlay: {
+          priority: 'Priority',
+          check: 'Done',
+          redo: 'Redownload',
+          remove: 'Remove'
+        },
         mediaCard: {
           changepriority: 'Priority',
           redownload: 'Mark for Re-Download',
@@ -113,7 +155,7 @@ export default {
 .overlay-active {
   opacity: 1;
   z-index: 2;
-  padding: 5px;
+  padding: 0;
 }
 .overlay-content {
   text-align: center;
@@ -134,6 +176,36 @@ export default {
   opacity: 1;
 }
 .overlay-icon.highlight {
+  opacity: 1;
+}
+.actions {
+  height: 100%;
+}
+.action {
+  height: 33.33%;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0 10px 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.actions .icon {
+  color: white;
+  height: 26px;
+  width: 26px;
+}
+.action .label {
+  color: white;
+  float: right;
+  text-transform: uppercase;
+}
+.action .icon.inactive {
+  opacity: 0.5;
+}
+.action .icon.inactive.highlight {
+  opacity: 1;
+}
+.action .icon.highlight {
   opacity: 1;
 }
 </style>

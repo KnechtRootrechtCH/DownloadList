@@ -34,7 +34,7 @@ export default {
 
 <style scoped>
 *:focus {
-    outline: none;
+  outline: none;
 }
 .clickable {
   cursor: pointer;

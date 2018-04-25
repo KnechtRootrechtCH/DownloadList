@@ -3,7 +3,7 @@
     <div class="card-img-top" v-on:click.stop="cardClicked()">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
-        <overlay v-bind:item="item" v-bind:editMode="editModeActive" v-bind:showPriorityControls="showPriorityControls" v-bind:showReDownloadControls="showReDownloadControls" ></overlay>
+        <overlay v-bind:item="item" v-bind:editMode="editModeActive" v-bind:showPriorityControls="showPriorityControls" v-bind:showReDownloadControls="showReDownloadControls" @close="editModeInternal = false"></overlay>
       </div>
     </div>
     <div class="card-body">
@@ -29,16 +29,17 @@
               :icon="editIcon"
               class="card-icon"
               v-bind:class="{ 'check-icon': isDownloaded }"
-              @click.stop="editModeInternal = !editModeInternal, destroyTooltips()"
+              @click.stop="editModeInternal = !editModeInternal"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
+            <!--
             <font-awesome-icon
               v-if="isSelected && !isDownloaded"
               :icon="icon('minus')"
               class="card-icon"
               @click.stop="toggleItem"
-              v-bind:title="$t('mediaCard.tooltip.remove')"/>
+              v-bind:title="$t('mediaCard.tooltip.remove')"/>-->
             <font-awesome-icon
-              v-if="!isSelected && !isDownloaded"
+              v-if="!isSelected"
               :icon="icon('plus')"
               class="card-icon"
               @click.stop="toggleItem"
@@ -75,6 +76,9 @@ export default {
   },
   computed: {
     editModeActive () {
+      if (!this.isSelected) {
+        return false
+      }
       switch (this.editModeHandling) {
         case 'internal':
           return this.editModeInternal
