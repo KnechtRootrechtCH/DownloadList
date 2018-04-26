@@ -25,11 +25,12 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import ImagesMixin from '../../mixins/images'
 
 export default {
   name: 'ItemCast',
   props: ['cast'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, ImagesMixin],
   data () {
     return {
       swiperOptions: {

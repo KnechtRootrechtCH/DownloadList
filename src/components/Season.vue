@@ -40,11 +40,15 @@ import EditIcon from './season/EditIcon'
 import Information from './season/Information'
 import EpisodeList from './season/EpisodeList'
 import UtilsMixin from '../mixins/utils'
+import ImagesMixin from '../mixins/images'
+import MetadataMixin from '../mixins/metadata'
+import TvShowsMixin from '../mixins/tv'
+import TransactionsMixin from '../mixins/transactions'
 
 export default {
   name: 'Season',
   props: ['id', 'seasonNumber'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TvShowsMixin, TransactionsMixin],
   data () {
     return {
       shrink: 0,

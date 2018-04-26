@@ -23,11 +23,12 @@
 <script>
 import UtilsMixin from '../../mixins/utils'
 import IconsMixin from '../../mixins/icons'
+import TransactionsMixin from '../../mixins/transactions'
 
 export default {
   name: 'EditIcon',
   props: ['details', 'isSelected', 'isDownloaded', 'shrink'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
       minPosition: 63,

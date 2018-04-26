@@ -97,12 +97,14 @@
 <script>
 import ItemAction from './Action'
 import ItemPriority from './Priority'
-import UtilMixins from '../../mixins/utils'
+import UtilMixin from '../../mixins/utils'
+import MetadataMixin from '../../mixins/metadata'
+import TransactionsMixin from '../../mixins/transactions'
 
 export default {
   name: 'ItemActions',
   props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
-  mixins: [UtilMixins],
+  mixins: [UtilMixin, MetadataMixin, TransactionsMixin],
   data () {
     return {
     }

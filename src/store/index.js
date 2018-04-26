@@ -192,10 +192,8 @@ export const store = new Vuex.Store({
       })
     },
     addComment: (context, payload) => {
-      console.log(payload)
       let transaction = {time: new Date().toString(), action: 'addComment', payload: payload.comment, key: payload.key}
       context.dispatch('transactionLog', transaction)
-      console.log(transaction)
       firebase.database.ref('comments/' + payload.key).push(payload.comment)
     },
     setItemDownloaded: (context, payload) => {

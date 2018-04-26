@@ -8,11 +8,12 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import MetadataMixin from '../../mixins/metadata'
 
 export default {
   name: 'Overview',
   props: ['season', 'isSelected', 'episodes', 'downloaded'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, MetadataMixin],
   data () {
     return {
     }

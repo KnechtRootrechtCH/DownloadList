@@ -53,6 +53,10 @@
 <script>
 import MediaCardEditOverlay from './MediaCardOverlay'
 import UtilsMixin from '../mixins/utils'
+import ImagesMixin from '../mixins/images'
+import MetadataMixin from '../mixins/metadata'
+import TvShowsMixin from '../mixins/tv'
+import TransactionsMixon from '../mixins/transactions'
 import IconsMixin from '../mixins/icons'
 
 export default {
@@ -64,7 +68,7 @@ export default {
     'showPriorityControls',
     'showReDownloadControls',
     'detailsRouterPrefix'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TvShowsMixin, TransactionsMixon, IconsMixin],
   data () {
     return {
       editModeInternal: false

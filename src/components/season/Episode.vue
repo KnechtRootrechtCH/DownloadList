@@ -37,12 +37,15 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import ImagesMixin from '../../mixins/images'
+import TvShowsMixin from '../../mixins/tv'
+import TransactionsMixin from '../../mixins/transactions'
 import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemEpisode',
   props: ['id', 'item', 'episode'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, ImagesMixin, TvShowsMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
     }
@@ -74,7 +77,7 @@ export default {
       return this.getStillPlaceholder(this.constants.IMAGESIZE.STILL.W144)
     },
     episodeNumber () {
-      return this.utils.padNumber(this.episode.episode_number, 2)
+      return this.helpers.padNumber(this.episode.episode_number, 2)
     }
   },
   methods: {

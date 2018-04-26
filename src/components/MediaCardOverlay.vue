@@ -51,12 +51,13 @@
 
 <script>
 import UtilsMixin from '../mixins/utils'
+import TransactionsMixon from '../mixins/transactions'
 import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCardEditOverlay',
   props: ['item', 'editMode', 'showPriorityControls', 'showReDownloadControls', 'selectedItem', 'seasons', 'isDownloaded'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, TransactionsMixon, IconsMixin],
   data () {
     return {
       hoverPriority: 100

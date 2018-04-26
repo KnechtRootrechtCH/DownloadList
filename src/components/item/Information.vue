@@ -75,12 +75,14 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import MetadataMixin from '../../mixins/metadata'
+import TransactionsMixin from '../../mixins/transactions'
 import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemInformation',
   props: ['item', 'details', 'crew', 'mediaType', 'totalEpisodeCount', 'totalDownloadedCount'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, MetadataMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
       hoverPriority: 10

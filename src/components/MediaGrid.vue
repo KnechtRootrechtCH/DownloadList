@@ -23,11 +23,12 @@
 
 <script>
 import MediaCard from './MediaCard'
+import MetadataMixin from '../mixins/metadata'
 import UtilsMixin from '../mixins/utils'
 
 export default {
   name: 'MediaGrid',
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, MetadataMixin],
   props: ['items',
     'sort',
     'filter',

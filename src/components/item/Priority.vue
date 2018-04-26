@@ -17,12 +17,13 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import TransactionsMixin from '../../mixins/transactions'
 import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemPriority',
   props: ['itemKey', 'current', 'label', 'iconType', 'isClickable', 'isActive', 'color', 'isReactive'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
       hoverPriority: 10

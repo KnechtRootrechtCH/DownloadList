@@ -42,12 +42,16 @@
 
 <script>
 import UtilsMixin from '../../mixins/utils'
+import ImagesMixin from '../../mixins/images'
+import MetadataMixin from '../../mixins/metadata'
+import TvShowsMixin from '../../mixins/tv'
+import TransactionsMixin from '../../mixins/transactions'
 import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemSeasons',
   props: ['id', 'item', 'seasons'],
-  mixins: [UtilsMixin, IconsMixin],
+  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TvShowsMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
       swiperOptions: {

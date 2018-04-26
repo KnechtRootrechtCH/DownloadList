@@ -67,11 +67,15 @@ import ItemCast from './item/Cast'
 import ItemSeasons from './item/Seasons'
 import ItemComments from './item/Comments'
 import UtilsMixin from '../mixins/utils'
+import ImagesMixin from '../mixins/images'
+import MetadataMixin from '../mixins/metadata'
+import TvShowsMixin from '../mixins/tv'
+import TransactionsMixin from '../mixins/transactions'
 
 export default {
   name: 'Item',
   props: ['id', 'mediaType'],
-  mixins: [UtilsMixin],
+  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TvShowsMixin, TransactionsMixin],
   data () {
     return {
       commentsEditMode: false,
@@ -174,7 +178,6 @@ export default {
   methods: {
     addComment () {
       window.scrollTo(0, document.body.scrollHeight)
-      console.log('add comment')
     },
     showEditDialog () {
       this.$refs.dialog.show()
