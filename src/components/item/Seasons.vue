@@ -11,7 +11,7 @@
                 </div>
                 <div class="info">{{ year(season) }}
                   <span class="download-count pull-right" v-if="isSelected">
-                    {{ downloadedCount(season) }}/{{ episodeCount(season) }}
+                    {{ getEpisodeDownloadCount(item, season.season_number) }}/{{ getEpisodeCount(season) }}
                     <span class="actions">
                       <font-awesome-icon
                         v-if="isDownloaded(season)"
@@ -111,7 +111,7 @@ export default {
     },
     isDownloaded (season) {
       if (this.isSelected) {
-        return this.downloadedCount(season) === this.episodeCount(season)
+        return this.getEpisodeDownloadCount(this.item, season.season_number) > 0 && this.getEpisodeDownloadCount(this.item, season.season_number) === this.getEpisodeCount(season)
       }
       return false
     }

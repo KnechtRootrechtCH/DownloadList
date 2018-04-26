@@ -3,7 +3,13 @@
     <div class="card-img-top" v-on:click.stop="cardClicked()">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
-        <overlay v-bind:item="item" v-bind:editMode="editModeActive" v-bind:showPriorityControls="showPriorityControls" v-bind:showReDownloadControls="showReDownloadControls" @close="editModeInternal = false"></overlay>
+        <overlay
+          v-bind:item="item"
+          v-bind:editMode="editModeActive"
+          v-bind:selectedItem="selectedItem"
+          v-bind:seasons="seasons"
+          v-bind:isDownloaded="isDownloaded"
+          @close="editModeInternal = false"></overlay>
       </div>
     </div>
     <div class="card-body">
@@ -31,13 +37,6 @@
               v-bind:class="{ 'check-icon': isDownloaded }"
               @click.stop="editModeInternal = !editModeInternal"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
-            <!--
-            <font-awesome-icon
-              v-if="isSelected && !isDownloaded"
-              :icon="icon('minus')"
-              class="card-icon"
-              @click.stop="toggleItem"
-              v-bind:title="$t('mediaCard.tooltip.remove')"/>-->
             <font-awesome-icon
               v-if="!isSelected"
               :icon="icon('plus')"
@@ -107,12 +106,14 @@ export default {
       return this.selectedItem && this.selectedItem.priority > 0
     },
     isDownloaded () {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      // TODO: downloaded state for tv shows?????
-      if (selectedItem) {
-        return selectedItem.downloaded
+      if (!this.selectedItem) {
+        return false
       }
-      return false
+      if (this.isTv(this.selectedItem)) {
+        return this.totalDownloadedCount > 0 && this.totalDownloadedCount === this.totalEpisodeCount
+      } else {
+        return this.selectedItem.downloaded
+      }
     },
     infoUrl () {
       let infoUrl = '/' + this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
@@ -128,6 +129,37 @@ export default {
       } else {
         return this.icon('clock')
       }
+    },
+    seasons () {
+      if (!this.selectedItem || !this.selectedItem.seasons) {
+        return null
+      }
+      let seasons = this.filterSeasons(this.selectedItem.seasons, this.settings.includeSpecials)
+      return seasons
+    },
+    totalDownloadedCount () {
+      let count = 0
+      if (this.isTv(this.selectedItem)) {
+        let seasons = this.seasons
+        if (seasons !== null) {
+          this.seasons.forEach(season => {
+            count += this.getEpisodeDownloadCount(this.selectedItem, season.season_number)
+          })
+        }
+      }
+      return count
+    },
+    totalEpisodeCount () {
+      let count = 0
+      if (this.isTv(this.selectedItem)) {
+        let seasons = this.seasons
+        if (seasons !== null) {
+          this.seasons.forEach(season => {
+            count += this.getEpisodeCount(season)
+          })
+        }
+      }
+      return count
     }
   },
   methods: {
@@ -135,11 +167,9 @@ export default {
       if (this.editModeActive) {
         return
       }
-      // this.destroyTooltips()
       this.routeTo(this.infoUrl)
     },
     toggleItem () {
-      // this.destroyTooltips()
       this.editModeInternal = false
       if (this.isSelected) {
         this.removeItem(this.item.key)

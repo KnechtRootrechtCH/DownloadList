@@ -77,8 +77,7 @@ export default {
       commentsEditMode: false,
       shrink: 0,
       shrinkStart: 0,
-      shrinkEnd: 150,
-      includeSpecials: false
+      shrinkEnd: 150
     }
   },
   components: {
@@ -136,7 +135,7 @@ export default {
         return false
       }
       if (this.isTv(this.item)) {
-        return this.totalDownloadedCount === this.totalEpisodeCount
+        return this.totalDownloadedCount > 0 && this.totalDownloadedCount === this.totalEpisodeCount
       } else {
         return this.item.downloaded
       }
@@ -147,7 +146,7 @@ export default {
         let seasons = this.seasons
         if (seasons !== null) {
           this.seasons.forEach(season => {
-            count += this.getDownloadedEpisodeCount(season)
+            count += this.getEpisodeDownloadCount(this.item, season.season_number)
           })
         }
       }
@@ -169,12 +168,7 @@ export default {
       if (!this.isTv(this.details)) {
         return null
       }
-      let seasons = this.details.seasons.filter((s) => s.season_number !== 0)
-      let specials = this.details.seasons.filter((s) => s.season_number === 0)
-      if (this.includeSpecials && specials && specials.length > 0) {
-        return seasons.concat(specials)
-      }
-      return seasons
+      return this.filterSeasons(this.details.seasons, this.settings.includeSpecials)
     }
   },
   methods: {
@@ -197,20 +191,6 @@ export default {
         shrink = 100
       }
       this.shrink = shrink
-    },
-    getEpisodeCount (season) {
-      if (season.episode_count) {
-        return season.episode_count
-      } else if (season.episodes) {
-        return season.episodes.length
-      }
-    },
-    getDownloadedEpisodeCount (season) {
-      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
-      if (!count) {
-        return 0
-      }
-      return count
     },
     toggleDownloadedState () {
       this.setDownloaded(this.item, !this.isDownloaded, this.seasons)

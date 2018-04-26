@@ -25,7 +25,7 @@ import UtilsMixin from '../../mixins/utils'
 import IconsMixin from '../../mixins/icons'
 
 export default {
-  name: 'Edit',
+  name: 'EditIcon',
   props: ['details', 'isSelected', 'isDownloaded', 'shrink'],
   mixins: [UtilsMixin, IconsMixin],
   data () {

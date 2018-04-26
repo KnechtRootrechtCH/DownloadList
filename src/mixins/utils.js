@@ -15,6 +15,9 @@ export default {
         priorities.push(i)
       }
       return priorities
+    },
+    settings () {
+      return this.$store.getters.settings
     }
   },
   methods: {
@@ -171,7 +174,7 @@ export default {
       this.$store.dispatch('setSeasonDownloaded', {
         itemId: item.id,
         season: season.season_number,
-        episodeCount: this.episodeCount(season),
+        episodeCount: this.getEpisodeCount(season),
         downloaded: downloaded
       })
     },
@@ -218,6 +221,18 @@ export default {
       })
       return count
     },
+    getEpisodeCount (season) {
+      let count = 0
+      if (season.episodes) {
+        count = season.episodes.length
+      } else if (season.episode_count) {
+        count = season.episode_count
+      }
+      if (!count) {
+        count = 0
+      }
+      return count
+    },
     updateEpisodeDownloadState (itemId, seasonNumber, episodeNumber, downloaded) {
       this.$store.dispatch('setEpisodeDownloaded', {
         itemId: itemId,
@@ -225,19 +240,13 @@ export default {
         episode: episodeNumber,
         downloaded: downloaded})
     },
-    episodeCount (season) {
-      if (season.episode_count) {
-        return season.episode_count
-      } else if (season.episodes) {
-        return season.episodes.length
+    filterSeasons (seasons, includeSpecials) {
+      let filteredSeasons = seasons.filter((s) => s.season_number !== 0)
+      let specials = seasons.filter((s) => s.season_number === 0)
+      if (includeSpecials && specials && specials.length > 0) {
+        return filteredSeasons.concat(specials)
       }
-    },
-    downloadedCount (season) {
-      let count = this.getEpisodeDownloadCount(this.item, season.season_number)
-      if (!count) {
-        return 0
-      }
-      return count
+      return filteredSeasons
     }
   }
 }

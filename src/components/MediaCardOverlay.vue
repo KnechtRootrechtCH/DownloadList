@@ -18,8 +18,8 @@
       </b-list-group-item>
       <b-list-group-item
         button
-        v-if="!downloaded"
-        @click.stop="setDownloaded(item, true), $emit('close')"
+        v-if="!isDownloaded"
+        @click.stop="setDownloaded(selectedItem, true, seasons), $emit('close')"
         class="action button-blue">
         <font-awesome-icon
           :icon="icon('check')"
@@ -28,8 +28,8 @@
       </b-list-group-item>
       <b-list-group-item
         button
-        v-if="downloaded"
-        @click.stop="setDownloaded(item, false)"
+        v-if="isDownloaded"
+        @click.stop="setDownloaded(selectedItem, false, seasons), $emit('close')"
         class="action button-blue">
         <font-awesome-icon
           :icon="icon('redo')"
@@ -55,7 +55,7 @@ import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCardEditOverlay',
-  props: ['item', 'editMode', 'showPriorityControls', 'showReDownloadControls'],
+  props: ['item', 'editMode', 'showPriorityControls', 'showReDownloadControls', 'selectedItem', 'seasons', 'isDownloaded'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {
@@ -72,17 +72,6 @@ export default {
       } else {
         return this.constants.PRIORITY.NONE
       }
-    },
-    downloaded () {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.downloaded
-      }
-      return false
-    },
-    selectedItem () {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      return selectedItem
     }
   },
   methods: {
@@ -162,21 +151,6 @@ export default {
   font-size: 16px;
   font-weight: bold;
   color: white;
-}
-.overlay-icon {
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  color: white;
-}
-.overlay-icon.inactive {
-  opacity: 0.5;
-}
-.overlay-icon.inactive.highlight {
-  opacity: 1;
-}
-.overlay-icon.highlight {
-  opacity: 1;
 }
 .actions {
   height: 100%;

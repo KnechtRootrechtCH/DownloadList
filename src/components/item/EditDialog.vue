@@ -26,7 +26,7 @@ import UtilsMixin from '../../mixins/utils'
 import IconsMixin from '../../mixins/icons'
 
 export default {
-  name: 'Edit',
+  name: 'EditDialog',
   props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
   mixins: [UtilsMixin, IconsMixin],
   data () {

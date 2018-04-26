@@ -11,7 +11,9 @@ Vue.use(VueAxios, axios)
 
 export const store = new Vuex.Store({
   state: {
-    _movieDbApiKey: '23703a8a857927f41414fb155404393d',
+    _settings: {
+      movieDbApiKey: '23703a8a857927f41414fb155404393d'
+    },
     _movieDbConfiguration: null,
     _locale: 'en',
     _user: null,
@@ -30,7 +32,7 @@ export const store = new Vuex.Store({
     _suggestionsCount: 0
   },
   mutations: {
-    setMovieDbApiKey: (state, payload) => { state._movieDbApiKey = payload },
+    setSettings: (state, payload) => { state._settings = payload },
     setMovieDbConfiguration: (state, payload) => { state._movieDbConfiguration = payload },
 
     setLocale: state => { state._locale = navigator.language.trim().substring(0, 2) },
@@ -61,6 +63,7 @@ export const store = new Vuex.Store({
         let details = payload.data
         details.media_type = payload.media_type
         details.key = payload.media_type + ':' + details.id
+        details.details = true
         state._suggestionDetails = details
       } else {
         state._suggestionDetails = null
@@ -113,7 +116,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     getMovieDbConfiguration: (context) => {
-      let query = 'https://api.themoviedb.org/3/configuration?api_key=' + context.state._movieDbApiKey
+      let query = 'https://api.themoviedb.org/3/configuration?api_key=' + context.state._settings.movieDbApiKey
       axios.get(query).then(
         (response) => {
           context.commit('setMovieDbConfiguration', response.data)
@@ -121,9 +124,9 @@ export const store = new Vuex.Store({
       )
     },
 
-    getFirebaseData: (context) => {
-      firebase.database.ref('settings/movieDbApiKey').on('value', (snapshot) => {
-        context.commit('setMovieDbApiKey', snapshot.val())
+    getFirebaseSettings: (context) => {
+      firebase.database.ref('settings').on('value', (snapshot) => {
+        context.commit('setSettings', snapshot.val())
       })
     },
     getFirebaseUserData: (context) => {
@@ -146,7 +149,23 @@ export const store = new Vuex.Store({
     addItem: (context, item) => {
       let transaction = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
       context.dispatch('transactionLog', transaction)
-      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
+      if (item.details) {
+        item.priority = Constants.PRIORITY.DEFAULT
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
+      } else {
+        let query = 'https://api.themoviedb.org/3/' + item.media_type + '/' + item.id + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
+        axios.get(query).then(
+          (response) => {
+            if (response.status === 200) {
+              let details = response.data
+              details.media_type = item.media_type
+              details.key = item.media_type + ':' + details.id
+              details.details = true
+              details.priority = Constants.PRIORITY.DEFAULT
+              firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + details.key).set(details)
+            }
+          })
+      }
     },
     updateItem: (context, item) => {
       let transaction = {time: new Date().toString(), action: 'updateItem', payload: item, key: item.key}
@@ -229,13 +248,13 @@ export const store = new Vuex.Store({
       let query = null
       switch (parameters.queryType) {
         case 'search':
-          query = 'https://api.themoviedb.org/3/search/' + parameters.media_type + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1) + '&query=' + parameters.searchString
+          query = 'https://api.themoviedb.org/3/search/' + parameters.media_type + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1) + '&query=' + parameters.searchString
           break
         case 'popular':
-          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/popular?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
+          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/popular?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
           break
         case 'top_rated':
-          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/top_rated?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
+          query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/top_rated?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale + '&page=' + (context.state._suggestionsPage + 1)
           break
       }
 
@@ -257,7 +276,7 @@ export const store = new Vuex.Store({
     getSuggestionDetails: (context, parameters) => {
       let query = null
       context.commit('setSuggestionDetails', null)
-      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
 
       // console.log(parameters, query)
 
@@ -275,7 +294,7 @@ export const store = new Vuex.Store({
       let query = null
       context.commit('setSuggestionCast', null)
       context.commit('setSuggestionCrew', null)
-      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '/credits?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '/credits?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
 
       // console.log(parameters, query)
 
@@ -293,7 +312,7 @@ export const store = new Vuex.Store({
     },
     getSuggestionSeason: (context, parameters) => {
       let query = null
-      query = 'https://api.themoviedb.org/3/tv/' + parameters.id + '/season/' + parameters.season_number + '?api_key=' + context.state._movieDbApiKey + '&language=' + context.state._locale
+      query = 'https://api.themoviedb.org/3/tv/' + parameters.id + '/season/' + parameters.season_number + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
 
       // console.log(parameters, query)
 
@@ -341,8 +360,8 @@ export const store = new Vuex.Store({
       return array
     },
 
+    settings: (state) => { return state._settings },
     locale: (state) => { return state._locale },
-    movieDbApiKey: (state) => { return state._movieDbApiKey },
     movieDbConfiguration: (state) => { return state._movieDbConfiguration }
   }
 })
