@@ -11,7 +11,7 @@ export default {
     },
     priorities () {
       let priorities = []
-      for (let i = Constants.PRIORITY.MIN; i >= Constants.PRIORITY.MAX; i--) {
+      for (let i = this.settings.priority.min; i >= this.settings.priority.max; i--) {
         priorities.push(i)
       }
       return priorities

@@ -12,7 +12,13 @@ Vue.use(VueAxios, axios)
 export const store = new Vuex.Store({
   state: {
     _settings: {
-      movieDbApiKey: '23703a8a857927f41414fb155404393d'
+      movieDbApiKey: '23703a8a857927f41414fb155404393d',
+      priority: {
+        min: 3,
+        max: 1,
+        default: 2,
+        none: 0
+      }
     },
     _movieDbConfiguration: null,
     _locale: 'en',
@@ -150,7 +156,7 @@ export const store = new Vuex.Store({
       let transaction = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
       context.dispatch('transactionLog', transaction)
       if (item.details) {
-        item.priority = Constants.PRIORITY.DEFAULT
+        item.priority = context.getters.settings.priority.default
         firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
       } else {
         let query = 'https://api.themoviedb.org/3/' + item.media_type + '/' + item.id + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
@@ -161,7 +167,7 @@ export const store = new Vuex.Store({
               details.media_type = item.media_type
               details.key = item.media_type + ':' + details.id
               details.details = true
-              details.priority = Constants.PRIORITY.DEFAULT
+              details.priority = context.getters.settings.priority.default
               firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + details.key).set(details)
             }
           })
@@ -176,7 +182,7 @@ export const store = new Vuex.Store({
       let transaction = {time: new Date().toString(), action: 'removeItem', payload: null, key: key}
       context.dispatch('transactionLog', transaction)
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).update({
-        'priority': Constants.PRIORITY.NONE
+        'priority': context.getters.settings.priority.none
       })
     },
     setItemPriority: (context, payload) => {

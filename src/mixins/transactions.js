@@ -5,7 +5,7 @@ export default {
   },
   methods: {
     addItem (item, mediaType) {
-      item.priority = Constants.PRIORITY.DEFAULT
+      item.priority = this.$store.getters.settings.priority.default
       if (!item.key) {
         if (mediaType) {
           item.key = mediaType + ':' + item.id

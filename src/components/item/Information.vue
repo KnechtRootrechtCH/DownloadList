@@ -20,7 +20,7 @@
       :icon="icon('star')"
       class="priority-icon"
       v-bind:class="[{ 'highlighted' : hasPriority(p) }, icon]"
-      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
     </div>
     <!-- ORIGINAL TITLE -->
     <div class="content" v-if="translated"><span class="label">{{ $t('item.originalTitle')}}:&nbsp;</span>{{ originalTitle }} ({{ details.original_language }})</div>

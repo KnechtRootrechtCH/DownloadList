@@ -8,7 +8,7 @@
       v-bind:color="constants.COLOR.NETFLIX_RED"
       iconType="play"
       @click.native="openNetflixUrl()"></action>
-    <!--<priority
+    <priority
       v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.priority')"
       v-bind:isClickable="true"
@@ -16,37 +16,19 @@
       v-bind:itemKey="item.key"
       v-bind:current="item.priority"
       v-bind:isReactive="true"
+      iconType="star"></priority>
+    <!--<priority
+      v-for="p in priorities"
+      :key="p"
+      v-if="isSelected && !isDownloaded"
+      v-bind:label="$t('item.action.priority' + p)"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.PURPLE"
+      v-bind:itemKey="item.key"
+      v-bind:current="p"
+      v-bind:isReactive="false"
+      @updated="$emit('close')"
       iconType="star"></priority>-->
-    <priority
-      v-if="isSelected && !isDownloaded"
-      v-bind:label="$t('item.action.priority1')"
-      v-bind:isClickable="true"
-      v-bind:color="constants.COLOR.PURPLE"
-      v-bind:itemKey="item.key"
-      v-bind:current="1"
-      v-bind:isReactive="false"
-      @updated="$emit('close')"
-      iconType="star"></priority>
-    <priority
-      v-if="isSelected && !isDownloaded"
-      v-bind:label="$t('item.action.priority2')"
-      v-bind:isClickable="true"
-      v-bind:color="constants.COLOR.PURPLE"
-      v-bind:itemKey="item.key"
-      v-bind:current="2"
-      v-bind:isReactive="false"
-      @updated="$emit('close')"
-      iconType="star"></priority>
-    <priority
-      v-if="isSelected && !isDownloaded"
-      v-bind:label="$t('item.action.priority3')"
-      v-bind:isClickable="true"
-      v-bind:color="constants.COLOR.PURPLE"
-      v-bind:itemKey="item.key"
-      v-bind:current="3"
-      v-bind:isReactive="false"
-      @updated="$emit('close')"
-      iconType="star"></priority>
     <action
       v-if="!isSelected"
       v-bind:label="$t('item.action.select')"

@@ -10,7 +10,7 @@
       :icon="actionIcon"
       class="icon clickable"
       v-bind:class="[{ 'highlighted' : has(p) }, icon]"
-      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+      @click.stop="setItemPriority(p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
       <span class="label">{{ label.toUpperCase() }}</span>
   </b-list-group-item>
 </template>
@@ -54,11 +54,11 @@ export default {
     },
     increase () {
       let priority = this.current - 1
-      if (priority < this.constants.PRIORITY.MAX) {
-        priority = this.constants.PRIORITY.MIN
+      if (priority < this.settings.priority.max) {
+        priority = this.settings.priority.min
       }
       this.setPriority(this.itemKey, priority)
-      this.hoverPriority = this.constants.PRIORITY.MIN + 1
+      this.hoverPriority = this.settings.priority.min + 1
     },
     setItemPriority (p) {
       if (this.isReactive) {

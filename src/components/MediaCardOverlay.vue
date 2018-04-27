@@ -13,7 +13,7 @@
           v-bind:class="{ 'inactive': !hasPriority(p), 'highlight': hoverPriorityIcon(p) }"
           @click.stop="setPriority(item.key, p)"
           @mouseover="hoverPriority = p"
-          @mouseout="hoverPriority = constants.PRIORITY.MIN + 1"/>
+          @mouseout="hoverPriority = settings.priority.min + 1"/>
         <span class="label">{{ $t('overlay.priority') }}</span>
       </b-list-group-item>
       <b-list-group-item
@@ -71,7 +71,7 @@ export default {
       if (selectedItem) {
         return selectedItem.priority
       } else {
-        return this.constants.PRIORITY.NONE
+        return this.settings.priority.none
       }
     }
   },
@@ -88,11 +88,11 @@ export default {
     },
     incrementPriority () {
       let priority = this.selectedItem.priority - 1
-      if (priority < this.constants.PRIORITY.MAX) {
-        priority = this.constants.PRIORITY.MIN
+      if (priority < this.settings.priority.max) {
+        priority = this.settings.priority.min
       }
       this.setPriority(this.selectedItem.key, priority)
-      this.hoverPriority = this.constants.PRIORITY.MIN + 1
+      this.hoverPriority = this.settings.priority.min + 1
     }
   },
   i18n: {
