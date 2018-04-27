@@ -153,34 +153,34 @@ export default {
   font-weight: bold;
   color: white;
 }
-.actions {
+.overlay .actions {
   height: 100%;
 }
-.action {
+.overlay .actions .action {
   height: 33.33%;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0) !important;
   padding: 0 10px 0 10px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.actions .icon {
+.overlay .actions .icon {
   color: white;
   height: 26px;
   width: 26px;
 }
-.action .label {
+.overlay .actions .action .label {
   color: white;
   float: right;
   text-transform: uppercase;
 }
-.action .icon.inactive {
+.overlay .actions .action .icon.inactive {
   opacity: 0.5;
 }
-.action .icon.inactive.highlight {
+.overlay .actions .action .icon.inactive.highlight {
   opacity: 1;
 }
-.action .icon.highlight {
+.overlay .actions .action .icon.highlight {
   opacity: 1;
 }
 </style>

@@ -24,11 +24,12 @@
 <script>
 import MediaCard from './MediaCard'
 import MetadataMixin from '../mixins/metadata'
+import TvShowsMixin from '../mixins/tv'
 import UtilsMixin from '../mixins/utils'
 
 export default {
   name: 'MediaGrid',
-  mixins: [UtilsMixin, MetadataMixin],
+  mixins: [UtilsMixin, MetadataMixin, TvShowsMixin],
   props: ['items',
     'sort',
     'filter',
@@ -108,8 +109,8 @@ export default {
     },
     sortItems (a, b) {
       if (this.sort === 'priority') {
-        if (a.downloaded) return 1
-        if (b.downloaded) return -1
+        if (this.isDownloaded(a)) return 1
+        if (this.isDownloaded(b)) return -1
         if (a.priority - b.priority !== 0) return a.priority - b.priority
       }
       if (this.sort === 'release') {
@@ -133,6 +134,37 @@ export default {
       if (titleA > titleB) return 1
       if (titleA < titleB) return -1
       return 0
+    },
+    isDownloaded (item) {
+      if (!item.priority > 0) {
+        return false
+      }
+      if (this.isTv(item)) {
+        let seasons = this.filterSeasons(item.seasons, this.settings.includeSpecials)
+        let totalDownloadedCount = this.totalDownloadedCount(item, seasons)
+        let totalEpisodeCount = this.totalEpisodeCount(item, seasons)
+        return totalDownloadedCount > 0 && totalDownloadedCount === totalEpisodeCount
+      } else {
+        return item.downloaded
+      }
+    },
+    totalDownloadedCount (item, seasons) {
+      let count = 0
+      if (seasons !== null) {
+        seasons.forEach(season => {
+          count += this.getEpisodeDownloadCount(item, season.season_number)
+        })
+      }
+      return count
+    },
+    totalEpisodeCount (item, seasons) {
+      let count = 0
+      if (seasons !== null) {
+        seasons.forEach(season => {
+          count += this.getEpisodeCount(season)
+        })
+      }
+      return count
     }
   },
   i18n: {
