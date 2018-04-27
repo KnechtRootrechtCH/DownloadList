@@ -228,8 +228,9 @@ export default {
 .media-card:hover {
   transform: scale(1.05);
 }
-.card-image-top {
+.card-img-top {
   background-color: #343a40;
+  cursor: pointer;
 }
 .card-body {
   padding: 10px;

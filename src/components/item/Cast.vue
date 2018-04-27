@@ -10,7 +10,9 @@
                 <div class="character">{{ person.character }}</div>
               </div>
               <div class="card-img-bottom">
-                <progressive-img class="photo" v-bind:src="picture(person)" v-bind:fallback="picturePlaceholder" :blur="10"></progressive-img>
+                <a v-bind:href="'https://www.themoviedb.org/person/' + person.id" target="_blank">
+                  <progressive-img class="photo" v-bind:src="picture(person)" v-bind:fallback="picturePlaceholder" :blur="10"></progressive-img>
+                </a>
               </div>
             </div>
         </swiper-slide>
@@ -129,6 +131,10 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.card-img-bottom {
+  background-color: #343a40;
+  cursor: pointer;
 }
 a {
   color: #ffbf58;
