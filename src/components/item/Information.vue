@@ -46,7 +46,10 @@
       </span>
     </div>
     <!-- RATING -->
-    <div class="content" v-if="details.vote_count >= 10"><span class="label">{{ $t('item.rating')}}:&nbsp;</span>{{ details.vote_average }}</div>
+    <div class="content" v-if="details.vote_count >= 10">
+        <span class="label">{{ $t('item.rating')}}:&nbsp;</span>
+        <span>{{ details.vote_average }}</span>
+    </div>
     <!-- DIRECTOR -->
     <div class="content" v-if="mediaType === 'movie' && director">
       <span class="label">{{ $t('item.director') }}:&nbsp;</span>
@@ -99,9 +102,6 @@ export default {
     },
     releaseDate () {
       return this.getReleaseDateFormated(this.details, 'DD.MM.YYYY')
-    },
-    rating () {
-      return this.details.vote_average
     },
     translated () {
       let originalLanguage = this.$store.getters.locale.startsWith(this.details.original_language)
@@ -172,7 +172,7 @@ export default {
           originalTitle: 'Originaltitel',
           release: 'Premiere',
           firstAirDate: 'Erstausstrahlung',
-          rating: 'MovieDb Bewertung',
+          rating: 'Bewertung',
           productionCompanies: 'Produkion',
           networks: 'Netzwerk',
           createdby: 'Created by',
@@ -202,7 +202,7 @@ export default {
           release: 'Release',
           originalTitle: 'Original title',
           firstAirDate: 'Premiered',
-          rating: 'MovieDb Rating',
+          rating: 'Rating',
           productionCompanies: 'Production',
           networks: 'Networks',
           createdby: 'Created by',

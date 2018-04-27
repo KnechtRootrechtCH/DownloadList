@@ -41,6 +41,11 @@
               <item-cast v-bind:cast="cast"></item-cast>
             </b-col>
           </b-row>
+          <b-row>
+            <b-col id="recommendations" cols="12" md="12" xl="12" class="content-section">
+              <item-recommendations v-bind:recommendations="recommendations" v-bind:mediaType="mediaType"></item-recommendations>
+            </b-col>
+          </b-row>
           <b-row id="comments">
             <b-col cols="12" md="12" xl="12" id="seasons" class="content-section">
               <item-comments v-bind:itemKey="itemKey"></item-comments>
@@ -65,6 +70,7 @@ import ItemSynopsis from './item/Synopsis'
 import ItemActions from './item/Actions'
 import ItemCast from './item/Cast'
 import ItemSeasons from './item/Seasons'
+import ItemRecommendations from './item/Recommendations'
 import ItemComments from './item/Comments'
 import UtilsMixin from '../mixins/utils'
 import ImagesMixin from '../mixins/images'
@@ -94,7 +100,16 @@ export default {
     'item-actions': ItemActions,
     'item-cast': ItemCast,
     'item-seasons': ItemSeasons,
+    'item-recommendations': ItemRecommendations,
     'item-comments': ItemComments
+  },
+  watch: {
+    id (oldId, newId) {
+      this.loadDetails()
+    },
+    mediaType (oldMediaType, newMediaType) {
+      this.loadDetails()
+    }
   },
   computed: {
     itemKey () {
@@ -111,6 +126,10 @@ export default {
     crew () {
       let crew = this.$store.getters.suggestionCrew
       return crew
+    },
+    recommendations () {
+      let similar = this.$store.getters.recommendations
+      return similar
     },
     item () {
       let item = this.$store.getters.item(this.mediaType + ':' + this.id)
@@ -176,6 +195,20 @@ export default {
     }
   },
   methods: {
+    loadDetails () {
+      this.$store.dispatch('getSuggestionDetails', {
+        'media_type': this.mediaType,
+        'id': this.id
+      })
+      this.$store.dispatch('getSuggestionCredits', {
+        'media_type': this.mediaType,
+        'id': this.id
+      })
+      this.$store.dispatch('getRecommendations', {
+        'media_type': this.mediaType,
+        'id': this.id
+      })
+    },
     addComment () {
       window.scrollTo(0, document.body.scrollHeight)
     },
@@ -201,14 +234,7 @@ export default {
   },
   created () {
     window.addEventListener('scroll', this.handleScroll)
-    this.$store.dispatch('getSuggestionDetails', {
-      'media_type': this.mediaType,
-      'id': this.id
-    })
-    this.$store.dispatch('getSuggestionCredits', {
-      'media_type': this.mediaType,
-      'id': this.id
-    })
+    this.loadDetails()
   },
   beforeDestroy () {
     window.removeEventListener('scroll', this.handleScroll)

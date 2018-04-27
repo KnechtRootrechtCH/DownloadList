@@ -103,6 +103,15 @@ let router = new Router({
       props: true
     },
     {
+      path: '/list/tv/:id/season/:seasonNumber',
+      name: 'ListSeasonDetails',
+      component: Season,
+      meta: {
+        requiresAuth: true
+      },
+      props: true
+    },
+    {
       path: '/info',
       name: 'Info',
       component: Info,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="content">
+    <div class="content" v-if="seasons && seasons.length > 0">
       <h5 class="label">{{ $t('item.seasons')}}</h5>
       <swiper :options="swiperOptions" ref="mySwiper">
         <swiper-slide v-for="(season) in seasons" :key="season.id">

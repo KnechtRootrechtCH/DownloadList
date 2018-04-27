@@ -31,6 +31,7 @@ export const store = new Vuex.Store({
     _suggestionDetails: null,
     _suggestionCast: null,
     _suggestionCrew: null,
+    _recommendations: null,
     _suggestionSeasons: {},
     _suggestions: {},
     _suggestionsPage: 0,
@@ -87,6 +88,13 @@ export const store = new Vuex.Store({
         state._suggestionCrew = payload.data.crew
       } else {
         state._suggestionCrew = null
+      }
+    },
+    setRecommendations: (state, payload) => {
+      if (payload) {
+        state._recommendations = payload.data.results
+      } else {
+        state._recommendations = null
       }
     },
     setSuggestionSeason: (state, payload) => {
@@ -314,6 +322,22 @@ export const store = new Vuex.Store({
           }
         })
     },
+    getRecommendations: (context, parameters) => {
+      let query = null
+      context.commit('setRecommendations', null)
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '/recommendations?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
+
+      // console.log(parameters, query)
+
+      axios.get(query).then(
+        (response) => {
+          if (response.status === 200) {
+            context.commit('setRecommendations', {
+              'data': response.data
+            })
+          }
+        })
+    },
     getSuggestionSeason: (context, parameters) => {
       let query = null
       query = 'https://api.themoviedb.org/3/tv/' + parameters.id + '/season/' + parameters.season_number + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale
@@ -352,6 +376,7 @@ export const store = new Vuex.Store({
     suggestionDetails: (state) => { return state._suggestionDetails },
     suggestionCast: (state) => { return state._suggestionCast },
     suggestionCrew: (state) => { return state._suggestionCrew },
+    recommendations: (state) => { return state._recommendations },
     suggestionSeasons: (state) => { return state._suggestionSeasons },
     suggestionSeason: (state) => (number) => { return state._suggestionSeasons !== null ? state._suggestionSeasons['season_' + number] : null },
     suggestions: (state) => { return state._suggestions },
