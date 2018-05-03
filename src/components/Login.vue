@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <form v-on:submit.prevent="signIn">
+    <form v-on:submit.prevent="signInWithEmailAndPassword">
       <div class="form-group">
         <label for="email">Mail</label>
         <input type="email" v-model="email" class="form-control" placeholder="name@example.com">
@@ -12,6 +12,7 @@
       </div>
       <button type="submit" class="btn btn-yellow">Login</button>
       <small id="signup" class="form-text">Don't have an account? Signup <router-link to="/signup">here</router-link>.</small>
+      <img src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png" @click="signInWithGoogleAuth">
     </form>
   </div>
 </template>
@@ -30,13 +31,11 @@ export default {
     }
   },
   methods: {
-    signIn: function () {
+    signInWithEmailAndPassword: function () {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
         (user) => {
           this.message = ''
           this.hasMessage = false
-          this.$store.commit('setUser')
-          this.$store.dispatch('getFirebaseUserData')
           this.$router.replace('/')
         },
         (err) => {
@@ -44,6 +43,23 @@ export default {
           this.hasMessage = true
         }
       )
+    },
+    signInWithGoogleAuth: function () {
+      let provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth().signInWithPopup(provider).then((result) => {
+        console.log('success')
+        this.message = ''
+        this.hasMessage = false
+        this.$router.replace('/')
+        /*
+        let token = result.credential.accessToken
+        let user = result.user
+        */
+      }).catch((error) => {
+        console.log('error', error, this)
+        this.message = error.message
+        this.hasMessage = true
+      })
     }
   }
 }

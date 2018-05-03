@@ -28,9 +28,15 @@ Vue.use(VueAwesomeSwiper)
 
 let app
 
+store.dispatch('getFirebaseSettings')
+store.dispatch('getMovieDbConfiguration')
+
 firebase.authentication.onAuthStateChanged(function (user) {
   store.commit('setUser')
   store.commit('setLocale')
+  if (user) {
+    store.dispatch('getFirebaseUserData')
+  }
 
   if (!app) {
     /* eslint-disable no-new */

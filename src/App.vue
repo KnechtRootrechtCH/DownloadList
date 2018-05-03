@@ -8,8 +8,6 @@
 </template>
 
 <script>
-import firebase from 'firebase'
-
 import Navigation from './components/Navigation'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -32,14 +30,6 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
-    }
-  },
-  created: function () {
-    this.$store.dispatch('getFirebaseSettings')
-    this.$store.dispatch('getMovieDbConfiguration')
-    let currentUser = firebase.auth().currentUser
-    if (currentUser) {
-      this.$store.dispatch('getFirebaseUserData')
     }
   }
 }

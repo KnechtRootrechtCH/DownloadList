@@ -23,6 +23,7 @@ export const store = new Vuex.Store({
     _movieDbConfiguration: null,
     _locale: 'en',
     _user: null,
+    _userSettings: null,
     _dataUserId: null,
     _loading: false,
 
@@ -51,6 +52,9 @@ export const store = new Vuex.Store({
         state._user = null
         state._dataUserId = null
       }
+    },
+    setUserSettings: (state, payload) => {
+      state._userSettings = payload
     },
     setDataUserId: (state, uid) => {
       state._dataUserId = uid
@@ -146,16 +150,28 @@ export const store = new Vuex.Store({
     getFirebaseUserData: (context) => {
       let dateString = Helpers.getDateString()
       let timeString = Helpers.getTimeString()
-      firebase.database.ref('data/' + context.getters.dataUserId + '/access/' + dateString + '/' + timeString).set(new Date().toString())
-      firebase.database.ref('data/' + context.getters.dataUserId + '/mail').set(context.getters.user.email)
+      firebase.database.ref('data/' + context.getters.user.uid + '/access/' + dateString + '/' + timeString).set(new Date().toString())
+      firebase.database.ref('data/' + context.getters.user.uid + '/mail').set(context.getters.user.email)
+      firebase.database.ref('data/' + context.getters.user.uid + '/settings/').on('value', (snapshot) => {
+        let payload = snapshot.val()
+        context.commit('setUserSettings', payload)
+        if (payload && payload.dataUserId && context.getters.user.uid !== payload.dataUserId) {
+          context.commit('setDataUserId', payload.dataUserId)
+          context.dispatch('loadUserItems')
+        }
+      })
+      context.dispatch('loadUserItems')
+    },
+    loadUserItems: (context) => {
       firebase.database.ref('data/' + context.getters.dataUserId + '/items/').on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
       })
     },
-
     transactionLog: (context, payload) => {
       let dateString = Helpers.getDateString()
       let timeString = Helpers.getTimeString()
+      payload.uid = context.getters.user.uid
+      payload.user = context.getters.user.email
       firebase.database.ref('data/' + context.getters.dataUserId + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
       firebase.database.ref('data/' + context.getters.dataUserId + '/transaction').set(payload)
     },
@@ -358,6 +374,7 @@ export const store = new Vuex.Store({
     test: (state) => { return state._test },
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
+    userSettings: (state) => { return state._userSettings },
     dataUserId: (state) => { return state._dataUserId },
     loading: (state) => { return state._loading },
 

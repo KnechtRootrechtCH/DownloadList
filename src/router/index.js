@@ -7,7 +7,8 @@ import List from '@/components/List'
 import Discover from '@/components/Discover'
 import Item from '@/components/Item'
 import Season from '@/components/Season'
-import Info from '@/components/Info'
+import Profile from '@/components/Profile'
+import About from '@/components/About'
 
 import firebase from 'firebase'
 
@@ -112,9 +113,17 @@ let router = new Router({
       props: true
     },
     {
-      path: '/info',
-      name: 'Info',
-      component: Info,
+      path: '/about',
+      name: 'About',
+      component: About,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
       meta: {
         requiresAuth: true
       }

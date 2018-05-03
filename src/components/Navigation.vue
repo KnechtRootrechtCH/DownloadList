@@ -1,6 +1,6 @@
 <template>
-  <div class="navigation">
-    <b-navbar variant="dark" type="dark" toggleable="sm" fixed="top">
+  <div class="navigation" v-bind:class="{ 'externalData' : usesExternalData }">
+    <b-navbar v-bind:variant="variant" v-bind:type="variant" toggleable="sm" fixed="top">
       <b-navbar-brand to="/">
         <img src="../assets/imgs/firebase.png" width="30" height="30" class="d-inline-block align-top" alt="Nix">
         Varda
@@ -21,7 +21,9 @@
             <template slot="button-content">
               <font-awesome-icon :icon="icon('cog')" class="navigation-icon"/>
             </template>
-            <b-dropdown-item to="/info">{{ $t("nav.about") }}</b-dropdown-item>
+            <b-dropdown-item to="/profile" v-if="!isAdmin">{{ $t("nav.profile") }}</b-dropdown-item>
+            <b-dropdown-item to="/profile" v-if="isAdmin">{{$t("nav.admin") }}</b-dropdown-item>
+            <b-dropdown-item to="/about">{{ $t("nav.about") }}</b-dropdown-item>
             <b-dropdown-item v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
@@ -40,6 +42,29 @@ export default {
   components: {
   },
   computed: {
+    variant () {
+      if (this.usesExternalData) {
+        return 'light'
+      } else {
+        return 'dark'
+      }
+    },
+    isAdmin () {
+      return this.userSettings && this.userSettings.isAdmin
+    },
+    userSettings () {
+      return this.$store.getters.userSettings
+    },
+    usesExternalData () {
+      return this.$store.getters.dataUserId !== this.$store.getters.user.uid
+    },
+    externalDataId () {
+      if (this.usesExternalData) {
+        return this.$store.getters.dataUserId
+      } else {
+        return null
+      }
+    }
   },
   methods: {
     signOut () {
@@ -57,6 +82,8 @@ export default {
           movies: 'Filme',
           tv: 'Serien',
           downloadList: 'Download Liste',
+          profile: 'Profile',
+          admin: 'Administrator',
           signout: 'SignOut',
           about: 'About'
         }
@@ -68,6 +95,8 @@ export default {
           movies: 'Movies',
           tv: 'TV Shows',
           downloadList: 'Download List',
+          profile: 'Profile',
+          admin: 'Administrator',
           signout: 'SignOut',
           about: 'About'
         }
