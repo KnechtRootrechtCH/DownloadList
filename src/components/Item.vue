@@ -120,16 +120,26 @@ export default {
       return details
     },
     cast () {
-      let cast = this.$store.getters.suggestionCast
+      if (!this.details.credits) {
+        return null
+      }
+      let cast = this.details.credits.cast
       return cast
     },
     crew () {
-      let crew = this.$store.getters.suggestionCrew
+      if (!this.details.credits) {
+        return null
+      }
+      let crew = this.details.credits.crew
       return crew
     },
     recommendations () {
-      let similar = this.$store.getters.recommendations
-      return similar
+      let recommendations = this.details.recommendations
+      if (recommendations) {
+        return recommendations.results
+      } else {
+        return null
+      }
     },
     item () {
       let item = this.$store.getters.item(this.mediaType + ':' + this.id)
@@ -197,14 +207,6 @@ export default {
   methods: {
     loadDetails () {
       this.$store.dispatch('getSuggestionDetails', {
-        'media_type': this.mediaType,
-        'id': this.id
-      })
-      this.$store.dispatch('getSuggestionCredits', {
-        'media_type': this.mediaType,
-        'id': this.id
-      })
-      this.$store.dispatch('getRecommendations', {
         'media_type': this.mediaType,
         'id': this.id
       })
