@@ -133,13 +133,14 @@ export const store = new Vuex.Store({
         context.commit('setUserSettings', payload)
         if (payload && payload.dataUserId && context.getters.user.uid !== payload.dataUserId) {
           context.commit('setDataUserId', payload.dataUserId)
-          context.dispatch('loadUserItems')
+          context.dispatch('loadItems')
         }
       })
-      context.dispatch('loadUserItems')
+      context.dispatch('loadItems')
     },
-    loadUserItems: (context) => {
-      firebase.database.ref('data/' + context.getters.dataUserId + '/items/').on('value', (snapshot) => {
+    loadItems: (context) => {
+      let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
+      ref.on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
       })
     },
@@ -181,9 +182,7 @@ export const store = new Vuex.Store({
     removeItem: (context, key) => {
       let transaction = {time: new Date().toString(), action: 'removeItem', payload: null, key: key}
       context.dispatch('transactionLog', transaction)
-      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).update({
-        'priority': context.getters.settings.priority.none
-      })
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + key).remove()
     },
     setItemPriority: (context, payload) => {
       let transaction = {time: new Date().toString(), action: 'setItemPriority', payload: payload.priority, key: payload.key}

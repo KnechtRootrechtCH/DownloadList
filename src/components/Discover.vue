@@ -21,11 +21,8 @@
     </div>
     <div class="discover-content">
       <mediaGrid
+        mode="discover"
         v-bind:items="items"
-        v-bind:showEditButton="true"
-        editModeHandling="internal"
-        v-bind:showPriorityControls="true"
-        v-bind:showReDownloadControls="true"
         detailsRouterPrefix="browse">
       ></mediaGrid>
     </div>

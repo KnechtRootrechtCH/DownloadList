@@ -1,5 +1,3 @@
-import Constants from '../constants'
-
 export default {
   computed: {
   },
@@ -26,15 +24,9 @@ export default {
         priority: priority})
     },
     setDownloaded (item, downloaded, seasons) {
-      if (item.media_type !== Constants.MEDIA_TYPE.TV) {
-        this.$store.dispatch('setItemDownloaded', {
-          key: item.key,
-          downloaded: downloaded})
-      } else if (seasons) {
-        this.setAllSeasonsDownloaded(item, seasons, downloaded)
-      } else {
-        this.$error('Unable to set downloaded state for item ' + item.key + '! Please provide seasons list')
-      }
+      this.$store.dispatch('setItemDownloaded', {
+        key: item.key,
+        downloaded: downloaded})
     },
     setAllSeasonsDownloaded (item, seasons, downloaded) {
       this.$store.dispatch('setSeasonsDownloaded', {

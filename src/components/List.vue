@@ -11,12 +11,6 @@
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
             <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
-              <!-- removed due to performance impact
-              <span class="checklist-navigation-item" @click="editModeActive = !editModeActive" v-bind:class="{ active: editModeActive }">
-                <span class="d-none d-lg-inline">{{$t('edit') }}</span>
-                <font-awesome-icon :icon="icon('pencil')" class="checklist-navigation-icon"/>
-              </span>
-              -->
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
@@ -70,14 +64,10 @@
     </div>
     <div class="checklist-content">
       <mediaGrid
+        mode="list"
         v-bind:items="items"
         v-bind:filter="filter"
         v-bind:sort="sort"
-        v-bind:showEditButton="true"
-        editModeHandling="external"
-        v-bind:editMode="editModeActive"
-        v-bind:showPriorityControls="true"
-        v-bind:showReDownloadControls="true"
         detailsRouterPrefix="list">
       </mediaGrid>
     </div>
@@ -87,11 +77,12 @@
 <script>
 import MediaGrid from './MediaGrid'
 import IconsMixin from '../mixins/icons'
+import MetadataMixin from '../mixins/metadata'
 
 export default {
   name: 'Browse',
   props: ['mode', 'header', 'inputPlaceholder'],
-  mixins: [IconsMixin],
+  mixins: [IconsMixin, MetadataMixin],
   data () {
     return {
       filter: {
@@ -105,7 +96,6 @@ export default {
         text: ''
       },
       sort: 'priority',
-      editModeActive: false,
       filterPanelActive: false,
       sortPanelActive: false
     }
@@ -120,13 +110,10 @@ export default {
     }
   },
   methods: {
-
   },
   created () {
-
   },
   beforeDestroy () {
-
   },
   watch: {
   },
@@ -144,7 +131,6 @@ export default {
         priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
         sort: 'Sortierung',
-        edit: 'Editieren',
         rating: 'Bewertung',
         title: 'Titel',
         popularity: 'Beliebtheit',
@@ -165,7 +151,6 @@ export default {
         priority3: 'Low',
         downloaded: 'Downloaded',
         sort: 'Sort',
-        edit: 'Quickedit',
         rating: 'Rating',
         title: 'Title',
         popularity: 'Popularity',

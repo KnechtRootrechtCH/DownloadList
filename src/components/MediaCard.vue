@@ -1,16 +1,15 @@
 <template>
   <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': isSelected, 'bg-dark text-light': !isSelected }">
-    <div class="card-img-top" v-on:click.stop="cardClicked()">
+    <div class="card-img-top" v-on:click.stop="clicked()">
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
         <overlay
-          v-if="editModeActive"
+          v-if="editMode"
           v-bind:item="item"
-          v-bind:editMode="editModeActive"
+          v-bind:editMode="editMode"
           v-bind:selectedItem="selectedItem"
-          v-bind:seasons="seasons"
           v-bind:isDownloaded="isDownloaded"
-          @close="editModeInternal = false"></overlay>
+          @close="editMode = false"></overlay>
       </div>
     </div>
     <div class="card-body">
@@ -32,17 +31,17 @@
           </div>
           <div class='col-xs-6'>
             <font-awesome-icon
-              v-if="showEditButton && isSelected"
+              v-if="isSelected"
               :icon="editIcon"
               class="card-icon"
               v-bind:class="{ 'check-icon': isDownloaded }"
-              @click.stop="editModeInternal = !editModeInternal"
+              @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
               v-if="!isSelected"
               :icon="icon('plus')"
               class="card-icon"
-              @click.stop="toggleItem"
+              @click.stop="add"
               v-bind:title="$t('mediaCard.tooltip.add')"/>
           </div>
         </div>
@@ -56,44 +55,22 @@ import MediaCardEditOverlay from './MediaCardOverlay'
 import UtilsMixin from '../mixins/utils'
 import ImagesMixin from '../mixins/images'
 import MetadataMixin from '../mixins/metadata'
-import TvShowsMixin from '../mixins/tv'
 import TransactionsMixon from '../mixins/transactions'
 import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCard',
-  props: ['item',
-    'showEditButton',
-    'editModeHandling',
-    'editMode',
-    'showPriorityControls',
-    'showReDownloadControls',
-    'detailsRouterPrefix'],
-  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TvShowsMixin, TransactionsMixon, IconsMixin],
+  props: ['item', 'mode', 'detailsRouterPrefix'],
+  mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TransactionsMixon, IconsMixin],
   data () {
     return {
-      editModeInternal: false
+      editMode: false
     }
   },
   components: {
     'overlay': MediaCardEditOverlay
   },
   computed: {
-    editModeActive () {
-      if (!this.isSelected) {
-        return false
-      }
-      switch (this.editModeHandling) {
-        case 'internal':
-          return this.editModeInternal
-        case 'selected':
-          return this.isSelected
-        case 'external':
-          return this.editMode || this.editModeInternal
-        default:
-          return this.editModeInternal
-      }
-    },
     rating () {
       return this.item.vote_average
     },
@@ -104,29 +81,27 @@ export default {
       return this.getBackdropPlaceholder(this.constants.IMAGESIZE.BACKDROP.W500)
     },
     selectedItem () {
+      if (this.mode === 'list') {
+        return this.item
+      }
       let selectedItem = this.$store.getters.item(this.item.key)
       return selectedItem
     },
     isSelected () {
+      if (this.mode === 'list') {
+        return true
+      }
       return this.selectedItem && this.selectedItem.priority > 0
     },
     isDownloaded () {
       if (!this.selectedItem) {
         return false
       }
-      if (this.isTv(this.selectedItem)) {
-        return this.totalDownloadedCount > 0 && this.totalDownloadedCount === this.totalEpisodeCount
-      } else {
-        return this.selectedItem.downloaded
-      }
+      return this.selectedItem.downloaded
     },
     infoUrl () {
       let infoUrl = '/' + this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
       return infoUrl
-    },
-    movieDbUrl () {
-      let url = 'https://www.themoviedb.org/' + this.item.media_type + '/' + this.item.id
-      return url
     },
     editIcon () {
       if (this.isDownloaded) {
@@ -134,53 +109,18 @@ export default {
       } else {
         return this.icon('clock')
       }
-    },
-    seasons () {
-      if (!this.selectedItem || !this.selectedItem.seasons) {
-        return null
-      }
-      let seasons = this.filterSeasons(this.selectedItem.seasons, this.settings.includeSpecials)
-      return seasons
-    },
-    totalDownloadedCount () {
-      let count = 0
-      if (this.isTv(this.selectedItem)) {
-        let seasons = this.seasons
-        if (seasons !== null) {
-          this.seasons.forEach(season => {
-            count += this.getEpisodeDownloadCount(this.selectedItem, season.season_number)
-          })
-        }
-      }
-      return count
-    },
-    totalEpisodeCount () {
-      let count = 0
-      if (this.isTv(this.selectedItem)) {
-        let seasons = this.seasons
-        if (seasons !== null) {
-          this.seasons.forEach(season => {
-            count += this.getEpisodeCount(season)
-          })
-        }
-      }
-      return count
     }
   },
   methods: {
-    cardClicked () {
-      if (this.editModeActive) {
+    clicked () {
+      if (this.editMode) {
         return
       }
       this.routeTo(this.infoUrl)
     },
-    toggleItem () {
-      this.editModeInternal = false
-      if (this.isSelected) {
-        this.removeItem(this.item.key)
-      } else {
-        this.addItem(this.item)
-      }
+    add () {
+      this.editMode = false
+      this.addItem(this.item)
     }
   },
   i18n: {

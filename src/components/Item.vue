@@ -167,11 +167,7 @@ export default {
       if (!this.isSelected) {
         return false
       }
-      if (this.isTv(this.item)) {
-        return this.totalDownloadedCount > 0 && this.totalDownloadedCount === this.totalEpisodeCount
-      } else {
-        return this.item.downloaded
-      }
+      return this.item.downloaded
     },
     totalDownloadedCount () {
       let count = 0

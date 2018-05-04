@@ -1,10 +1,10 @@
 <template>
-  <div class="overlay" v-bind:class="{ 'overlay-active' : editMode }">
+  <div class="overlay active">
     <b-list-group class="actions">
       <b-list-group-item
         button
         @click.stop="incrementPriority()"
-        class="action button-blue">
+        class="action">
         <font-awesome-icon
           v-for="p in priorities"
           :key="p"
@@ -19,7 +19,7 @@
       <b-list-group-item
         button
         v-if="!isDownloaded"
-        @click.stop="setDownloaded(selectedItem, true, seasons), $emit('close')"
+        @click.stop="setDownloaded(selectedItem, true), $emit('close')"
         class="action button-blue">
         <font-awesome-icon
           :icon="icon('check')"
@@ -29,7 +29,7 @@
       <b-list-group-item
         button
         v-if="isDownloaded"
-        @click.stop="setDownloaded(selectedItem, false, seasons), $emit('close')"
+        @click.stop="setDownloaded(selectedItem, false), $emit('close')"
         class="action button-blue">
         <font-awesome-icon
           :icon="icon('redo')"
@@ -56,7 +56,7 @@ import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCardEditOverlay',
-  props: ['item', 'editMode', 'showPriorityControls', 'showReDownloadControls', 'selectedItem', 'seasons', 'isDownloaded'],
+  props: ['item', 'editMode', 'selectedItem', 'isDownloaded'],
   mixins: [UtilsMixin, TransactionsMixon, IconsMixin],
   data () {
     return {
@@ -67,9 +67,8 @@ export default {
   },
   computed: {
     priority () {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.priority
+      if (this.selectedItem) {
+        return this.selectedItem.priority
       } else {
         return this.settings.priority.none
       }
@@ -77,9 +76,8 @@ export default {
   },
   methods: {
     hasPriority (priority) {
-      let selectedItem = this.$store.getters.item(this.item.key)
-      if (selectedItem) {
-        return selectedItem.priority <= priority
+      if (this.selectedItem) {
+        return this.selectedItem.priority <= priority
       }
       return false
     },
@@ -142,7 +140,7 @@ export default {
   opacity: 0;
   z-index: -1;
 }
-.overlay-active {
+.overlay.active {
   opacity: 1;
   z-index: 2;
   padding: 0;
@@ -158,11 +156,14 @@ export default {
 }
 .overlay .actions .action {
   height: 33.33%;
-  background-color: rgba(0, 0, 0, 0) !important;
+  background-color: rgba(0, 0, 0, 0);
   padding: 0 10px 0 10px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.overlay .actions .action:hover {
+  background-color: rgba(68, 68, 153, 0.5);
 }
 .overlay .actions .icon {
   color: white;
