@@ -15,16 +15,16 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <b-dropdown-divider class="d-sm-none"></b-dropdown-divider>
-          <b-nav-item to="/info" class="d-sm-none">{{ $t("nav.about") }}</b-nav-item>
-          <b-nav-item v-on:click="signOut" class="d-sm-none">{{ $t("nav.signout") }}</b-nav-item>
+          <b-nav-item to="/profile" class="d-sm-none" v-if="user">{{ userName }}<span v-if="isAdmin">&nbsp;({{ $t('nav.admin')}})</span></b-nav-item>
+          <b-nav-item to="/about" class="d-sm-none">{{ $t("nav.about") }}</b-nav-item>
+          <b-nav-item v-if="user" v-on:click="signOut" class="d-sm-none">{{ $t("nav.signout") }}</b-nav-item>
           <b-nav-item-dropdown right class="d-none d-sm-inline" no-caret>
             <template slot="button-content">
               <font-awesome-icon :icon="icon('cog')" class="navigation-icon"/>
             </template>
-            <b-dropdown-item to="/profile" v-if="!isAdmin">{{ $t("nav.profile") }}</b-dropdown-item>
-            <b-dropdown-item to="/profile" v-if="isAdmin">{{$t("nav.admin") }}</b-dropdown-item>
+            <b-dropdown-item to="/profile" v-if="user">{{ userName }}<span v-if="isAdmin">&nbsp;({{ $t('nav.admin')}})</span></b-dropdown-item>
             <b-dropdown-item to="/about">{{ $t("nav.about") }}</b-dropdown-item>
-            <b-dropdown-item v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
+            <b-dropdown-item v-if="user" v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -49,6 +49,19 @@ export default {
         return 'dark'
       }
     },
+    user () {
+      return this.$store.getters.user
+    },
+    userName () {
+      if (!this.user) {
+        return null
+      }
+      if (this.user.displayName) {
+        return this.user.displayName
+      } else {
+        return this.user.email
+      }
+    },
     isAdmin () {
       return this.userSettings && this.userSettings.isAdmin
     },
@@ -56,7 +69,7 @@ export default {
       return this.$store.getters.userSettings
     },
     usesExternalData () {
-      return this.$store.getters.dataUserId !== this.$store.getters.user.uid
+      return this.$store.getters.user && this.$store.getters.dataUserId !== this.$store.getters.user.uid
     },
     externalDataId () {
       if (this.usesExternalData) {

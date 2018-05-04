@@ -127,7 +127,7 @@ export const store = new Vuex.Store({
       let dateString = Helpers.getDateString()
       let timeString = Helpers.getTimeString()
       firebase.database.ref('data/' + context.getters.user.uid + '/access/' + dateString + '/' + timeString).set(new Date().toString())
-      firebase.database.ref('data/' + context.getters.user.uid + '/mail').set(context.getters.user.email)
+      firebase.database.ref('data/' + context.getters.user.uid + '/lastAccess').set(new Date().toString())
       firebase.database.ref('data/' + context.getters.user.uid + '/settings/').on('value', (snapshot) => {
         let payload = snapshot.val()
         context.commit('setUserSettings', payload)

@@ -139,7 +139,7 @@ export default {
       if (!item.priority > 0) {
         return false
       }
-      if (this.isTv(item)) {
+      if (this.isTv(item) && item.seasons) {
         let seasons = this.filterSeasons(item.seasons, this.settings.includeSpecials)
         let totalDownloadedCount = this.totalDownloadedCount(item, seasons)
         let totalEpisodeCount = this.totalEpisodeCount(item, seasons)
