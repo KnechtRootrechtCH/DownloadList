@@ -4,6 +4,7 @@
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
         <overlay
+          v-if="editModeActive"
           v-bind:item="item"
           v-bind:editMode="editModeActive"
           v-bind:selectedItem="selectedItem"

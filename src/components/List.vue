@@ -11,10 +11,12 @@
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
             <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
+              <!-- removed due to performance impact
               <span class="checklist-navigation-item" @click="editModeActive = !editModeActive" v-bind:class="{ active: editModeActive }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
                 <font-awesome-icon :icon="icon('pencil')" class="checklist-navigation-icon"/>
               </span>
+              -->
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
@@ -94,7 +96,7 @@ export default {
     return {
       filter: {
         movie: true,
-        tv: true,
+        tv: false,
         downloaded: true,
         notDownloaded: true,
         priority1: true,
