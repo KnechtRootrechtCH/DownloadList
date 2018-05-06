@@ -141,7 +141,8 @@ export default {
       this.page = 1
     },
     items: function (val, oldVal) {
-      this.page = 1
+      // disabled. might disorient the user
+      // this.page = 1
     }
   },
   i18n: {
