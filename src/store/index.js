@@ -124,6 +124,7 @@ export const store = new Vuex.Store({
       })
     },
     getFirebaseUserData: (context) => {
+      context.commit('setLoading', true)
       let dateString = Helpers.getDateString()
       let timeString = Helpers.getTimeString()
       firebase.database.ref('data/' + context.getters.user.uid + '/access/' + dateString + '/' + timeString).set(new Date().toString())
@@ -142,6 +143,7 @@ export const store = new Vuex.Store({
       let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
       ref.on('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
+        context.commit('setLoading', false)
       })
     },
     transactionLog: (context, payload) => {

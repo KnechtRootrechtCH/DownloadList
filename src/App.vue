@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <loading/>
     <navigation/>
     <div class="app-content">
       <router-view/>
@@ -9,6 +10,7 @@
 
 <script>
 import Navigation from './components/Navigation'
+import LoadingOverlay from './components/Loading'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vue-instant/dist/vue-instant.css'
@@ -16,7 +18,8 @@ import 'vue-instant/dist/vue-instant.css'
 export default {
   name: 'App',
   components: {
-    'navigation': Navigation
+    'navigation': Navigation,
+    'loading': LoadingOverlay
   },
   data () {
     return {
@@ -27,9 +30,6 @@ export default {
   computed: {
     movieDbConfig () {
       return this.$store.getters.movieDbConfiguration
-    },
-    loading () {
-      return this.$store.getters.loading
     }
   }
 }
@@ -56,7 +56,6 @@ body {
 .app-content a:hover {
   color: #ffbf58;
 }
-
 .app-content .button-green {
   color: #339933;
   background: #f0f0f0;
