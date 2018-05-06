@@ -70,7 +70,7 @@
         v-bind:sort="sort"
         v-bind:paging="true"
         v-bind:page="page"
-        pageSize="10"
+        pageSize="20"
         detailsRouterPrefix="list">
       </mediaGrid>
     </div>
