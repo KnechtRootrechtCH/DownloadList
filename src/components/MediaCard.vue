@@ -4,7 +4,7 @@
       <div class="overlay-container">
         <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
         <overlay
-          v-if="editMode"
+          v-if="editMode || forceEditOverlay"
           v-bind:item="item"
           v-bind:editMode="editMode"
           v-bind:selectedItem="selectedItem"
@@ -22,12 +22,22 @@
         </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-            <router-link v-bind:to="infoUrl">
+            <router-link v-bind:to="infoUrl" v-if="!showPriorityIcons">
               <font-awesome-icon
                 :icon="icon('info')"
                 class="card-icon info-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
+            <font-awesome-icon
+              v-if="showPriorityIcons"
+              v-for="p in priorities"
+              :key="p"
+              :icon="icon('star')"
+              class="card-icon"
+              v-bind:class="{ 'inactive': !hasPriority(p), 'highlight': hoverPriorityIcon(p) }"
+              @click.stop="setPriority(item.key, p)"
+              @mouseover="hoverPriority = p"
+              @mouseout="hoverPriority = settings.priority.min + 1"/>
           </div>
           <div class='col-xs-6'>
             <font-awesome-icon
@@ -60,11 +70,12 @@ import IconsMixin from '../mixins/icons'
 
 export default {
   name: 'MediaCard',
-  props: ['item', 'mode', 'detailsRouterPrefix'],
+  props: ['item', 'mode', 'forceEditOverlay', 'showPriorityIcons', 'detailsRouterPrefix'],
   mixins: [UtilsMixin, ImagesMixin, MetadataMixin, TransactionsMixon, IconsMixin],
   data () {
     return {
-      editMode: false
+      editMode: false,
+      hoverPriority: 100
     }
   },
   components: {
@@ -121,6 +132,15 @@ export default {
     add () {
       this.editMode = false
       this.addItem(this.item)
+    },
+    hasPriority (priority) {
+      if (this.selectedItem) {
+        return this.selectedItem.priority <= priority
+      }
+      return false
+    },
+    hoverPriorityIcon (priority) {
+      return priority >= this.hoverPriority
     }
   },
   i18n: {
@@ -200,40 +220,13 @@ export default {
   height: 100%;
   position: relative;
 }
-.overlay {
-  height: 100%;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  z-index: -1;
-}
-.overlay-active {
-  opacity: 1;
-  z-index: 2;
-  padding: 5px;
-}
-.overlay-content {
-  text-align: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-}
-.overlay-icon {
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  color: white;
-}
-.overlay-icon.inactive {
+.card-icon.inactive {
   opacity: 0.5;
 }
-.overlay-icon.inactive.highlight {
+.card-icon.inactive.highlight {
   opacity: 1;
 }
-.overlay-icon.highlight {
+.card-icon.highlight {
   opacity: 1;
 }
 a {

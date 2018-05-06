@@ -17,6 +17,10 @@
                 <font-awesome-icon :icon="icon('search')" class="checklist-navigation-icon"/>
               </span>
               -->
+              <span class="checklist-navigation-item" @click="editPriorities = !editPriorities" v-bind:class="{ active: editPriorities }">
+                <span class="d-none d-lg-inline">{{$t('edit') }}</span>
+                <font-awesome-icon :icon="icon('star')" class="checklist-navigation-icon"/>
+              </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
@@ -87,6 +91,7 @@
         v-bind:sort="sort"
         v-bind:paging="true"
         v-bind:page="page"
+        v-bind:showPriorityIcons="editPriorities"
         pageSize="20"
         detailsRouterPrefix="list">
       </mediaGrid>
@@ -115,10 +120,11 @@ export default {
         priority3: true,
         text: ''
       },
-      sort: 'priority',
+      sort: 'title',
       filterPanelActive: false,
       sortPanelActive: false,
-      page: 1
+      page: 1,
+      editPriorities: false
     }
   },
   components: {
@@ -175,6 +181,7 @@ export default {
         priority2: 'Mittel',
         priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
+        edit: 'Editieren',
         sort: 'Sortierung',
         rating: 'Bewertung',
         title: 'Titel',
@@ -197,6 +204,7 @@ export default {
         priority2: 'Medium',
         priority3: 'Low',
         downloaded: 'Downloaded',
+        edit: 'Edit',
         sort: 'Sort',
         rating: 'Rating',
         title: 'Title',

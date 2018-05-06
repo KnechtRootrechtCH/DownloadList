@@ -43,7 +43,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 10000;
-  background-color: rgba(0,0,0,0.75); /*dim the background*/
+  background-color: rgba(0,0,0,0.9); /*dim the background*/
   padding: 250px 0 0 0;
 }
 .spinner {

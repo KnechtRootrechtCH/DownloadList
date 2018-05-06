@@ -9,6 +9,7 @@
           <mediaCard
             v-bind:item="item"
             v-bind:mode="mode"
+            v-bind:showPriorityIcons="showPriorityIcons"
             v-bind:detailsRouterPrefix="detailsRouterPrefix">
           </mediaCard>
         </b-col>
@@ -25,7 +26,7 @@ import UtilsMixin from '../mixins/utils'
 export default {
   name: 'MediaGrid',
   mixins: [UtilsMixin, MetadataMixin],
-  props: ['items', 'mode', 'sort', 'filter', 'paging', 'page', 'pageSize', 'detailsRouterPrefix'],
+  props: ['items', 'mode', 'sort', 'filter', 'paging', 'page', 'pageSize', 'showPriorityIcons', 'detailsRouterPrefix'],
   data () {
     return {
     }
