@@ -100,7 +100,7 @@ export default {
       let offset = d.scrollTop + window.innerHeight
       let height = d.offsetHeight
 
-      if (offset === height) {
+      if (offset >= height - 100) {
         this.infiniteScroll()
       }
     },
