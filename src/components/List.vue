@@ -11,6 +11,12 @@
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
             <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
+              <!--
+              <span class="checklist-navigation-item" @click="searchPanelActive = !searchPanelActive, filterPanelActive = false, sortPanelActive = false" v-bind:class="{ active: sortPanelActive }">
+                <span class="d-none d-lg-inline">{{$t('search') }}</span>
+                <font-awesome-icon :icon="icon('search')" class="checklist-navigation-icon"/>
+              </span>
+              -->
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
@@ -61,6 +67,17 @@
           </b-row>
         </b-container>
       </b-collapse>
+      <b-collapse id="collapse-input" v-bind:visible="!filterPanelActive && !sortPanelActive">
+        <b-input-group class="checklist-search-group">
+          <!--<b-input-group-prepend is-text>
+            <font-awesome-icon :icon="searchIcon" />
+          </b-input-group-prepend>-->
+          <b-form-input class="checklist-search-input" v-model="filter.text" v-bind:placeholder="$t('searchPlaceholder')"></b-form-input>
+          <b-input-group-append is-text v-on:click="filter.text = ''">
+              <font-awesome-icon :icon="icon('times')" class="checklist-search-clear"/>
+          </b-input-group-append>
+        </b-input-group>
+      </b-collapse>
     </div>
     <div class="checklist-content">
       <mediaGrid
@@ -90,7 +107,7 @@ export default {
     return {
       filter: {
         movie: true,
-        tv: false,
+        tv: true,
         downloaded: true,
         notDownloaded: true,
         priority1: true,
@@ -165,7 +182,9 @@ export default {
         release: 'Veröffentlichung',
         yes: 'Ja',
         no: 'Nein',
-        none: 'Keine'
+        none: 'Keine',
+        search: 'Suchen',
+        searchPlaceholder: 'Suchen…'
       },
       en: {
         checklist: 'Download list',
@@ -185,7 +204,9 @@ export default {
         release: 'Release',
         yes: 'Yes',
         no: 'No',
-        none: 'None'
+        none: 'None',
+        search: 'Search',
+        searchPlaceholder: 'Search…'
       }
     }
   }
@@ -242,5 +263,11 @@ export default {
 .checklist-filter-label {
   padding: 0;
   margin-top: 5px;
+}
+.checklist-search-group {
+  margin-top: 10px;
+}
+.checklist-search-clear:hover {
+  color: darkred;
 }
 </style>

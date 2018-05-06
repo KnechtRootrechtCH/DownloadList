@@ -103,10 +103,18 @@ export default {
           break
       }
 
-      if (this.filter.string && this.filter.string.length > 2) {
+      if (this.filter.text && this.filter.text.length > 2) {
         let title = this.getTitle(item)
-        return title.toLowerCase().includes(this.searchString.toLowerCase())
+        if (title.toLowerCase().includes(this.filter.text.toLowerCase())) {
+          return true
+        }
+        let originalTitle = this.getOriginalTitle(item)
+        if (originalTitle) {
+          return originalTitle.toLowerCase().includes(this.filter.text.toLowerCase())
+        }
+        return false
       }
+
       return true
     },
     sortItem (a, b) {
