@@ -68,6 +68,9 @@
         v-bind:items="items"
         v-bind:filter="filter"
         v-bind:sort="sort"
+        v-bind:paging="true"
+        v-bind:page="page"
+        pageSize="10"
         detailsRouterPrefix="list">
       </mediaGrid>
     </div>
@@ -97,7 +100,8 @@ export default {
       },
       sort: 'priority',
       filterPanelActive: false,
-      sortPanelActive: false
+      sortPanelActive: false,
+      page: 1
     }
   },
   components: {
@@ -110,12 +114,35 @@ export default {
     }
   },
   methods: {
+    handleScroll () {
+      let d = document.documentElement
+      let offset = d.scrollTop + window.innerHeight
+      let height = d.offsetHeight
+
+      if (offset === height) {
+        this.page++
+      }
+    }
   },
   created () {
+    window.addEventListener('scroll', this.handleScroll)
   },
   beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   },
   watch: {
+    filter: {
+      handler: function (newValue) {
+        this.page = 1
+      },
+      deep: true
+    },
+    sort: function (val, oldVal) {
+      this.page = 1
+    },
+    items: function (val, oldVal) {
+      this.page = 1
+    }
   },
   i18n: {
     messages: {

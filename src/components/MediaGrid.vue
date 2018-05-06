@@ -3,7 +3,7 @@
     <b-container fluid class="media-container">
       <transition-group name="media-grid" tag="div" class="row media-row">
         <b-col
-        v-for="item in sortedItems" :key="item.id"
+        v-for="item in pagedItems" :key="item.id"
         cols="12" sm="12" md="4" lg="3" xl="3"
         class="media-item">
           <mediaCard
@@ -25,7 +25,7 @@ import UtilsMixin from '../mixins/utils'
 export default {
   name: 'MediaGrid',
   mixins: [UtilsMixin, MetadataMixin],
-  props: ['items', 'mode', 'sort', 'filter', 'detailsRouterPrefix'],
+  props: ['items', 'mode', 'sort', 'filter', 'paging', 'page', 'pageSize', 'detailsRouterPrefix'],
   data () {
     return {
     }
@@ -50,6 +50,12 @@ export default {
       } else {
         return filtered
       }
+    },
+    pagedItems () {
+      if (!this.paging) {
+        return this.sortedItems
+      }
+      return this.sortedItems.slice(0, this.page * this.pageSize)
     }
   },
   methods: {
