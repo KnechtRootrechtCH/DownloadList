@@ -22,7 +22,7 @@
         </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
-            <router-link v-bind:to="infoUrl" v-if="!showPriorityIcons">
+            <router-link v-bind:to="infoUrl" v-if="!isSelected || !showPriorityIcons">
               <font-awesome-icon
                 :icon="icon('info')"
                 class="card-icon info-icon"

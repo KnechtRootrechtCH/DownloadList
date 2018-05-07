@@ -59,6 +59,12 @@ export const store = new Vuex.Store({
     setLoading: (state, loading) => { state._loading = loading },
 
     setItems: (state, items) => { state._items = items },
+    removeItem: (state, item) => {
+      Vue.set(state._items, item.key, null)
+    },
+    updateItem: (state, item) => {
+      Vue.set(state._items, item.key, item)
+    },
     setComments: (state, comments) => { state._comments = comments },
     resetSuggestions: (state) => {
       state._suggestionsCount = 0
@@ -141,8 +147,17 @@ export const store = new Vuex.Store({
     },
     loadItems: (context) => {
       let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
-      ref.on('value', (snapshot) => {
+      ref.once('value', (snapshot) => {
         context.commit('setItems', snapshot.val())
+        ref.on('child_added', (snapshot) => {
+          context.commit('updateItem', snapshot.val())
+        })
+        ref.on('child_changed', (snapshot) => {
+          context.commit('updateItem', snapshot.val())
+        })
+        ref.on('child_removed', (snapshot) => {
+          context.commit('removeItem', snapshot.val())
+        })
         context.commit('setLoading', false)
       })
     },
@@ -194,7 +209,8 @@ export const store = new Vuex.Store({
       })
     },
     getComments: (context, key) => {
-      firebase.database.ref('comments/' + key).on('value', (snapshot) => {
+      let ref = firebase.database.ref('comments/' + key)
+      ref.on('value', (snapshot) => {
         context.commit('setComments', snapshot.val())
       })
     },
