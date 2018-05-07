@@ -23,6 +23,7 @@
       <mediaGrid
         mode="discover"
         v-bind:items="items"
+        v-bind:showPriorityIcons="settings.alwaysShowPriorityIcons"
         detailsRouterPrefix="browse">
       ></mediaGrid>
     </div>
@@ -32,11 +33,12 @@
 <script>
 import MediaGrid from './MediaGrid'
 import IconsMixin from '../mixins/icons'
+import UtilsMixin from '../mixins/utils'
 
 export default {
-  name: 'discover',
+  name: 'Discover',
   props: ['mode', 'header', 'inputPlaceholder'],
-  mixins: [IconsMixin],
+  mixins: [IconsMixin, UtilsMixin],
   data () {
     return {
       queryType: 'popular',

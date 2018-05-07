@@ -17,7 +17,7 @@
                 <font-awesome-icon :icon="icon('search')" class="checklist-navigation-icon"/>
               </span>
               -->
-              <span class="checklist-navigation-item" @click="editPriorities = !editPriorities" v-bind:class="{ active: editPriorities }">
+              <span v-if="!settings.alwaysShowPriorityIcons" class="checklist-navigation-item" @click="editPriorities = !editPriorities" v-bind:class="{ active: editPriorities }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
                 <font-awesome-icon :icon="icon('star')" class="checklist-navigation-icon"/>
               </span>
@@ -91,7 +91,7 @@
         v-bind:sort="sort"
         v-bind:paging="true"
         v-bind:page="page"
-        v-bind:showPriorityIcons="editPriorities"
+        v-bind:showPriorityIcons="editPriorities || settings.alwaysShowPriorityIcons"
         pageSize="20"
         detailsRouterPrefix="list">
       </mediaGrid>
@@ -102,12 +102,13 @@
 <script>
 import MediaGrid from './MediaGrid'
 import IconsMixin from '../mixins/icons'
+import UtilsMixin from '../mixins/utils'
 import MetadataMixin from '../mixins/metadata'
 
 export default {
-  name: 'Browse',
+  name: 'DownloadList',
   props: ['mode', 'header', 'inputPlaceholder'],
-  mixins: [IconsMixin, MetadataMixin],
+  mixins: [IconsMixin, UtilsMixin, MetadataMixin],
   data () {
     return {
       filter: {
