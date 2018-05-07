@@ -29,7 +29,7 @@
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
             <font-awesome-icon
-              v-if="showPriorityIcons"
+              v-if="isSelected && showPriorityIcons"
               v-for="p in priorities"
               :key="p"
               :icon="icon('star')"
