@@ -1,8 +1,10 @@
 <template>
   <div class="card border-dark media-card" v-bind:class="{ 'bg-light text-dark': isSelected, 'bg-dark text-light': !isSelected }">
-    <div class="card-img-top" v-on:click.stop="clicked()">
+    <div class="card-img-top">
       <div class="overlay-container">
-        <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+        <router-link v-bind:to="infoUrl">
+          <progressive-img v-bind:src="backdrop" v-bind:fallback="backdropPlaceholder" :blur="2"></progressive-img>
+        </router-link>
         <overlay
           v-if="editMode || forceEditOverlay"
           v-bind:item="item"

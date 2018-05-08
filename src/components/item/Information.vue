@@ -150,6 +150,10 @@ export default {
         links.push(netflixSearch)
       }
 
+      if (this.isMovie(this.details)) {
+        let hdArena = { name: 'HD Arena', url: this.getHdArenaUrl(this.details) }
+        links.push(hdArena)
+      }
       return links
     }
   },

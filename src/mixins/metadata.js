@@ -66,6 +66,15 @@ export default {
         return item.homepage
       }
     },
+    getHdArenaUrl (item) {
+      let query = this.getTitle(item)
+      query = query.replace(' ', '+')
+      query = query.replace(':', '')
+      query = query.replace(';', '')
+      query = query.replace('-', '')
+      query = query.replace('!', '')
+      return 'http://www.hd-area.org/?s=search&q=' + query
+    },
     filterItem (item) {
       if (this.filter === null) {
         return true

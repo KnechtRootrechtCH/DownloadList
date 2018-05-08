@@ -47,7 +47,6 @@ export default {
     signInWithGoogleAuth: function () {
       let provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
-        console.log('success')
         this.message = ''
         this.hasMessage = false
         this.$router.replace('/')

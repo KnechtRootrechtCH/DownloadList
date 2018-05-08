@@ -73,7 +73,6 @@ export default {
       let userSettings = this.$store.getters.userSettings
       let author = comment.author
       let isAdmin = userSettings && userSettings.isAdmin
-      console.log(user)
       return author === user.email && isAdmin
     },
     addComment () {
