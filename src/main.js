@@ -8,6 +8,7 @@ import logger from './logger'
 import { store } from './store'
 
 import underscore from 'vue-underscore'
+import linkify from 'vue-linkify'
 import BootstrapVue from 'bootstrap-vue'
 import VueProgressiveImage from 'vue-progressive-image'
 import moment from 'moment'
@@ -25,6 +26,8 @@ Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
 Vue.use(VueMomentJS, moment)
 Vue.use(VueAwesomeSwiper)
+
+Vue.directive('linkified', linkify)
 
 let app
 

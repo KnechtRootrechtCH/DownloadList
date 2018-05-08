@@ -3,18 +3,27 @@
     <div class="content">
       <h5 class="label">{{ $t('item.comments')}}</h5>
       <div v-if="comments">
-        <div v-for="comment in comments" :key="comment.id" class="comment">
+        <div v-for="(comment, index) in comments" :key="index" class="comment">
           <b-card no-body bg-variant="dark" border-variant="dark">
             <b-card-header
               header-bg-variant="dark"
               header-border-variant="secondary"
               header-text-variant="faded">
               <span class="author">{{ comment.author }}</span>
-              <span class="time">{{ getTime(comment) }}</span>
+              <span class="time">{{ getTime(comment) }}
+                <font-awesome-icon
+                  v-if="isDeletable(comment)"
+                  @click="removeComment(index)"
+                  :icon="icon('trash')"
+                  class="icon"
+                  v-bind:class="icon"/>
+              </span>
             </b-card-header>
-            <b-card-body class="card-text"
+            <b-card-body
+              class="card-text comment-text"
+              v-html="comment.text"
+              v-linkified
               body-text-variant="dark">
-              {{ comment.text }}
             </b-card-body>
           </b-card>
         </div>
@@ -34,10 +43,12 @@
 </template>
 
 <script>
+import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemComments',
   props: ['itemKey'],
+  mixins: [IconsMixin],
   data () {
     return {
       commentText: ''
@@ -57,6 +68,14 @@ export default {
     getTime (comment) {
       return this.$moment(comment.time).format('DD.MM.YYYY HH:mm')
     },
+    isDeletable (comment) {
+      let user = this.$store.getters.user
+      let userSettings = this.$store.getters.userSettings
+      let author = comment.author
+      let isAdmin = userSettings && userSettings.isAdmin
+      console.log(user)
+      return author === user.email && isAdmin
+    },
     addComment () {
       if (!this.commentStringEntered) {
         return
@@ -68,9 +87,14 @@ export default {
       comment.author = this.$store.getters.user.email
       comment.text = this.commentText
       this.$store.dispatch('addComment', {
-        key: key,
+        itemKey: key,
         comment: comment})
       this.commentText = null
+    },
+    removeComment (commentId) {
+      this.$store.dispatch('removeComment', {
+        itemKey: this.itemKey,
+        commentId: commentId})
     }
   },
   created () {
@@ -121,6 +145,12 @@ export default {
 }
 .time {
   float: right;
+}
+.icon {
+  margin-left: 5px;
+}
+.icon:hover {
+  color: red;
 }
 .comments-input {
   margin-bottom: 10px;

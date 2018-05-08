@@ -208,16 +208,21 @@ export const store = new Vuex.Store({
         'priority': payload.priority
       })
     },
-    getComments: (context, key) => {
-      let ref = firebase.database.ref('comments/' + key)
+    getComments: (context, itemKey) => {
+      let ref = firebase.database.ref('comments/' + itemKey)
       ref.on('value', (snapshot) => {
         context.commit('setComments', snapshot.val())
       })
     },
     addComment: (context, payload) => {
-      let transaction = {time: new Date().toString(), action: 'addComment', payload: payload.comment, key: payload.key}
+      let transaction = {time: new Date().toString(), action: 'addComment', payload: payload.comment, key: payload.itemKey}
       context.dispatch('transactionLog', transaction)
-      firebase.database.ref('comments/' + payload.key).push(payload.comment)
+      firebase.database.ref('comments/' + payload.itemKey).push(payload.comment)
+    },
+    removeComment: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'removeComment', payload: payload.commentId, key: payload.itemKey}
+      context.dispatch('transactionLog', transaction)
+      firebase.database.ref('comments/' + payload.itemKey + '/' + payload.commentId).remove()
     },
     setItemDownloaded: (context, payload) => {
       let transaction = {time: new Date().toString(), action: 'setItemDownloaded', payload: payload.downloaded, key: payload.key}

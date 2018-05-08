@@ -25,6 +25,7 @@ import chevronUpIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleUp
 import chevronDownIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleDown'
 import clockIcon from '@fortawesome/fontawesome-free-solid/faClock'
 import pencilIcon from '@fortawesome/fontawesome-free-solid/faPencilAlt'
+import trashIcon from '@fortawesome/fontawesome-free-solid/faTrash'
 
 export default {
   methods: {
@@ -53,6 +54,7 @@ export default {
         case 'chevron-down': return chevronDownIcon
         case 'clock': return clockIcon
         case 'pencil': return pencilIcon
+        case 'trash': return trashIcon
         default: return defaultIcon
       }
     }

@@ -27,6 +27,7 @@
     "vue-axios": "^2.0.2",
     "vue-i18n": "^7.6.0",
     "vue-instant": "^1.0.2",
+    "vue-linkify": "^1.0.1",
     "vue-logger": "0.0.3",
     "vue-momentjs": "^0.1.2",
     "vue-progressive-image": "^2.4.4",
