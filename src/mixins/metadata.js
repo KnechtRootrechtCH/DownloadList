@@ -66,14 +66,26 @@ export default {
         return item.homepage
       }
     },
-    getHdArenaUrl (item) {
+    getHdArenaSearchUrl (item) {
+      let query = this.getSearchString(item)
+      return 'http://www.hd-area.org/?s=search&q=' + query
+    },
+    getMovieBlogSearchUrl (item) {
+      let query = this.getSearchString(item)
+      return 'http://movie-blog.org/index.php?s=' + query + '&cat=0'
+    },
+    getSearchString (item) {
       let query = this.getTitle(item)
-      query = query.replace(' ', '+')
+      query = query.replace(/[-+():;]/gi, '')
+      /*
       query = query.replace(':', '')
       query = query.replace(';', '')
       query = query.replace('-', '')
       query = query.replace('!', '')
-      return 'http://www.hd-area.org/?s=search&q=' + query
+      */
+      query = query.replace(/ +(?= )/g, '')
+      query = query.replace(' ', '+')
+      return query
     },
     filterItem (item) {
       if (this.filter === null) {

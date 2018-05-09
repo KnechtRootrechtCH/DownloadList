@@ -64,6 +64,13 @@
         <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < links.length">,&nbsp;</span>
       </span>
     </div>
+    <!-- DOWNLOAD LINKS -->
+    <div class="content" v-if="downloadLinks.length > 0">
+      <span class="label">{{ $t('item.downloadLinks')}}:&nbsp;</span>
+      <span v-for="(link, index) in downloadLinks" :key="link.name">
+        <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < downloadLinks.length">,&nbsp;</span>
+      </span>
+    </div>
     <!-- PRODUCTION -->
     <!--
     <div class="content">
@@ -149,10 +156,15 @@ export default {
         let netflixSearch = { name: this.$t('item.netflixSearch'), url: 'https://www.netflix.com/search?q=' + this.title }
         links.push(netflixSearch)
       }
-
+      return links
+    },
+    downloadLinks () {
+      let links = []
       if (this.isMovie(this.details)) {
-        let hdArena = { name: 'HD Arena', url: this.getHdArenaUrl(this.details) }
+        let hdArena = { name: 'HD Arena', url: this.getHdArenaSearchUrl(this.details) }
         links.push(hdArena)
+        let movieBlog = { name: 'Movie Blog', url: this.getMovieBlogSearchUrl(this.details) }
+        links.push(movieBlog)
       }
       return links
     }
@@ -183,6 +195,7 @@ export default {
           director: 'Regisseur',
           runtime: 'Laufzeit',
           links: 'Links',
+          downloadLinks: 'Download Suche',
           netflix: 'Netflix',
           netflixSearch: 'Netflix Suche',
           homepage: 'Homepage',
@@ -213,6 +226,7 @@ export default {
           director: 'Director',
           runtime: 'Runtime',
           links: 'Links',
+          downloadLinks: 'Download search',
           netflix: 'Netflix',
           netflixSearch: 'Netflix search',
           homepage: 'Homepage',
