@@ -140,10 +140,9 @@ export const store = new Vuex.Store({
         context.commit('setUserSettings', payload)
         if (payload && payload.dataUserId && context.getters.user.uid !== payload.dataUserId) {
           context.commit('setDataUserId', payload.dataUserId)
-          context.dispatch('loadItems')
         }
+        context.dispatch('loadItems')
       })
-      context.dispatch('loadItems')
     },
     loadItems: (context) => {
       let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
