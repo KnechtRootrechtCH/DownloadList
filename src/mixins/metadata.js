@@ -77,14 +77,8 @@ export default {
     getSearchString (item) {
       let query = this.getTitle(item)
       query = query.replace(/[-+():;]/gi, '')
-      /*
-      query = query.replace(':', '')
-      query = query.replace(';', '')
-      query = query.replace('-', '')
-      query = query.replace('!', '')
-      */
       query = query.replace(/ +(?= )/g, '')
-      query = query.replace(' ', '+')
+      query = query.replace(/\s/g, '+')
       return query
     },
     filterItem (item) {

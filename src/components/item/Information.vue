@@ -59,7 +59,7 @@
     <div class="content" v-if="mediaType === 'tv'"><span class="label">{{ $t('item.createdby')}}:&nbsp;</span>{{ releaseDate }}</div>
     <!-- LINKS -->
     <div class="content" v-if="links.length > 0">
-      <span class="label">{{ $t('item.links')}}:&nbsp;</span>
+      <span class="label">{{ $t('item.infoLinks')}}:&nbsp;</span>
       <span v-for="(link, index) in links" :key="link.name">
         <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < links.length">,&nbsp;</span>
       </span>
@@ -144,15 +144,22 @@ export default {
     },
     links () {
       let links = []
+      // Homepage
+      let homepage = { name: this.$t('item.homepage'), url: this.homepage }
+      links.push(homepage)
+      // Movie DB
       let movieDbLink = { name: this.$t('item.movieDb'), url: this.getMovieDbUrl(this.details) }
       links.push(movieDbLink)
-
+      // Trakt.tv
+      let query = this.getSearchString(this.details)
+      let traktSearchUrl = 'https://trakt.tv/search?query=' + query
+      let trakt = { name: this.$t('item.traktSearch'), url: traktSearchUrl }
+      links.push(trakt)
+      // Netflix
       if (this.isAvailableOnNetflix(this.details)) {
         let netflixLink = { name: this.$t('item.netflix'), url: this.getNetflixUrl(this.details) }
         links.push(netflixLink)
       } else if (this.details.homepage) {
-        let homepage = { name: this.$t('item.homepage'), url: this.homepage }
-        links.push(homepage)
         let netflixSearch = { name: this.$t('item.netflixSearch'), url: 'https://www.netflix.com/search?q=' + this.title }
         links.push(netflixSearch)
       }
@@ -160,11 +167,13 @@ export default {
     },
     downloadLinks () {
       let links = []
-      if (this.isMovie(this.details)) {
-        let hdArena = { name: 'HD Arena', url: this.getHdArenaSearchUrl(this.details) }
-        links.push(hdArena)
-        let movieBlog = { name: 'Movie Blog', url: this.getMovieBlogSearchUrl(this.details) }
-        links.push(movieBlog)
+      for (let key in this.settings.downloadLinks) {
+        let value = this.settings.downloadLinks[key]
+        if ((value.tv && this.isTv(this.details)) || (value.movie && this.isMovie(this.details))) {
+          let url = value.urlPattern.replace('{query}', this.getSearchString(this.details))
+          let link = { name: value.title, url: url }
+          links.push(link)
+        }
       }
       return links
     }
@@ -194,10 +203,11 @@ export default {
           createdby: 'Created by',
           director: 'Regisseur',
           runtime: 'Laufzeit',
-          links: 'Links',
-          downloadLinks: 'Download Suche',
+          infoLinks: 'Links',
+          downloadLinks: 'Downloads',
           netflix: 'Netflix',
           netflixSearch: 'Netflix Suche',
+          traktSearch: 'Trakt.tv',
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
           priority: 'Priorität',
@@ -225,10 +235,11 @@ export default {
           createdby: 'Created by',
           director: 'Director',
           runtime: 'Runtime',
-          links: 'Links',
-          downloadLinks: 'Download search',
+          infoLinks: 'Links',
+          downloadLinks: 'Downloads',
           netflix: 'Netflix',
-          netflixSearch: 'Netflix search',
+          netflixSearch: 'Netflix Suche',
+          traktSearch: 'Trakt.tv',
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
           priority: 'Priority',
