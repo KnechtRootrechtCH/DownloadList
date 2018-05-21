@@ -227,7 +227,13 @@ export default {
       this.shrink = shrink
     },
     toggleDownloadedState () {
-      this.setDownloaded(this.item, !this.isDownloaded, this.seasons)
+      if (!this.isTv(this.item)) {
+        this.setDownloaded(this.item, !this.isDownloaded, this.seasons)
+        return
+      }
+      let isDownloaded = this.totalDownloadedCount === this.totalEpisodeCount
+
+      this.setAllSeasonsDownloaded(this.item, this.seasons, !isDownloaded)
     }
   },
   created () {
