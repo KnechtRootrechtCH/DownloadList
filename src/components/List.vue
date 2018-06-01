@@ -114,7 +114,7 @@ export default {
       filter: {
         movie: true,
         tv: true,
-        downloaded: true,
+        downloaded: false,
         notDownloaded: true,
         priority1: true,
         priority2: true,

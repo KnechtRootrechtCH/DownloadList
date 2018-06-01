@@ -145,8 +145,10 @@ export default {
     links () {
       let links = []
       // Homepage
-      let homepage = { name: this.$t('item.homepage'), url: this.homepage }
-      links.push(homepage)
+      if (this.homepage) {
+        let homepage = { name: this.$t('item.homepage'), url: this.homepage }
+        links.push(homepage)
+      }
       // Movie DB
       let movieDbLink = { name: this.$t('item.movieDb'), url: this.getMovieDbUrl(this.details) }
       links.push(movieDbLink)
@@ -170,9 +172,11 @@ export default {
       for (let key in this.settings.downloadLinks) {
         let value = this.settings.downloadLinks[key]
         if ((value.tv && this.isTv(this.details)) || (value.movie && this.isMovie(this.details))) {
-          let url = value.urlPattern.replace('{query}', this.getSearchString(this.details))
-          let link = { name: value.title, url: url }
-          links.push(link)
+          if (!value.languages || value.languages.includes(this.details.original_language) || value.languages.includes(this.$store.getters.locale)) {
+            let url = value.urlPattern.replace('{query}', this.getSearchString(this.details))
+            let link = { name: value.title, url: url }
+            links.push(link)
+          }
         }
       }
       return links
