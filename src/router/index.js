@@ -9,6 +9,7 @@ import Item from '@/components/Item'
 import Season from '@/components/Season'
 import Profile from '@/components/Profile'
 import About from '@/components/About'
+import Discuss from '@/components/Discuss'
 
 import firebase from 'firebase'
 
@@ -111,6 +112,14 @@ let router = new Router({
         requiresAuth: true
       },
       props: true
+    },
+    {
+      path: '/discuss',
+      name: 'Discuss',
+      component: Discuss,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/about',

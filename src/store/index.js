@@ -34,7 +34,9 @@ export const store = new Vuex.Store({
     _suggestions: {},
     _suggestionsPage: 0,
     _suggestionsPages: 0,
-    _suggestionsCount: 0
+    _suggestionsCount: 0,
+
+    _messages: []
   },
   mutations: {
     setSettings: (state, payload) => { state._settings = payload },
@@ -112,7 +114,8 @@ export const store = new Vuex.Store({
           })
         }
       })
-    }
+    },
+    setMessages: (state, messages) => { state._messages = messages }
   },
   actions: {
     getMovieDbConfiguration: (context) => {
@@ -142,8 +145,23 @@ export const store = new Vuex.Store({
           context.commit('setDataUserId', payload.dataUserId)
         }
         context.dispatch('loadItems')
+        context.dispatch('loadMessages')
       })
     },
+
+    transactionLog: (context, payload) => {
+      let dateString = Helpers.getDateString()
+      let timeString = Helpers.getTimeString()
+      payload.uid = context.getters.user.uid
+      payload.user = context.getters.user.email
+      let uid = context.getters.dataUserId
+      if (payload.action.includes('Comment')) {
+        uid = context.getters.user.uid
+      }
+      firebase.database.ref('data/' + uid + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
+      firebase.database.ref('data/' + uid + '/transaction').set(payload)
+    },
+
     loadItems: (context) => {
       let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
       ref.once('value', (snapshot) => {
@@ -160,19 +178,6 @@ export const store = new Vuex.Store({
         context.commit('setLoading', false)
       })
     },
-    transactionLog: (context, payload) => {
-      let dateString = Helpers.getDateString()
-      let timeString = Helpers.getTimeString()
-      payload.uid = context.getters.user.uid
-      payload.user = context.getters.user.email
-      let uid = context.getters.dataUserId
-      if (payload.action.includes('Comment')) {
-        uid = context.getters.user.uid
-      }
-      firebase.database.ref('data/' + uid + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
-      firebase.database.ref('data/' + uid + '/transaction').set(payload)
-    },
-
     addItem: (context, item) => {
       let transaction = {time: new Date().toString(), action: 'addItem', payload: item, key: item.key}
       context.dispatch('transactionLog', transaction)
@@ -211,6 +216,24 @@ export const store = new Vuex.Store({
         'priority': payload.priority
       })
     },
+
+    loadMessages: (context) => {
+      let ref = firebase.database.ref('messages')
+      ref.on('value', (snapshot) => {
+        context.commit('setMessages', snapshot.val())
+      })
+    },
+    addMessage: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'addMessage', payload: payload, key: null}
+      context.dispatch('transactionLog', transaction)
+      firebase.database.ref('messages/').push(payload)
+    },
+    removeMessage: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'removeMessage', payload: payload.messageId, key: null}
+      context.dispatch('transactionLog', transaction)
+      firebase.database.ref('messages/' + payload.messageId).remove()
+    },
+
     getComments: (context, itemKey) => {
       let ref = firebase.database.ref('comments/' + itemKey)
       ref.on('value', (snapshot) => {
@@ -370,6 +393,17 @@ export const store = new Vuex.Store({
 
     settings: (state) => { return state._settings },
     locale: (state) => { return state._locale },
-    movieDbConfiguration: (state) => { return state._movieDbConfiguration }
+    movieDbConfiguration: (state) => { return state._movieDbConfiguration },
+
+    messages: (state) => { return state._messages },
+    messagesArray: (state) => {
+      let array = []
+      for (let key in state._messages) {
+        let message = state._messages[key]
+        message.key = key
+        array.push(message)
+      }
+      return array
+    }
   }
 })

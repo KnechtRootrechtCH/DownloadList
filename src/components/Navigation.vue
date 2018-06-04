@@ -16,6 +16,7 @@
         <b-navbar-nav class="ml-auto">
           <b-dropdown-divider class="d-sm-none"></b-dropdown-divider>
           <b-nav-item to="/profile" class="d-sm-none" v-if="user">{{ userName }}<span v-if="isAdmin">&nbsp;({{ $t('nav.admin')}})</span></b-nav-item>
+          <b-nav-item to="/discuss" class="d-sm-none">{{ $t("nav.discuss") }}</b-nav-item>
           <b-nav-item to="/about" class="d-sm-none">{{ $t("nav.about") }}</b-nav-item>
           <b-nav-item v-if="user" v-on:click="signOut" class="d-sm-none">{{ $t("nav.signout") }}</b-nav-item>
           <b-nav-item-dropdown right class="d-none d-sm-inline" no-caret>
@@ -23,6 +24,7 @@
               <font-awesome-icon :icon="icon('cog')" class="navigation-icon"/>
             </template>
             <b-dropdown-item to="/profile" v-if="user">{{ userName }}<span v-if="isAdmin">&nbsp;({{ $t('nav.admin')}})</span></b-dropdown-item>
+            <b-dropdown-item to="/discuss">{{ $t("nav.discuss") }}</b-dropdown-item>
             <b-dropdown-item to="/about">{{ $t("nav.about") }}</b-dropdown-item>
             <b-dropdown-item v-if="user" v-on:click="signOut" right>{{ $t("nav.signout") }}</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -98,6 +100,7 @@ export default {
           profile: 'Profile',
           admin: 'Administrator',
           signout: 'SignOut',
+          discuss: 'Chat',
           about: 'About'
         }
       },
@@ -111,6 +114,7 @@ export default {
           profile: 'Profile',
           admin: 'Administrator',
           signout: 'SignOut',
+          discuss: 'Chat',
           about: 'About'
         }
       }
