@@ -158,6 +158,9 @@ export const store = new Vuex.Store({
       if (payload.action.includes('Comment')) {
         uid = context.getters.user.uid
       }
+      if (payload.action.includes('Message')) {
+        uid = context.getters.user.uid
+      }
       firebase.database.ref('data/' + uid + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)
       firebase.database.ref('data/' + uid + '/transaction').set(payload)
     },
