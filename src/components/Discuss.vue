@@ -1,48 +1,35 @@
 <template>
   <div class="discuss">
-      <h2 class="discuss-header noselect">{{ $t('discuss') }}</h2>
-      <div>
-        <b-form-textarea class="messages-input" id="messages-textarea"
-          v-if="showInput"
+    <div class="messages">
+      <div v-for="(message, index) in messages" :key="index" class="message">
+        <b-alert variant="dark" show fade>
+          <span class="heading">
+            <span class="author">{{ message.author }}</span>&nbsp;&ndash;&nbsp;<span class="time">{{ getTime(message) }}</span>
+            <span class="pull-right">
+              <button v-if="isDeletable(message)" type="button" aria-label="Delete" class="close" @click.prevent="deleteMessage(message)">×</button>
+            </span>
+          </span>
+          <hr>
+          <p class="mb-0" v-linkified>
+            {{ message.text }}
+          </p>
+        </b-alert>
+      </div>
+    </div>
+    <div class="input fixed-bottom">
+      <b-input-group>
+        <b-input-group-prepend>
+          <b-btn variant="light" @click.prevent="addMessage">
+            <font-awesome-icon class="button-icon" :icon="icon('plus')" v-bind:class="{ 'disabled': !messageText}"/>
+          </b-btn>
+        </b-input-group-prepend>
+        <b-form-input class="messages-input" id="messages-input"
           v-model="messageText"
           v-bind:placeholder="$t('placeholder')"
-          :rows="5">
-        </b-form-textarea>
-        <div class="messages-actions">
-          <b-button variant="dark" v-if="!showInput" class="messages-button" @click="showInput = true">{{ $t('addMessage') }}</b-button>
-          <b-button variant="dark" v-if="showInput && !messageStringEntered" class="messages-button" @click="showInput = false">{{ $t('cancel') }}</b-button>
-          <b-button variant="dark" v-if="showInput && messageStringEntered" v-bind:class="{ disabled : !messageStringEntered }" class="messages-button" @click="addMessage">{{ $t('submit') }}</b-button>
-        </div>
-      </div>
-
-      <div v-if="messages">
-        <div v-for="(message, index) in messages" :key="index" class="message">
-          <b-card no-body bg-variant="dark" border-variant="dark">
-            <b-card-header
-              header-bg-variant="default"
-              header-border-variant="secondary"
-              header-text-variant="default">
-              <span class="author">{{ message.author }}</span>
-              <span class="time">{{ getTime(message) }}
-                <font-awesome-icon
-                  v-if="isDeletable(message)"
-                  @click="removeMessage(message)"
-                  :icon="icon('trash')"
-                  class="icon"
-                  v-bind:class="icon"/>
-              </span>
-            </b-card-header>
-            <b-card-body
-              class="card-text message-text"
-              v-html="message.text"
-              v-linkified
-              body-bg-variant="default"
-              body-border-variant="default"
-              body-text-variant="default">
-            </b-card-body>
-          </b-card>
-        </div>
-      </div>
+          v-on:keyup.enter.native.prevent="addMessage">
+        </b-form-input>
+      </b-input-group>
+    </div>
   </div>
 </template>
 
@@ -55,7 +42,8 @@ export default {
   data () {
     return {
       messageText: '',
-      showInput: false
+      showInput: false,
+      limit: 50
     }
   },
   components: {
@@ -63,7 +51,8 @@ export default {
   computed: {
     messages () {
       let messages = this.$store.getters.messagesArray
-      return messages.reverse()
+      messages = messages.slice(Math.max(messages.length - this.limit, 0))
+      return messages
     },
     messageStringEntered () {
       return this.messageText !== null && this.messageText.length > 0
@@ -78,10 +67,10 @@ export default {
       let userSettings = this.$store.getters.userSettings
       let author = message.author
       let isAdmin = userSettings && userSettings.isAdmin
-      return author === user.email && isAdmin
+      return author === user.email || isAdmin
     },
     addMessage () {
-      if (!this.messageStringEntered) {
+      if (!this.messageText) {
         return
       }
       let message = {}
@@ -93,12 +82,26 @@ export default {
       this.messageText = null
       this.showInput = false
     },
-    removeMessage (message) {
+    deleteMessage (message) {
+      if (!this.isDeletable(message)) {
+        return
+      }
       this.$store.dispatch('removeMessage', {
         messageId: message.key})
+    },
+    scrollToEnd () {
+      window.scrollTo(0, document.body.scrollHeight)
     }
   },
   created () {
+  },
+  mounted () {
+    setTimeout(this.scrollToEnd, 100)
+  },
+  watch: {
+    messages (oldVal, newVal) {
+      setTimeout(this.scrollToEnd, 100)
+    }
   },
   i18n: {
     messages: {
@@ -114,7 +117,7 @@ export default {
         addMessage: 'Add message',
         cancel: 'Cancel',
         submit: 'Submit',
-        placeholder: 'Add a message…'
+        placeholder: 'Add message…'
       }
     }
   }
@@ -127,38 +130,46 @@ export default {
   outline: none;
 }
 .discuss {
-  margin: 20px 20px 0 20px;
+  margin: 20px 20px 20px 20px;
+}
+.input {
+  padding: 20px 20px 10px 20px;
+  background-color: #17212b;;
+}
+.button-icon {
+  color: #444444;
+}
+.button-icon.disabled {
+  color: #AAA;
+  cursor: pointer;
 }
 .label {
   font-weight: bold;
 }
-.message-label {
-  font-weight: bold;
+.messages {
+  margin-bottom: 70px;
 }
-.card {
-  margin-bottom: 10px;
+.message .alert{
+  background-color: #343a40;
+  color: white;
+  border: none;
 }
-.content .card-body {
-  padding: 12px 20px 12px 20px;
-  background-color: rgb(240, 240, 240);
-}
-.author {
-  float: left;
-}
-.time {
+.pull-right {
   float: right;
 }
-.icon {
+.close {
   margin-left: 5px;
+  color: white;
 }
-.icon:hover {
-  color: red;
+.author {
+  font-weight: bold;
 }
-.messages-input {
-  margin-bottom: 10px;
-}
-.messages-button {
-  width: 100%;
-  margin: 0 0 20px 0;
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #aaa;
+    margin: 2px 0 8px 0;
+    padding: 0;
 }
 </style>
