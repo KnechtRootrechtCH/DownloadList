@@ -161,6 +161,9 @@ export default {
   margin-left: 5px;
   color: white;
 }
+.close:hover {
+  color: grey;
+}
 .author {
   font-weight: bold;
 }
