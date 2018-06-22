@@ -41,5 +41,15 @@ export default Object.freeze({
     STILL: {
       W185: { key: 'w185', width: 185, height: 104 }
     }
+  },
+  LIST_FILTER_DEFAULT: {
+    movie: true,
+    tv: true,
+    downloaded: false,
+    notDownloaded: true,
+    priority1: true,
+    priority2: true,
+    priority3: true,
+    text: ''
   }
 })

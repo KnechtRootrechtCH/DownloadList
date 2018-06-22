@@ -1,4 +1,4 @@
-import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
 
 import defaultIcon from '@fortawesome/fontawesome-free-solid/faCircle'
 
@@ -11,6 +11,7 @@ import plusIcon from '@fortawesome/fontawesome-free-solid/faPlusCircle'
 import minusIcon from '@fortawesome/fontawesome-free-solid/faMinusCircle'
 import starIcon from '@fortawesome/fontawesome-free-solid/faStar'
 import redoIcon from '@fortawesome/fontawesome-free-solid/faRedoAlt'
+import undoIcon from '@fortawesome/fontawesome-free-solid/faUndoAlt'
 import checkIcon from '@fortawesome/fontawesome-free-solid/faCheckCircle'
 import editIcon from '@fortawesome/fontawesome-free-solid/faEdit'
 import cogIcon from '@fortawesome/fontawesome-free-solid/faCog'
@@ -26,6 +27,7 @@ import chevronDownIcon from '@fortawesome/fontawesome-free-solid/faChevronCircle
 import clockIcon from '@fortawesome/fontawesome-free-solid/faClock'
 import pencilIcon from '@fortawesome/fontawesome-free-solid/faPencilAlt'
 import trashIcon from '@fortawesome/fontawesome-free-solid/faTrash'
+import banIcon from '@fortawesome/fontawesome-free-solid/faBan'
 
 export default {
   methods: {
@@ -41,11 +43,13 @@ export default {
         case 'star': return starIcon
         case 'check': return checkIcon
         case 'redo': return redoIcon
+        case 'undo': return undoIcon
         case 'edit': return editIcon
         case 'cog': return cogIcon
         case 'search': return searchIcon
         case 'times': return timesIcon
         case 'filter': return filterIcon
+        case 'filterAlt': return filterIcon
         case 'sort': return sortIcon
         case 'exclamation': return exclamationIcon
         case 'play': return playIcon
@@ -55,11 +59,12 @@ export default {
         case 'clock': return clockIcon
         case 'pencil': return pencilIcon
         case 'trash': return trashIcon
+        case 'ban': return banIcon
         default: return defaultIcon
       }
     }
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText
   }
 }

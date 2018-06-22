@@ -17,6 +17,10 @@
                 <font-awesome-icon :icon="icon('search')" class="checklist-navigation-icon"/>
               </span>
               -->
+              <span  v-if="settings.showFilterReset" class="checklist-navigation-item" @click="resetFilters">
+                <span class="d-none d-lg-inline">{{$t('reset') }}</span>
+                <font-awesome-icon :icon="icon('undo')" class="checklist-navigation-icon"/>
+              </span>
               <span v-if="!settings.alwaysShowPriorityIcons" class="checklist-navigation-item" @click="editPriorities = !editPriorities" v-bind:class="{ active: editPriorities }">
                 <span class="d-none d-lg-inline">{{$t('edit') }}</span>
                 <font-awesome-icon :icon="icon('star')" class="checklist-navigation-icon"/>
@@ -27,7 +31,7 @@
               </span>
               <span class="checklist-navigation-item" @click="filterPanelActive = !filterPanelActive, sortPanelActive = false" v-bind:class="{ active: filterPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('filter') }}</span>
-                <font-awesome-icon :icon="icon('filter')" class="checklist-navigation-icon"/>
+                <font-awesome-icon :icon="icon('filter')" class="checklist-navigation-icon" transform="shrink-2"/>
               </span>
             </b-col>
           </b-row>
@@ -111,16 +115,7 @@ export default {
   mixins: [IconsMixin, UtilsMixin, MetadataMixin],
   data () {
     return {
-      filter: {
-        movie: true,
-        tv: true,
-        downloaded: false,
-        notDownloaded: true,
-        priority1: true,
-        priority2: true,
-        priority3: true,
-        text: ''
-      },
+      filter: {},
       sort: 'title',
       filterPanelActive: false,
       sortPanelActive: false,
@@ -146,6 +141,10 @@ export default {
       if (offset >= height - 100) {
         this.page++
       }
+    },
+    resetFilters () {
+      this.filter = JSON.parse(JSON.stringify(this.constants.LIST_FILTER_DEFAULT))
+      this.sort = 'title'
     }
   },
   created () {
@@ -154,15 +153,31 @@ export default {
   beforeDestroy () {
     window.removeEventListener('scroll', this.handleScroll)
   },
+  mounted () {
+    let filter = JSON.parse(this.$localStorage.get('varda:list:filter'))
+    if (filter) {
+      filter.text = ''
+      this.filter = filter
+    } else {
+      this.resetFilters()
+    }
+
+    let sort = this.$localStorage.get('varda:list:sort')
+    if (sort) {
+      this.sort = sort
+    }
+  },
   watch: {
     filter: {
       handler: function (newValue) {
         this.page = 1
+        this.$localStorage.set('varda:list:filter', JSON.stringify(this.filter))
       },
       deep: true
     },
     sort: function (val, oldVal) {
       this.page = 1
+      this.$localStorage.set('varda:list:sort', this.sort)
     },
     items: function (val, oldVal) {
       // disabled. might disorient the user
@@ -192,7 +207,8 @@ export default {
         no: 'Nein',
         none: 'Keine',
         search: 'Suchen',
-        searchPlaceholder: 'Suchen…'
+        searchPlaceholder: 'Suchen…',
+        reset: 'Filter zurücksetzen'
       },
       en: {
         checklist: 'Download list',
@@ -215,7 +231,8 @@ export default {
         no: 'No',
         none: 'None',
         search: 'Search',
-        searchPlaceholder: 'Search…'
+        searchPlaceholder: 'Search…',
+        reset: 'Reset filters'
       }
     }
   }

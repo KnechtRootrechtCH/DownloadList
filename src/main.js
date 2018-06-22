@@ -14,6 +14,11 @@ import VueProgressiveImage from 'vue-progressive-image'
 import moment from 'moment'
 import VueMomentJS from 'vue-momentjs'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
+import VueLocalStorage from 'vue-localstorage'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import 'swiper/dist/css/swiper.css'
 
@@ -26,6 +31,10 @@ Vue.use(BootstrapVue)
 Vue.use(VueProgressiveImage)
 Vue.use(VueMomentJS, moment)
 Vue.use(VueAwesomeSwiper)
+Vue.use(VueLocalStorage)
+
+library.add(faCoffee)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.directive('linkified', linkify)
 
