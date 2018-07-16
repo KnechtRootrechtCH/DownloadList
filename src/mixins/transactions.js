@@ -24,6 +24,15 @@ export default {
         priority: priority})
     },
     setDownloaded (item, downloaded, seasons) {
+      if (downloaded) {
+        this.$store.dispatch('setItemDownloadStatus', {
+          key: item.key,
+          status: 'downloaded'})
+      } else {
+        this.$store.dispatch('setItemDownloadStatus', {
+          key: item.key,
+          status: null})
+      }
       this.$store.dispatch('setItemDownloaded', {
         key: item.key,
         downloaded: downloaded})
