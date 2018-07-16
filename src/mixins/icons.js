@@ -19,7 +19,9 @@ import searchIcon from '@fortawesome/fontawesome-free-solid/faSearch'
 import timesIcon from '@fortawesome/fontawesome-free-solid/faTimes'
 import filterIcon from '@fortawesome/fontawesome-free-solid/faFilter'
 import sortIcon from '@fortawesome/fontawesome-free-solid/faSort'
-import exclamationIcon from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
+import exclamationIcon from '@fortawesome/fontawesome-free-solid/faExclamation'
+import exclamationCircleIcon from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
+import exclamationTriangleIcon from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
 import playIcon from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import commentIcon from '@fortawesome/fontawesome-free-solid/faComment'
 import chevronUpIcon from '@fortawesome/fontawesome-free-solid/faChevronCircleUp'
@@ -28,6 +30,13 @@ import clockIcon from '@fortawesome/fontawesome-free-solid/faClock'
 import pencilIcon from '@fortawesome/fontawesome-free-solid/faPencilAlt'
 import trashIcon from '@fortawesome/fontawesome-free-solid/faTrash'
 import banIcon from '@fortawesome/fontawesome-free-solid/faBan'
+import hourglassIcon from '@fortawesome/fontawesome-free-solid/faHourglass'
+import spinnerIcon from '@fortawesome/fontawesome-free-solid/faSpinner'
+import downloadIcon from '@fortawesome/fontawesome-free-solid/faDownload'
+import tasksIcon from '@fortawesome/fontawesome-free-solid/faTasks'
+import bellIcon from '@fortawesome/fontawesome-free-solid/faBell'
+import flagIcon from '@fortawesome/fontawesome-free-solid/faFlag'
+import calendarIcon from '@fortawesome/fontawesome-free-solid/faCalendarAlt'
 
 export default {
   methods: {
@@ -52,6 +61,8 @@ export default {
         case 'filterAlt': return filterIcon
         case 'sort': return sortIcon
         case 'exclamation': return exclamationIcon
+        case 'exclamationCircle': return exclamationCircleIcon
+        case 'exclamationTriangle': return exclamationTriangleIcon
         case 'play': return playIcon
         case 'comment': return commentIcon
         case 'chevron-up': return chevronUpIcon
@@ -60,6 +71,13 @@ export default {
         case 'pencil': return pencilIcon
         case 'trash': return trashIcon
         case 'ban': return banIcon
+        case 'hourglass': return hourglassIcon
+        case 'spinner' : return spinnerIcon
+        case 'download' : return downloadIcon
+        case 'tasks' : return tasksIcon
+        case 'bell' : return bellIcon
+        case 'flag' : return flagIcon
+        case 'calendar' : return calendarIcon
         default: return defaultIcon
       }
     }

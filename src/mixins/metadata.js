@@ -42,6 +42,7 @@ export default {
         let moment = this.$moment(date)
         return moment
       }
+      return null
     },
     getReleaseDateFormated (item, format) {
       let moment = this.getReleaseDateMoment(item)

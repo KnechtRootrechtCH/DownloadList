@@ -152,4 +152,31 @@ body {
   color:#f0f0f0;
   background: #dd9c25;
 }
+.app-content .green {
+  color: green;
+}
+.app-content .yellow {
+  color: gold;
+}
+.app-content .darkred {
+  color: darkred;
+}
+.app-content .red {
+  color: red;
+}
+.app-content .blue {
+  color: blue;
+}
+.app-content .orange {
+  color: orange;
+}
+.app-content .limegreen {
+  color: limegreen;
+}
+.app-content .skyblue {
+  color: skyblue;
+}
+.app-content .turquoise {
+  color: turquoise;
+}
 </style>
