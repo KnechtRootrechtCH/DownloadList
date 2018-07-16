@@ -51,7 +51,7 @@
       iconType="download"
       @click.native="updateStatus('queued')"></action>
     <action
-      v-if="isSelected && !isDownloaded && !isQueued && !isUnreleased && !isNotYetAvailable"
+      v-if="isSelected && !isDownloaded && !isQueued && !isNotYetAvailable"
       v-bind:label="$t('item.action.markNotYetAvailable')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.GOLD"
