@@ -63,10 +63,23 @@
           </b-row>
           <b-row class="checklist-filter-row">
             <b-col class="checklist-filter-items text-right">
-              {{ $t('downloaded') }}
+              {{ $t('status') }}
               <b-button-group>
-                <b-button v-bind:class="{ 'btn-dark' : !filter.downloaded}" @click="filter.downloaded = !filter.downloaded" size="sm">{{ $t('yes') }}</b-button>
-                <b-button v-bind:class="{ 'btn-dark' : !filter.notDownloaded}" @click="filter.notDownloaded = !filter.notDownloaded" size="sm">{{ $t('no') }}</b-button>
+                <b-button v-bind:class="{ 'btn-dark' : !filter.notYetAvailable}" @click="filter.notYetAvailable = !filter.notYetAvailable" size="sm">
+                  <font-awesome-icon :icon="icon('calendar')"/>
+                </b-button>
+                <b-button v-bind:class="{ 'btn-dark' : !filter.hardToFind}" @click="filter.hardToFind = !filter.hardToFind" size="sm">
+                  <font-awesome-icon :icon="icon('spinner')"/>
+                </b-button>
+                <b-button v-bind:class="{ 'btn-dark' : !filter.todo}" @click="filter.todo = !filter.todo" size="sm">
+                  <font-awesome-icon :icon="icon('clock')"/>
+                </b-button>
+                <b-button v-bind:class="{ 'btn-dark' : !filter.queued}" @click="filter.queued = !filter.queued" size="sm">
+                  <font-awesome-icon :icon="icon('download')"/>
+                </b-button>
+                <b-button v-bind:class="{ 'btn-dark' : !filter.downloaded}" @click="filter.downloaded = !filter.downloaded" size="sm">
+                  <font-awesome-icon :icon="icon('check')"/>
+                </b-button>
               </b-button-group>
             </b-col>
           </b-row>
@@ -205,7 +218,6 @@ export default {
         tv: 'Serien',
         filter: 'Filter',
         priority: 'Priorität',
-        downloaded: 'Heruntergeladen',
         edit: 'Editieren',
         sort: 'Sortierung',
         rating: 'Bewertung',
@@ -217,7 +229,8 @@ export default {
         none: 'Keine',
         search: 'Suchen',
         searchPlaceholder: 'Suchen…',
-        reset: 'Filter zurücksetzen'
+        reset: 'Filter zurücksetzen',
+        status: 'Status'
       },
       en: {
         checklist: 'Download list',
@@ -238,7 +251,8 @@ export default {
         none: 'None',
         search: 'Search',
         searchPlaceholder: 'Search…',
-        reset: 'Reset filters'
+        reset: 'Reset filters',
+        status: 'Status'
       }
     }
   }

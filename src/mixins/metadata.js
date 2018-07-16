@@ -100,9 +100,27 @@ export default {
           return false
         }
       }
+      console.log(selectedItem.downloadStatus)
+      if (!this.filter.queued) {
+        if (selectedItem && !selectedItem.downloaded && selectedItem.downloadStatus === 'queued') {
+          return false
+        }
+      }
 
-      if (!this.filter.notDownloaded) {
-        if (!selectedItem || !selectedItem.downloaded) {
+      if (!this.filter.todo) {
+        if (selectedItem && !selectedItem.downloaded && !selectedItem.downloadStatus) {
+          return false
+        }
+      }
+
+      if (!this.filter.hardToFind) {
+        if (selectedItem && !selectedItem.downloaded && selectedItem.downloadStatus === 'hardToFind') {
+          return false
+        }
+      }
+
+      if (!this.filter.notYetAvailable) {
+        if (selectedItem && !selectedItem.downloaded && selectedItem.downloadStatus === 'notYetAvailable') {
           return false
         }
       }
