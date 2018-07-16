@@ -129,7 +129,7 @@ export default {
   computed: {
     items () {
       let items = this.$store.getters.itemsArray
-      return items.filter(item => item.priority > 0)
+      return items.filter(item => item !== null && item.priority !== null && item.priority > 0)
     }
   },
   methods: {

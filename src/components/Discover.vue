@@ -13,7 +13,7 @@
             <font-awesome-icon :icon="searchIcon" />
           </b-input-group-prepend>-->
           <b-form-input class="discover-search-input" v-model="searchString" v-bind:placeholder="$t('searchPlaceholder.' + mode)"></b-form-input>
-          <b-input-group-append is-text v-on:click="clearSearch">
+          <b-input-group-append class="clear" is-text v-on:click="clearSearch">
               <font-awesome-icon :icon="icon('times')" class="discover-search-clear"/>
           </b-input-group-append>
         </b-input-group>
@@ -65,6 +65,7 @@ export default {
     },
     clearSearch () {
       this.searchString = ''
+      this.loadItems()
     },
     updateSearch () {
       if (this.searchString === this.previousSearchString) {
@@ -204,5 +205,8 @@ export default {
 }
 .discover-search-clear:hover {
   color: darkred;
+}
+.clear {
+  cursor: pointer;
 }
 </style>
