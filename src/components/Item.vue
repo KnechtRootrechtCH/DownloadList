@@ -4,7 +4,18 @@
       <div id="content">
         <item-header v-bind:title="title" v-bind:backdrop="backdrop" v-bind:backdropPlaceholder="backdropPlaceholder" v-bind:shrink="shrink"></item-header>
         <item-poster v-bind:poster="poster" v-bind:placeholder="posterPlaceholder" v-bind:shrink="shrink"></item-poster>
-        <item-edit v-bind:details="details" v-bind:isSelected="isSelected" v-bind:isDownloaded="isDownloaded" v-bind:shrink="shrink" @edit="showEditDialog" @redownload="showEditDialog"></item-edit>
+        <item-edit
+          v-bind:details="details"
+          v-bind:isSelected="isSelected"
+          v-bind:isDownloaded="isDownloaded"
+          v-bind:isQueued="isQueued"
+          v-bind:isHardToFind="isHardToFind"
+          v-bind:isNotYetAvailable="isNotYetAvailable"
+          v-bind:isUnreleased="isUnreleased"
+          v-bind:shrink="shrink"
+          @edit="showEditDialog"
+          @redownload="showEditDialog">
+        </item-edit>
         <item-dialog
           ref="dialog"
           v-bind:item="item"
@@ -13,6 +24,10 @@
           v-bind:mediaType="mediaType"
           v-bind:isSelected="isSelected"
           v-bind:isDownloaded="isDownloaded"
+          v-bind:isQueued="isQueued"
+          v-bind:isHardToFind="isHardToFind"
+          v-bind:isNotYetAvailable="isNotYetAvailable"
+          v-bind:isUnreleased="isUnreleased"
           v-bind:totalDownloadedCount="totalDownloadedCount"
           v-bind:totalEpisodeCount="totalEpisodeCount"
           @addComment="addComment">
@@ -27,6 +42,11 @@
                 v-bind:mediaType="mediaType"
                 v-bind:totalDownloadedCount="totalDownloadedCount"
                 v-bind:totalEpisodeCount="totalEpisodeCount"
+                v-bind:isDownloaded="isDownloaded"
+                v-bind:isQueued="isQueued"
+                v-bind:isHardToFind="isHardToFind"
+                v-bind:isNotYetAvailable="isNotYetAvailable"
+                v-bind:isUnreleased="isUnreleased"
                 @toggleDownloaded="toggleDownloadedState"></item-information>
               <item-synopsis v-bind:details="details"></item-synopsis>
             </b-col>
@@ -168,6 +188,37 @@ export default {
         return false
       }
       return this.item.downloaded
+    },
+    isQueued () {
+      if (!this.isSelected) {
+        return false
+      }
+      return this.item.downloadStatus === 'queued'
+    },
+    isHardToFind () {
+      if (!this.isSelected) {
+        return false
+      }
+      return this.item.downloadStatus === 'hardToFind'
+    },
+    isNotYetAvailable () {
+      if (!this.isSelected) {
+        return false
+      }
+      return this.item.downloadStatus === 'notYetAvailable'
+    },
+    isUnreleased () {
+      if (!this.isSelected) {
+        return false
+      }
+
+      let releaseDate = this.getReleaseDateMoment(this.details)
+      if (!releaseDate) {
+        return false
+      }
+
+      let currentDate = this.$moment()
+      return currentDate < releaseDate
     },
     totalDownloadedCount () {
       let count = 0

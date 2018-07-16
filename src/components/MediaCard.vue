@@ -46,7 +46,7 @@
               v-if="isSelected"
               :icon="editIcon"
               class="card-icon"
-              v-bind:class="{ 'check-icon': isDownloaded }"
+              v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'red': isHardToFind , 'orange': isUnreleased, 'yellow': isNotYetAvailable}"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
@@ -112,6 +112,37 @@ export default {
       }
       return this.selectedItem.downloaded
     },
+    isQueued () {
+      if (!this.selectedItem) {
+        return false
+      }
+      return this.selectedItem.downloadStatus === 'queued'
+    },
+    isHardToFind () {
+      if (!this.selectedItem) {
+        return false
+      }
+      return this.selectedItem.downloadStatus === 'hardToFind'
+    },
+    isNotYetAvailable () {
+      if (!this.selectedItem) {
+        return false
+      }
+      return this.selectedItem.downloadStatus === 'notYetAvailable'
+    },
+    isUnreleased () {
+      if (!this.selectedItem) {
+        return false
+      }
+
+      let releaseDate = this.getReleaseDateMoment(this.selectedItem)
+      if (!releaseDate) {
+        return false
+      }
+
+      let currentDate = this.$moment()
+      return currentDate < releaseDate
+    },
     infoUrl () {
       let infoUrl = '/' + this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
       return infoUrl
@@ -119,6 +150,14 @@ export default {
     editIcon () {
       if (this.isDownloaded) {
         return this.icon('check')
+      } else if (this.isUnreleased) {
+        return this.icon('calendar')
+      } else if (this.isNotYetAvailable) {
+        return this.icon('calendar')
+      } else if (this.isQueued) {
+        return this.icon('download')
+      } else if (this.isHardToFind) {
+        return this.icon('exclamationTriangle')
       } else {
         return this.icon('clock')
       }
@@ -213,9 +252,6 @@ export default {
   width: 35px;
   height: 35px;
   cursor: pointer;
-}
-.check-icon {
-  color: green;
 }
 .overlay-container {
   width: 100%;

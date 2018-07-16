@@ -11,6 +11,10 @@
       v-bind:mediaType="mediaType"
       v-bind:isSelected="isSelected"
       v-bind:isDownloaded="isDownloaded"
+      v-bind:isQueued="isQueued"
+      v-bind:isHardToFind="isHardToFind"
+      v-bind:isUnreleased="isUnreleased"
+      v-bind:isNotYetAvailable="isNotYetAvailable"
       v-bind:totalDownloadedCount="totalDownloadedCount"
       v-bind:totalEpisodeCount="totalEpisodeCount"
       @close="hide"
@@ -27,7 +31,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'EditDialog',
-  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
+  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'isQueued', 'isHardToFind', 'isUnreleased', 'isNotYetAvailable', 'totalDownloadedCount', 'totalEpisodeCount'],
   mixins: [UtilsMixin, IconsMixin],
   data () {
     return {

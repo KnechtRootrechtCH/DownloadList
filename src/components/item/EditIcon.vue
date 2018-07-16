@@ -5,17 +5,18 @@
         v-if="isDownloaded"
         @click="redownload"
         :icon="icon('check')"
-        class="icon downloaded"/>
+        class="icon limegreen"/>
       <font-awesome-icon
         v-if="!isDownloaded && isSelected"
         @click="edit"
-        :icon="icon('clock')"
+        :icon="editIcon"
+        v-bind:class="{ 'limegreen': isDownloaded, 'skyblue' : isQueued, 'red': isHardToFind , 'orange': isUnreleased, 'yellow': isNotYetAvailable}"
         class="icon edit"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"
         @click="add"
         :icon="icon('plus')"
-        class="icon add"/>
+        class="icon"/>
     </div>
   </div>
 </template>
@@ -27,7 +28,7 @@ import TransactionsMixin from '../../mixins/transactions'
 
 export default {
   name: 'EditIcon',
-  props: ['details', 'isSelected', 'isDownloaded', 'shrink'],
+  props: ['details', 'isSelected', 'isDownloaded', 'isQueued', 'isHardToFind', 'isUnreleased', 'isNotYetAvailable', 'shrink'],
   mixins: [UtilsMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
@@ -43,6 +44,21 @@ export default {
       position = position / 100 * (100 - this.shrink)
       position = position + this.minPosition
       return position
+    },
+    editIcon () {
+      if (this.isDownloaded) {
+        return this.icon('check')
+      } else if (this.isUnreleased) {
+        return this.icon('calendar')
+      } else if (this.isNotYetAvailable) {
+        return this.icon('calendar')
+      } else if (this.isQueued) {
+        return this.icon('download')
+      } else if (this.isHardToFind) {
+        return this.icon('exclamationTriangle')
+      } else {
+        return this.icon('clock')
+      }
     }
   },
   methods: {
@@ -85,12 +101,5 @@ export default {
   /*color: skyblue;*/
   /*color: lightblue;*/
   cursor: pointer;
-}
-.actions .icon.add {
-  /*color: lightblue;*/
-  color: skyblue;
-}
-.actions .icon.downloaded {
-  color: limegreen;
 }
 </style>

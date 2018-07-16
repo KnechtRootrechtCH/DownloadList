@@ -2,14 +2,15 @@
   <div>
     <!-- DOWNLOADED -->
     <div class="content" v-if="isSelected">
-      <span class="label">{{ $t('item.downloaded')}}:&nbsp;</span>
+      <span class="label">{{ $t('item.status')}}:&nbsp;</span>
+      <span v-if="isDownloaded">{{ $t('item.downloaded')}}</span>
+      <span v-if="!isDownloaded && isUnreleased">{{ $t('item.unreleased')}}</span>
+      <span v-if="!isDownloaded && !isUnreleased && item.downloadStatus">{{ $t('item.' + item.downloadStatus)}}</span>
+      <span v-if="!isDownloaded && !isUnreleased && !item.downloadStatus">{{ $t('item.todo')}}</span>
+      <span v-if="isTv(item)">({{ totalDownloadedCount }}&nbsp;/&nbsp;{{ totalEpisodeCount }})</span>
       <font-awesome-icon
-          :icon="downloadedIcon"
-          class="icon"
-          @click="$emit('toggleDownloaded')"
-          v-bind:class="{ 'downloaded' : isDownloaded }"/>
-      <span v-if="isTv(item)">{{ totalDownloadedCount }}&nbsp;/&nbsp;{{ totalEpisodeCount }}</span>
-      <span v-if="isMovie(item)">{{ $t('item.' + item.downloaded) }}</span>
+        :icon="statusIcon"
+        v-bind:class="{ 'limegreen': isDownloaded, 'skyblue' : isQueued, 'red': isHardToFind , 'orange': isUnreleased, 'yellow': isNotYetAvailable}" />
     </div>
     <div class="content" v-if="isSelected && isMovie(item)"></div>
     <!-- PRIORITY -->
@@ -91,7 +92,7 @@ import IconsMixin from '../../mixins/icons'
 
 export default {
   name: 'ItemInformation',
-  props: ['item', 'details', 'crew', 'mediaType', 'totalEpisodeCount', 'totalDownloadedCount'],
+  props: ['item', 'details', 'crew', 'mediaType', 'totalEpisodeCount', 'totalDownloadedCount', 'isQueued', 'isHardToFind', 'isUnreleased', 'isNotYetAvailable'],
   mixins: [UtilsMixin, MetadataMixin, TransactionsMixin, IconsMixin],
   data () {
     return {
@@ -136,9 +137,17 @@ export default {
       return (this.isTv(this.item) && this.totalDownloadedCount === this.totalEpisodeCount) ||
         (!this.isTv(this.item) && this.item.downloaded)
     },
-    downloadedIcon () {
+    statusIcon () {
       if (this.isDownloaded) {
         return this.icon('check')
+      } else if (this.isQueued) {
+        return this.icon('download')
+      } else if (this.isHardToFind) {
+        return this.icon('exclamationTriangle')
+      } else if (this.isUnreleased) {
+        return this.icon('calendar')
+      } else if (this.isNotYetAvailable) {
+        return this.icon('calendar')
       }
       return this.icon('clock')
     },
@@ -218,10 +227,16 @@ export default {
           priority1: 'hoch',
           priority2: 'mittel',
           priority3: 'tief',
+          status: 'Status',
           downloaded: 'Heruntergeladen',
+          queued: 'Wird heruntergeladen',
+          todo: 'ToDo',
+          unreleased: 'Noch nicht veröffentlicht',
+          notYetAvailable: 'Noch nicht erhältlich',
+          hardToFind: 'Schwer zu finden',
           true: 'Ja',
           false: 'Nein',
-          undefined: 'Nein'
+          undefined: 'Todo'
         }
       },
       en: {
@@ -250,10 +265,16 @@ export default {
           priority1: 'high',
           priority2: 'medium',
           priority3: 'low',
+          status: 'Status',
           downloaded: 'Downloaded',
+          queued: 'Queued',
+          todo: 'Todo',
+          unreleased: 'Unreleased',
+          notYetAvailable: 'Not yet available',
+          hardToFind: 'Hard to find',
           true: 'Yes',
           false: 'No',
-          undefined: 'No'
+          undefined: 'Todo'
         }
       }
     }

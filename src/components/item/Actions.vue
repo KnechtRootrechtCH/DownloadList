@@ -44,12 +44,40 @@
       iconType="check"
       @click.native="markDownloaded(true)"></action>
     <action
+      v-if="isSelected && !isDownloaded && !isQueued"
+      v-bind:label="$t('item.action.markQueued')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.BLUE"
+      iconType="download"
+      @click.native="updateStatus('queued')"></action>
+    <action
+      v-if="isSelected && !isDownloaded && !isQueued && !isUnreleased && !isNotYetAvailable"
+      v-bind:label="$t('item.action.markNotYetAvailable')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.GOLD"
+      iconType="calendar"
+      @click.native="updateStatus('notYetAvailable')"></action>
+    <action
+      v-if="isSelected && !isDownloaded && !isQueued && !isUnreleased && !isHardToFind"
+      v-bind:label="$t('item.action.markHardToFind')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.RED"
+      iconType="exclamationTriangle"
+      @click.native="updateStatus('hardToFind')"></action>
+    <action
       v-if="isSelected && isDownloaded"
       v-bind:label="$t('item.action.redownload')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.PURPLE"
       iconType="redo"
       @click.native="markDownloaded(false)"></action>
+    <action
+      v-if="isSelected && !isDownloaded && (isQueued || isHardToFind || isNotYetAvailable)"
+      v-bind:label="$t('item.action.reset')"
+      v-bind:isClickable="true"
+      v-bind:color="constants.COLOR.GREY"
+      iconType="clock"
+      @click.native="updateStatus(null)"></action>
     <action
       v-if="isSelected && !isDownloaded"
       v-bind:label="$t('item.action.deselect')"
@@ -64,15 +92,6 @@
       type="center"
       iconType="times"
       @click.native="$emit('close')"></action>-->
-   <!--
-    <action
-      v-if="isSelected"
-      v-bind:label="$t('item.action.comment')"
-      v-bind:isClickable="true"
-      v-bind:color="constants.COLOR.DARKGREY"
-      iconType="comment"
-      @click.native="addComment()"></action>
-      -->
   </b-list-group>
 </template>
 
@@ -85,7 +104,7 @@ import TransactionsMixin from '../../mixins/transactions'
 
 export default {
   name: 'ItemActions',
-  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'totalDownloadedCount', 'totalEpisodeCount'],
+  props: ['item', 'details', 'seasons', 'mediaType', 'isSelected', 'isDownloaded', 'isQueued', 'isHardToFind', 'isUnreleased', 'isNotYetAvailable', 'totalDownloadedCount', 'totalEpisodeCount'],
   mixins: [UtilMixin, MetadataMixin, TransactionsMixin],
   data () {
     return {
@@ -115,6 +134,10 @@ export default {
       this.$emit('close')
       this.setDownloaded(this.item, downloaded, this.seasons)
     },
+    updateStatus (status) {
+      this.$emit('close')
+      this.setStatus(this.item, status)
+    },
     openNetflixUrl () {
       this.$emit('close')
       let netflixUrl = this.getNetflixUrl(this.details)
@@ -134,8 +157,11 @@ export default {
             downloaded: 'Heruntergeladen',
             select: 'Der Liste hinzufügen',
             deselect: 'Aus Liste entfernen',
-            markDownloadedmovie: 'Als erledigt markieren',
-            markDownloadedtv: 'Als erledigt markieren',
+            markDownloadedmovie: 'Erledigt',
+            markDownloadedtv: 'Erledigt',
+            markNotYetAvailable: 'Noch nicht erhältlich',
+            markQueued: 'Wird heruntergeladen',
+            markHardToFind: 'Schwierig zu finden',
             redownload: 'Erneut herunterladen',
             priority: 'Priorität',
             priority1: 'Hohe Priorität',
@@ -145,7 +171,8 @@ export default {
             moviedb: 'The Movie Db',
             homepage: 'Homepage',
             netflix: 'Auf Netflix abspielen',
-            close: 'Schliessen'
+            close: 'Schliessen',
+            reset: 'Status zurücksetzen'
           }
         }
       },
@@ -155,9 +182,12 @@ export default {
             downloaded: 'Downloaded',
             select: 'Add to list',
             deselect: 'Remove from list',
-            markDownloadedmovie: 'Mark as done',
-            markDownloadedtv: 'Mark as done',
-            redownload: 'Mark for redownload',
+            markDownloadedmovie: 'Done',
+            markDownloadedtv: 'Done',
+            markNotYetAvailable: 'Not yet available',
+            markQueued: 'Queued',
+            markHardToFind: 'Hard to find',
+            redownload: 'Redownload',
             priority: 'Priority',
             priority1: 'High priority',
             priority2: 'Medium priority',
@@ -166,7 +196,8 @@ export default {
             moviedb: 'The Movie Db',
             homepage: 'Homepage',
             netflix: 'Watch on Netflix',
-            close: 'Close'
+            close: 'Close',
+            reset: 'Reset status'
           }
         }
       }
