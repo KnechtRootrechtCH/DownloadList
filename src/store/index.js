@@ -260,6 +260,13 @@ export const store = new Vuex.Store({
         'downloaded': payload.downloaded
       })
     },
+    setItemDownloadStatus: (context, payload) => {
+      let transaction = {time: new Date().toString(), action: 'setItemDownloadStatus', payload: payload.status, key: payload.key}
+      context.dispatch('transactionLog', transaction)
+      firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + payload.key).update({
+        'downloadStatus': payload.status
+      })
+    },
     setSeasonsDownloaded: (context, payload) => {
       let transaction = {time: new Date().toString(), action: 'setAllSeasonDownloaded', payload: payload, key: 'tv:' + payload.itemId}
       context.dispatch('transactionLog', transaction)

@@ -28,6 +28,11 @@ export default {
         key: item.key,
         downloaded: downloaded})
     },
+    setStatus (item, status) {
+      this.$store.dispatch('setItemDownloadStatus', {
+        key: item.key,
+        status: status})
+    },
     setAllSeasonsDownloaded (item, seasons, downloaded) {
       this.$store.dispatch('setSeasonsDownloaded', {
         itemId: item.id,
