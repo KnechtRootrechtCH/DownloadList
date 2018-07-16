@@ -117,6 +117,12 @@ export default {
         case 3:
           if (!this.filter.priority3) return false
           break
+        case 4:
+          if (!this.filter.priority4) return false
+          break
+        case 5:
+          if (!this.filter.priority5) return false
+          break
       }
 
       if (this.filter.text && this.filter.text.length > 2) {

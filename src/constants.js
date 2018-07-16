@@ -53,6 +53,8 @@ export default Object.freeze({
     priority1: true,
     priority2: true,
     priority3: true,
+    priority4: true,
+    priority5: true,
     text: ''
   }
 })

@@ -43,9 +43,21 @@
             <b-col class="checklist-filter-items text-right">
               {{ $t('priority') }}
               <b-button-group>
-                <b-button v-bind:class="{ 'btn-dark' : !filter.priority1}" @click="filter.priority1 = !filter.priority1" size="sm">{{ $t('priority1') }}</b-button>
-                <b-button v-bind:class="{ 'btn-dark' : !filter.priority2}" @click="filter.priority2 = !filter.priority2" size="sm">{{ $t('priority2') }}</b-button>
-                <b-button v-bind:class="{ 'btn-dark' : !filter.priority3}" @click="filter.priority3 = !filter.priority3" size="sm">{{ $t('priority3') }}</b-button>
+                <b-button v-if="settings.priority.max <= 1 && settings.priority.min >= 1" v-bind:class="{ 'btn-dark' : !filter.priority1}" @click="filter.priority1 = !filter.priority1" size="sm">
+                  {{ settings.priority.min }}&nbsp;<font-awesome-icon :icon="icon('star')"/>
+                </b-button>
+                <b-button v-if="settings.priority.max <= 2 && settings.priority.min >= 2" v-bind:class="{ 'btn-dark' : !filter.priority2}" @click="filter.priority2 = !filter.priority2" size="sm">
+                  {{ settings.priority.min -1 }}&nbsp;<font-awesome-icon :icon="icon('star')"/>
+                </b-button>
+                <b-button v-if="settings.priority.max <= 3 && settings.priority.min >= 3" v-bind:class="{ 'btn-dark' : !filter.priority3}" @click="filter.priority3 = !filter.priority3" size="sm">
+                  {{ settings.priority.min -2 }}&nbsp;<font-awesome-icon :icon="icon('star')"/>
+                </b-button>
+                <b-button v-if="settings.priority.max <= 4 && settings.priority.min >= 4" v-bind:class="{ 'btn-dark' : !filter.priority4}" @click="filter.priority4 = !filter.priority4" size="sm">
+                  {{ settings.priority.min -3 }}&nbsp;<font-awesome-icon :icon="icon('star')"/>
+                </b-button>
+                <b-button v-if="settings.priority.max <= 5 && settings.priority.min >= 5" v-bind:class="{ 'btn-dark' : !filter.priority5}" @click="filter.priority5 = !filter.priority5" size="sm">
+                  {{ settings.priority.min -4 }}&nbsp;<font-awesome-icon :icon="icon('star')"/>
+                </b-button>
               </b-button-group>
             </b-col>
           </b-row>
@@ -193,9 +205,6 @@ export default {
         tv: 'Serien',
         filter: 'Filter',
         priority: 'Priorität',
-        priority1: 'Hoch',
-        priority2: 'Mittel',
-        priority3: 'Niedrig',
         downloaded: 'Heruntergeladen',
         edit: 'Editieren',
         sort: 'Sortierung',
@@ -217,9 +226,6 @@ export default {
         tv: 'TV Shows',
         filter: 'Filter',
         priority: 'Priority',
-        priority1: 'High',
-        priority2: 'Medium',
-        priority3: 'Low',
         downloaded: 'Downloaded',
         edit: 'Edit',
         sort: 'Sort',
