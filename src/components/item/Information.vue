@@ -10,7 +10,8 @@
       <span v-if="isTv(item)">({{ totalDownloadedCount }}&nbsp;/&nbsp;{{ totalEpisodeCount }})</span>
       <font-awesome-icon
         :icon="statusIcon"
-        v-bind:class="{ 'limegreen': isDownloaded, 'skyblue' : isQueued, 'red': isHardToFind , 'orange': isUnreleased, 'yellow': isNotYetAvailable}" />
+        v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'orange': isHardToFind , 'red': isUnreleased, 'yellow': isNotYetAvailable}"
+        />
     </div>
     <div class="content" v-if="isSelected && isMovie(item)"></div>
     <!-- PRIORITY -->
@@ -143,7 +144,7 @@ export default {
       } else if (this.isQueued) {
         return this.icon('download')
       } else if (this.isHardToFind) {
-        return this.icon('exclamationTriangle')
+        return this.icon('clock')
       } else if (this.isUnreleased) {
         return this.icon('calendar')
       } else if (this.isNotYetAvailable) {
@@ -233,7 +234,7 @@ export default {
           todo: 'ToDo',
           unreleased: 'Noch nicht veröffentlicht',
           notYetAvailable: 'Noch nicht erhältlich',
-          hardToFind: 'Schwer zu finden',
+          hardToFind: 'Noch nicht gefunden',
           true: 'Ja',
           false: 'Nein',
           undefined: 'Todo'
@@ -270,8 +271,8 @@ export default {
           queued: 'Queued',
           todo: 'Todo',
           unreleased: 'Unreleased',
-          notYetAvailable: 'Not yet available',
-          hardToFind: 'Hard to find',
+          notYetAvailable: 'Not available yet',
+          hardToFind: 'Not found yet',
           true: 'Yes',
           false: 'No',
           undefined: 'Todo'

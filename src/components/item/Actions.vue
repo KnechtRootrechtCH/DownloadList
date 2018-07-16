@@ -62,7 +62,7 @@
       v-bind:label="$t('item.action.markHardToFind')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.RED"
-      iconType="exclamationTriangle"
+      iconType="clock"
       @click.native="updateStatus('hardToFind')"></action>
     <action
       v-if="isSelected && isDownloaded"
@@ -161,7 +161,7 @@ export default {
             markDownloadedtv: 'Erledigt',
             markNotYetAvailable: 'Noch nicht erhältlich',
             markQueued: 'Wird heruntergeladen',
-            markHardToFind: 'Schwierig zu finden',
+            markHardToFind: 'Noch nicht gefunden',
             redownload: 'Erneut herunterladen',
             priority: 'Priorität',
             priority1: 'Hohe Priorität',
@@ -186,7 +186,7 @@ export default {
             markDownloadedtv: 'Done',
             markNotYetAvailable: 'Not yet available',
             markQueued: 'Queued',
-            markHardToFind: 'Hard to find',
+            markHardToFind: 'Not found yet',
             redownload: 'Redownload',
             priority: 'Priority',
             priority1: 'High priority',

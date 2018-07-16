@@ -46,7 +46,7 @@
               v-if="isSelected"
               :icon="editIcon"
               class="card-icon"
-              v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'red': isHardToFind , 'orange': isUnreleased, 'yellow': isNotYetAvailable}"
+              v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'orange': isHardToFind , 'red': isUnreleased, 'yellow': isNotYetAvailable}"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
@@ -157,7 +157,7 @@ export default {
       } else if (this.isQueued) {
         return this.icon('download')
       } else if (this.isHardToFind) {
-        return this.icon('exclamationTriangle')
+        return this.icon('clock')
       } else {
         return this.icon('clock')
       }
