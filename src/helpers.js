@@ -7,14 +7,20 @@ export default Object.freeze({
     }
     return s
   },
-  getDateString: function () {
+  getDateString: function (separator) {
     let date = new Date()
-    let dateString = date.getFullYear() + '-' + this.padNumber(date.getMonth() + 1, 2) + '-' + this.padNumber(date.getDate(), 2)
+    if (!separator) {
+      separator = '-'
+    }
+    let dateString = date.getFullYear() + separator + this.padNumber(date.getMonth() + 1, 2) + separator + this.padNumber(date.getDate(), 2)
     return dateString
   },
-  getTimeString: function () {
+  getTimeString: function (separator) {
     let date = new Date()
-    let timeString = this.padNumber(date.getHours(), 2) + '-' + this.padNumber(date.getMinutes(), 2) + '-' + this.padNumber(date.getSeconds(), 2)
+    if (!separator) {
+      separator = '-'
+    }
+    let timeString = this.padNumber(date.getHours(), 2) + separator + this.padNumber(date.getMinutes(), 2) + separator + this.padNumber(date.getSeconds(), 2)
     return timeString
   }
 })

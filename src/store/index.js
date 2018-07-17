@@ -134,7 +134,7 @@ export const store = new Vuex.Store({
     },
     getFirebaseUserData: (context) => {
       context.commit('setLoading', true)
-      let dateString = Helpers.getDateString()
+      let dateString = Helpers.getDateString('/')
       let timeString = Helpers.getTimeString()
       firebase.database.ref('data/' + context.getters.user.uid + '/access/' + dateString + '/' + timeString).set(new Date().toString())
       firebase.database.ref('data/' + context.getters.user.uid + '/lastAccess').set(new Date().toString())
@@ -150,7 +150,7 @@ export const store = new Vuex.Store({
     },
 
     transactionLog: (context, payload) => {
-      let dateString = Helpers.getDateString()
+      let dateString = Helpers.getDateString('/')
       let timeString = Helpers.getTimeString()
       payload.uid = context.getters.user.uid
       payload.user = context.getters.user.email
