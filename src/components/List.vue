@@ -100,7 +100,7 @@
           </b-row>
         </b-container>
       </b-collapse>
-      <b-collapse id="collapse-input" v-bind:visible="!filterPanelActive && !sortPanelActive">
+      <b-collapse id="collapse-input" v-bind:visible="true">
         <b-input-group class="checklist-search-group">
           <!--<b-input-group-prepend is-text>
             <font-awesome-icon :icon="searchIcon" />
