@@ -62,7 +62,7 @@
       v-bind:label="$t('item.action.markHardToFind')"
       v-bind:isClickable="true"
       v-bind:color="constants.COLOR.RED"
-      iconType="clock"
+      iconType="spinner"
       @click.native="updateStatus('hardToFind')"></action>
     <action
       v-if="isSelected && isDownloaded"

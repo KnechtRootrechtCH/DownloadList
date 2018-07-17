@@ -19,8 +19,12 @@
         <div class="row">
           <div class="card-title col-xs-12">{{ getTitle(item) }}</div>
         </div>
-        <div class="row">
-          <div class="card-release col-xs-12">{{ getReleaseDateFormated(item, 'YYYY') }}</div>
+        <div class="row justify-content-between">
+          <div class="col-xs-12 card-release">
+            <span>{{ getReleaseDateFormated(item, 'YYYY') }}</span>
+            <span v-if="!isDownloaded && isUnreleased" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
+            <span v-if="!isDownloaded && !isUnreleased && item.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + item.downloadStatus)}}</span>
+          </div>
         </div>
         <div class="row justify-content-between">
           <div class='col-xs-6'>
@@ -46,7 +50,7 @@
               v-if="isSelected"
               :icon="editIcon"
               class="card-icon"
-              v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'orange': isHardToFind , 'red': isUnreleased, 'yellow': isNotYetAvailable}"
+              v-bind:class="{ 'darkgrey': isDownloaded, 'darkgrey' : isQueued, 'darkgrey': isHardToFind , 'darkgrey': isUnreleased, 'darkgrey': isNotYetAvailable}"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
@@ -157,7 +161,7 @@ export default {
       } else if (this.isQueued) {
         return this.icon('download')
       } else if (this.isHardToFind) {
-        return this.icon('clock')
+        return this.icon('spinner')
       } else {
         return this.icon('clock')
       }
@@ -194,7 +198,11 @@ export default {
             editPriority: 'Priorität ändern',
             downloaded: 'Bereits heruntergeladen',
             info: 'Zusätzliche Informationen'
-          }
+          },
+          unreleased: 'Unveröffentlicht',
+          notYetAvailable: 'Noch nicht erhältlich',
+          hardToFind: 'Noch nicht gefunden',
+          queued: 'Wird heruntergeladen'
         }
       },
       en: {
@@ -205,7 +213,11 @@ export default {
             editPriority: 'Change priority',
             downloaded: 'Downloaded',
             info: 'Additional information'
-          }
+          },
+          unreleased: 'Unreleased',
+          notYetAvailable: 'Not available yet',
+          hardToFind: 'Not found yet',
+          queued: 'Queued'
         }
       }
     }
@@ -246,6 +258,9 @@ export default {
   margin: 0;
 }
 .card-release {
+  margin-bottom: 4px;
+}
+.card-downloadstatus {
   margin-bottom: 4px;
 }
 .card-icon {

@@ -10,7 +10,7 @@
         v-if="!isDownloaded && isSelected"
         @click="edit"
         :icon="editIcon"
-        v-bind:class="{ 'green': isDownloaded, 'blue' : isQueued, 'orange': isHardToFind , 'red': isUnreleased, 'yellow': isNotYetAvailable}"
+        v-bind:class="{ 'green': isDownloaded, 'skyblue' : isQueued, 'orange': isUnreleased, 'yellow': isNotYetAvailable || isHardToFind }"
         class="icon edit"/>
       <font-awesome-icon
         v-if="!isDownloaded && !isSelected"
@@ -55,7 +55,7 @@ export default {
       } else if (this.isQueued) {
         return this.icon('download')
       } else if (this.isHardToFind) {
-        return this.icon('clock')
+        return this.icon('spinner')
       } else {
         return this.icon('clock')
       }

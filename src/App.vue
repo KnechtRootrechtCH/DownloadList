@@ -179,4 +179,13 @@ body {
 .app-content .turquoise {
   color: turquoise;
 }
+.app-content .darkgrey {
+  color: #343a40;
+}
+.app-content .grey {
+  color: #666666;
+}
+.app-content .lightgrey {
+  color: #A0A0A0;
+}
 </style>
