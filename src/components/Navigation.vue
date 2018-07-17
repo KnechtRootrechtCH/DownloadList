@@ -8,10 +8,10 @@
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav>
-          <b-nav-item to="/browse/discover">{{ $t("nav.discover") }}</b-nav-item>
-          <b-nav-item to="/browse/movie">{{ $t("nav.movies") }}</b-nav-item>
-          <b-nav-item to="/browse/tv">{{ $t("nav.tv") }}</b-nav-item>
-          <b-nav-item to="/list">{{ $t("nav.downloadList") }}</b-nav-item>
+          <b-nav-item to="/browse/discover" class="no-wrap">{{ $t("nav.discover") }}</b-nav-item>
+          <b-nav-item to="/browse/movie" class="no-wrap">{{ $t("nav.movies") }}</b-nav-item>
+          <b-nav-item to="/browse/tv" class="no-wrap">{{ $t("nav.tv") }}</b-nav-item>
+          <b-nav-item to="/list" class="no-wrap">{{ $t("nav.downloadList") }}</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <b-dropdown-divider class="d-sm-none"></b-dropdown-divider>
@@ -133,5 +133,9 @@ export default {
 }
 .navigation .nav-link {
   font-size: 20px;
+}
+.no-wrap a {
+  overflow: hidden;
+  white-space: nowrap;
 }
 </style>
