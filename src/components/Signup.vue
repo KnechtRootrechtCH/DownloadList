@@ -49,7 +49,7 @@ export default {
       this.hasPasswordRepeatMessage = false
       this.passwordRepeatMessage = ''
 
-      if (this.email === null || this.email === '' || !this.email.includes('@')) {
+      if (this.email === null || this.email === '' || this.email.indexOf('@') === -1) {
         this.emailMessage = 'Please enter a valid email address!'
         this.hasEmailMessage = true
         return

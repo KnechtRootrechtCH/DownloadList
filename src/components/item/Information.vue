@@ -182,7 +182,7 @@ export default {
       for (let key in this.settings.downloadLinks) {
         let value = this.settings.downloadLinks[key]
         if ((value.tv && this.isTv(this.details)) || (value.movie && this.isMovie(this.details))) {
-          if (!value.languages || value.languages.includes(this.details.original_language) || value.languages.includes(this.$store.getters.locale)) {
+          if (!value.languages || value.languages.indexOf(this.details.original_language) !== -1 || value.languages.indexOf(this.$store.getters.locale) !== -1) {
             let url = value.urlPattern.replace('{query}', this.getSearchString(this.details))
             let link = { name: value.title, url: url }
             links.push(link)

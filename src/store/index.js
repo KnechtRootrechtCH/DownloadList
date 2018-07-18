@@ -155,10 +155,10 @@ export const store = new Vuex.Store({
       payload.uid = context.getters.user.uid
       payload.user = context.getters.user.email
       let uid = context.getters.dataUserId
-      if (payload.action.includes('Comment')) {
+      if (payload.action.indexOf('Comment') !== -1) {
         uid = context.getters.user.uid
       }
-      if (payload.action.includes('Message')) {
+      if (payload.action.indexOf('Message') !== -1) {
         uid = context.getters.user.uid
       }
       firebase.database.ref('data/' + uid + '/transactions/' + dateString + '/' + timeString + '-' + payload.action).set(payload)

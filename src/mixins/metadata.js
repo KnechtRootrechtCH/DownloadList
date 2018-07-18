@@ -156,12 +156,12 @@ export default {
 
       if (this.filter.text && this.filter.text.length > 2) {
         let title = this.getTitle(item)
-        if (title.toLowerCase().includes(this.filter.text.toLowerCase())) {
+        if (title.toLowerCase().indexOf(this.filter.text.toLowerCase()) !== -1) {
           return true
         }
         let originalTitle = this.getOriginalTitle(item)
         if (originalTitle) {
-          return originalTitle.toLowerCase().includes(this.filter.text.toLowerCase())
+          return originalTitle.toLowerCase().indexOf(this.filter.text.toLowerCase()) !== -1
         }
         return false
       }

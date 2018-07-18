@@ -50,7 +50,6 @@
               v-if="isSelected"
               :icon="editIcon"
               class="card-icon"
-              v-bind:class="{ 'darkgrey': isDownloaded, 'darkgrey' : isQueued, 'darkgrey': isHardToFind , 'darkgrey': isUnreleased, 'darkgrey': isNotYetAvailable}"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
             <font-awesome-icon
