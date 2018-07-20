@@ -5,12 +5,12 @@
       <b-collapse id="collapse-navigation" class="checklist-navigation-items noselect" v-bind:visible="mode !== 'discover'">
         <b-container fluid>
           <b-row>
-            <b-col cols="8" md="6" class="checklist-navigation-colunn">
-              <span class="checklist-navigation-item" @click="filter.movie = true, filter.tv = true" v-bind:class="{ active: filter.movie && filter.tv }">{{ $t('all') }}</span>
+            <b-col cols="6" md="6" class="checklist-navigation-colunn">
+              <span class="checklist-navigation-item d-none d-sm-inline" @click="filter.movie = true, filter.tv = true" v-bind:class="{ active: filter.movie && filter.tv }">{{ $t('all') }}</span>
               <span class="checklist-navigation-item" @click="filter.movie = true, filter.tv = false" v-bind:class="{ active: filter.movie && ! filter.tv }">{{ $t('movie') }}</span>
               <span class="checklist-navigation-item" @click="filter.tv = true, filter.movie = false" v-bind:class="{ active: filter.tv && !filter.movie }">{{ $t('tv') }}</span>
             </b-col>
-            <b-col cols="4" md="6" class="text-right checklist-navigation-colunn">
+            <b-col cols="6" md="6" class="text-right checklist-navigation-colunn">
               <!--
               <span class="checklist-navigation-item" @click="searchPanelActive = !searchPanelActive, filterPanelActive = false, sortPanelActive = false" v-bind:class="{ active: sortPanelActive }">
                 <span class="d-none d-lg-inline">{{$t('search') }}</span>
@@ -18,20 +18,25 @@
               </span>
               -->
               <span  v-if="settings.showFilterReset" class="checklist-navigation-item" @click="resetFilters">
-                <span class="d-none d-lg-inline">{{$t('reset') }}</span>
+                <span class="d-none d-xl-inline">{{$t('reset') }}</span>
                 <font-awesome-icon :icon="icon('undo')" class="checklist-navigation-icon"/>
               </span>
               <span v-if="!settings.alwaysShowPriorityIcons" class="checklist-navigation-item" @click="editPriorities = !editPriorities" v-bind:class="{ active: editPriorities }">
-                <span class="d-none d-lg-inline">{{$t('edit') }}</span>
+                <span class="d-none d-xl-inline">{{$t('edit') }}</span>
                 <font-awesome-icon :icon="icon('star')" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="sortPanelActive = !sortPanelActive, filterPanelActive = false" v-bind:class="{ active: sortPanelActive }">
-                <span class="d-none d-lg-inline">{{$t('sort') }}</span>
+                <span class="d-none d-xl-inline">{{$t('sort') }}</span>
                 <font-awesome-icon :icon="icon('sort')" class="checklist-navigation-icon"/>
               </span>
               <span class="checklist-navigation-item" @click="filterPanelActive = !filterPanelActive, sortPanelActive = false" v-bind:class="{ active: filterPanelActive }">
-                <span class="d-none d-lg-inline">{{$t('filter') }}</span>
+                <span class="d-none d-xl-inline">{{$t('filter') }}</span>
                 <font-awesome-icon :icon="icon('filter')" class="checklist-navigation-icon" transform="shrink-2"/>
+              </span>
+              <span class="checklist-navigation-item" @click="toggleDisplayMode" v-bind:class="{ active: filterPanelActive }">
+                <span class="d-none d-xl-inline">{{$t('display') }}</span>
+                <font-awesome-icon v-if="display === 'cards'" :icon="icon('grid')" class="checklist-navigation-icon" transform="shrink-2"/>
+                <font-awesome-icon v-if="display === 'list'" :icon="icon('list')" class="checklist-navigation-icon" transform="shrink-2"/>
               </span>
             </b-col>
           </b-row>
@@ -113,7 +118,8 @@
       </b-collapse>
     </div>
     <div class="checklist-content">
-      <mediaGrid
+      <media-grid
+        v-if="display === 'cards'"
         mode="list"
         v-bind:items="items"
         v-bind:filter="filter"
@@ -123,13 +129,23 @@
         v-bind:showPriorityIcons="editPriorities || settings.alwaysShowPriorityIcons"
         pageSize="20"
         detailsRouterPrefix="list">
-      </mediaGrid>
+      </media-grid>
+      <media-list
+        v-if="display === 'list'"
+        v-bind:items="items"
+        v-bind:filter="filter"
+        v-bind:sort="sort"
+        v-bind:paging="true"
+        v-bind:page="page"
+        pageSize="50">
+      </media-list>
     </div>
   </div>
 </template>
 
 <script>
 import MediaGrid from './MediaGrid'
+import MediaList from './MediaList'
 import IconsMixin from '../mixins/icons'
 import UtilsMixin from '../mixins/utils'
 import MetadataMixin from '../mixins/metadata'
@@ -141,6 +157,7 @@ export default {
   data () {
     return {
       filter: {},
+      display: 'cards',
       sort: 'title',
       filterPanelActive: false,
       sortPanelActive: false,
@@ -149,7 +166,8 @@ export default {
     }
   },
   components: {
-    'mediaGrid': MediaGrid
+    'media-grid': MediaGrid,
+    'media-list': MediaList
   },
   computed: {
     items () {
@@ -170,6 +188,13 @@ export default {
     resetFilters () {
       this.filter = JSON.parse(JSON.stringify(this.constants.LIST_FILTER_DEFAULT))
       this.sort = 'title'
+    },
+    toggleDisplayMode () {
+      if (this.display === 'cards') {
+        this.display = 'list'
+      } else {
+        this.display = 'cards'
+      }
     }
   },
   created () {
@@ -191,6 +216,11 @@ export default {
     if (sort) {
       this.sort = sort
     }
+
+    let display = this.$localStorage.get('varda:list:display')
+    if (display) {
+      this.display = display
+    }
   },
   watch: {
     filter: {
@@ -204,6 +234,9 @@ export default {
       this.page = 1
       this.$localStorage.set('varda:list:sort', this.sort)
     },
+    display: function (val, oldVal) {
+      this.$localStorage.set('varda:list:display', this.display)
+    },
     items: function (val, oldVal) {
       // disabled. might disorient the user
       // this.page = 1
@@ -216,6 +249,7 @@ export default {
         all: 'Alles',
         movie: 'Filme',
         tv: 'Serien',
+        display: 'Darstellung',
         filter: 'Filter',
         priority: 'Priorität',
         edit: 'Editieren',
@@ -224,6 +258,8 @@ export default {
         title: 'Titel',
         popularity: 'Beliebtheit',
         release: 'Veröffentlichung',
+        grid: 'Grid',
+        list: 'Liste',
         yes: 'Ja',
         no: 'Nein',
         none: 'Keine',
@@ -237,6 +273,7 @@ export default {
         all: 'All',
         movie: 'Movies',
         tv: 'TV Shows',
+        display: 'Display',
         filter: 'Filter',
         priority: 'Priority',
         downloaded: 'Downloaded',
@@ -246,6 +283,8 @@ export default {
         title: 'Title',
         popularity: 'Popularity',
         release: 'Release',
+        grid: 'Grid',
+        list: 'List',
         yes: 'Yes',
         no: 'No',
         none: 'None',

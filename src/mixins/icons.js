@@ -37,6 +37,8 @@ import tasksIcon from '@fortawesome/fontawesome-free-solid/faTasks'
 import bellIcon from '@fortawesome/fontawesome-free-solid/faBell'
 import flagIcon from '@fortawesome/fontawesome-free-solid/faFlag'
 import calendarIcon from '@fortawesome/fontawesome-free-solid/faCalendarAlt'
+import gridIcon from '@fortawesome/fontawesome-free-solid/faThLarge'
+import listIcon from '@fortawesome/fontawesome-free-solid/faThList'
 
 export default {
   methods: {
@@ -78,6 +80,8 @@ export default {
         case 'bell' : return bellIcon
         case 'flag' : return flagIcon
         case 'calendar' : return calendarIcon
+        case 'grid' : return gridIcon
+        case 'list' : return listIcon
         default: return defaultIcon
       }
     }
