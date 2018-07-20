@@ -7,11 +7,11 @@
         <item-edit
           v-bind:details="details"
           v-bind:isSelected="isSelected"
-          v-bind:isDownloaded="isDownloaded"
-          v-bind:isQueued="isQueued"
-          v-bind:isHardToFind="isHardToFind"
-          v-bind:isNotYetAvailable="isNotYetAvailable"
-          v-bind:isUnreleased="isUnreleased"
+          v-bind:isDownloaded="itemIsDownloaded(item)"
+          v-bind:isQueued="itemIsQueued(item)"
+          v-bind:isHardToFind="itemIsHardToFind(item)"
+          v-bind:isNotYetAvailable="itemIsNotYetAvailable(item)"
+          v-bind:isUnreleased="itemIsUnreleased(item)"
           v-bind:shrink="shrink"
           @edit="showEditDialog"
           @redownload="showEditDialog">
@@ -23,11 +23,11 @@
           v-bind:seasons="seasons"
           v-bind:mediaType="mediaType"
           v-bind:isSelected="isSelected"
-          v-bind:isDownloaded="isDownloaded"
-          v-bind:isQueued="isQueued"
-          v-bind:isHardToFind="isHardToFind"
-          v-bind:isNotYetAvailable="isNotYetAvailable"
-          v-bind:isUnreleased="isUnreleased"
+          v-bind:isDownloaded="itemIsDownloaded(item)"
+          v-bind:isQueued="itemIsQueued(item)"
+          v-bind:isHardToFind="itemIsHardToFind(item)"
+          v-bind:isNotYetAvailable="itemIsNotYetAvailable(item)"
+          v-bind:isUnreleased="itemIsUnreleased(item)"
           v-bind:totalDownloadedCount="totalDownloadedCount"
           v-bind:totalEpisodeCount="totalEpisodeCount"
           @addComment="addComment">
@@ -42,11 +42,11 @@
                 v-bind:mediaType="mediaType"
                 v-bind:totalDownloadedCount="totalDownloadedCount"
                 v-bind:totalEpisodeCount="totalEpisodeCount"
-                v-bind:isDownloaded="isDownloaded"
-                v-bind:isQueued="isQueued"
-                v-bind:isHardToFind="isHardToFind"
-                v-bind:isNotYetAvailable="isNotYetAvailable"
-                v-bind:isUnreleased="isUnreleased"
+                v-bind:isDownloaded="itemIsDownloaded(item)"
+                v-bind:isQueued="itemIsQueued(item)"
+                v-bind:isHardToFind="itemIsHardToFind(item)"
+                v-bind:isNotYetAvailable="itemIsNotYetAvailable(item)"
+                v-bind:isUnreleased="itemIsUnreleased(item)"
                 @toggleDownloaded="toggleDownloadedState"></item-information>
               <item-synopsis v-bind:details="details"></item-synopsis>
             </b-col>
@@ -183,43 +183,6 @@ export default {
     isSelected () {
       return this.item && this.item.priority > 0
     },
-    isDownloaded () {
-      if (!this.isSelected) {
-        return false
-      }
-      return this.item.downloaded
-    },
-    isQueued () {
-      if (!this.isSelected) {
-        return false
-      }
-      return this.item.downloadStatus === 'queued'
-    },
-    isHardToFind () {
-      if (!this.isSelected) {
-        return false
-      }
-      return this.item.downloadStatus === 'hardToFind'
-    },
-    isNotYetAvailable () {
-      if (!this.isSelected) {
-        return false
-      }
-      return this.item.downloadStatus === 'notYetAvailable'
-    },
-    isUnreleased () {
-      if (!this.isSelected) {
-        return false
-      }
-
-      let releaseDate = this.getReleaseDateMoment(this.details)
-      if (!releaseDate) {
-        return false
-      }
-
-      let currentDate = this.$moment()
-      return currentDate < releaseDate
-    },
     totalDownloadedCount () {
       let count = 0
       if (this.isTv(this.item)) {
@@ -279,7 +242,7 @@ export default {
     },
     toggleDownloadedState () {
       if (!this.isTv(this.item)) {
-        this.setDownloaded(this.item, !this.isDownloaded, this.seasons)
+        this.setDownloaded(this.item, !this.itemIsDownloaded(this.item), this.seasons)
         return
       }
       let isDownloaded = this.totalDownloadedCount === this.totalEpisodeCount

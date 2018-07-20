@@ -25,7 +25,7 @@
         v-bind:items="items"
         v-bind:showPriorityIcons="settings.alwaysShowPriorityIcons"
         detailsRouterPrefix="browse">
-      ></mediaGrid>
+      </mediaGrid>
     </div>
   </div>
 </template>

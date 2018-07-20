@@ -23,6 +23,7 @@ export const store = new Vuex.Store({
     _movieDbConfiguration: null,
     _locale: 'en',
     _user: null,
+    _userInfo: null,
     _userSettings: null,
     _dataUserId: null,
     _loading: false,
@@ -47,6 +48,13 @@ export const store = new Vuex.Store({
       if (firebase.authentication && firebase.authentication.currentUser) {
         state._user = firebase.authentication.currentUser
         state._dataUserId = firebase.authentication.currentUser.uid
+        let userInfo = {}
+        userInfo.userAgent = window.navigator.userAgent
+        let userAgent = userInfo.userAgent.toLowerCase()
+        userInfo.isAndoid = userAgent.indexOf('android') >= 0
+        userInfo.isChrome = userAgent.indexOf('chrome') >= 0
+        userInfo.isIE = userAgent.indexOf('msie ') >= 0 || userAgent.indexOf('trident') >= 0
+        state._userInfo = userInfo
       } else {
         state._user = null
         state._dataUserId = null
@@ -154,6 +162,7 @@ export const store = new Vuex.Store({
       let timeString = Helpers.getTimeString()
       payload.uid = context.getters.user.uid
       payload.user = context.getters.user.email
+      payload.userInfo = context.getters.userInfo
       let uid = context.getters.dataUserId
       if (payload.action.indexOf('Comment') !== -1) {
         uid = context.getters.user.uid
@@ -372,6 +381,7 @@ export const store = new Vuex.Store({
     test: (state) => { return state._test },
     firebase: (state) => { return state._firebase },
     user: (state) => { return state._user },
+    userInfo: (state) => { return state._userInfo },
     userSettings: (state) => { return state._userSettings },
     dataUserId: (state) => { return state._dataUserId },
     loading: (state) => { return state._loading },

@@ -46,7 +46,7 @@ export default {
   computed: {
     variant () {
       if (this.usesExternalData) {
-        return 'light'
+        return 'danger'
       } else {
         return 'dark'
       }
@@ -137,5 +137,17 @@ export default {
 .no-wrap a {
   overflow: hidden;
   white-space: nowrap;
+}
+.externalData .navbar-brand {
+  color: white;
+}
+.externalData .nav-link {
+  color: white;
+}
+.externalData svg {
+  color: white;
+}
+.externalData .navbar-toggler-icon {
+  color: white !important;
 }
 </style>

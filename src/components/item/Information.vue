@@ -35,7 +35,7 @@
     <div class="content" v-if="mediaType === 'tv'">
       <span class="label">{{ $t('item.networks')}}:&nbsp;</span>
       <span v-for="(network, index) in details.networks" :key="network.id">
-        <span>{{network.name}}</span><span v-if="index + 1 < details.networks.length">,&nbsp;</span>
+        <span>{{ network.name }}</span><span v-if="index + 1 < details.networks.length">,&nbsp;</span>
       </span>
     </div>
     <!-- RUNTIME -->
@@ -225,9 +225,6 @@ export default {
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
           priority: 'Priorität',
-          priority1: 'hoch',
-          priority2: 'mittel',
-          priority3: 'tief',
           status: 'Status',
           downloaded: 'Heruntergeladen',
           queued: 'Wird heruntergeladen',
@@ -263,9 +260,6 @@ export default {
           homepage: 'Homepage',
           movieDb: 'The Movie DB',
           priority: 'Priority',
-          priority1: 'high',
-          priority2: 'medium',
-          priority3: 'low',
           status: 'Status',
           downloaded: 'Downloaded',
           queued: 'Queued',

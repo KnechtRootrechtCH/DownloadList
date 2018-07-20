@@ -3,7 +3,7 @@
     <b-container fluid class="media-container">
       <transition-group name="media-grid" tag="div" class="row media-row">
         <b-col
-        v-for="item in pagedItems" :key="item.id"
+        v-for="item in pagedItems" :key="item.key"
         cols="12" sm="12" md="4" lg="3" xl="3"
         class="media-item">
           <mediaCard

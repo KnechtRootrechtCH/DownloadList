@@ -10,7 +10,7 @@
           v-bind:item="item"
           v-bind:editMode="editMode"
           v-bind:selectedItem="selectedItem"
-          v-bind:isDownloaded="isDownloaded"
+          v-bind:sDownloaded="item.downloaded"
           @close="editMode = false"></overlay>
       </div>
     </div>
@@ -22,8 +22,8 @@
         <div class="row justify-content-between">
           <div class="col-xs-12 card-release">
             <span>{{ getReleaseDateFormated(item, 'YYYY') }}</span>
-            <span v-if="!isDownloaded && isUnreleased" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
-            <span v-if="!isDownloaded && !isUnreleased && item.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + item.downloadStatus)}}</span>
+            <span v-if="!itemIsDownloaded(item) && itemIsUnreleased(item)" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
+            <span v-if="!itemIsDownloaded(item) && !itemIsUnreleased(item) && item.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + item.downloadStatus)}}</span>
           </div>
         </div>
         <div class="row justify-content-between">
@@ -48,7 +48,7 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-if="isSelected"
-              :icon="editIcon"
+              :icon="icon(itemStatusIconName(item))"
               class="card-icon"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
@@ -109,61 +109,9 @@ export default {
       }
       return this.selectedItem && this.selectedItem.priority > 0
     },
-    isDownloaded () {
-      if (!this.selectedItem) {
-        return false
-      }
-      return this.selectedItem.downloaded
-    },
-    isQueued () {
-      if (!this.selectedItem) {
-        return false
-      }
-      return this.selectedItem.downloadStatus === 'queued'
-    },
-    isHardToFind () {
-      if (!this.selectedItem) {
-        return false
-      }
-      return this.selectedItem.downloadStatus === 'hardToFind'
-    },
-    isNotYetAvailable () {
-      if (!this.selectedItem) {
-        return false
-      }
-      return this.selectedItem.downloadStatus === 'notYetAvailable'
-    },
-    isUnreleased () {
-      if (!this.selectedItem) {
-        return false
-      }
-
-      let releaseDate = this.getReleaseDateMoment(this.selectedItem)
-      if (!releaseDate) {
-        return false
-      }
-
-      let currentDate = this.$moment()
-      return currentDate < releaseDate
-    },
     infoUrl () {
       let infoUrl = '/' + this.detailsRouterPrefix + '/' + this.item.media_type + '/' + this.item.id
       return infoUrl
-    },
-    editIcon () {
-      if (this.isDownloaded) {
-        return this.icon('check')
-      } else if (this.isUnreleased) {
-        return this.icon('calendar')
-      } else if (this.isNotYetAvailable) {
-        return this.icon('calendar')
-      } else if (this.isQueued) {
-        return this.icon('download')
-      } else if (this.isHardToFind) {
-        return this.icon('spinner')
-      } else {
-        return this.icon('clock')
-      }
     }
   },
   methods: {

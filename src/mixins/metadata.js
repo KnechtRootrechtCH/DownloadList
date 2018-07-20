@@ -195,6 +195,57 @@ export default {
       if (titleA > titleB) return 1
       if (titleA < titleB) return -1
       return 0
+    },
+    itemStatusIconName (item) {
+      if (item.downloaded) {
+        return 'check'
+      } else if (this.itemIsQueued(item)) {
+        return 'download'
+      } else if (this.itemIsHardToFind(item)) {
+        return 'spinner'
+      } else if (this.itemIsUnreleased(item)) {
+        return 'calendar'
+      } else if (this.itemIsNotYetAvailable(item)) {
+        return 'calendar'
+      }
+      return 'clock'
+    },
+    itemIsDownloaded (item) {
+      if (!item) {
+        return false
+      }
+      return item.downloaded
+    },
+    itemIsQueued (item) {
+      if (!item) {
+        return false
+      }
+      return item.downloadStatus === 'queued'
+    },
+    itemIsHardToFind (item) {
+      if (!item) {
+        return false
+      }
+      return item.downloadStatus === 'hardToFind'
+    },
+    itemIsNotYetAvailable (item) {
+      if (!item) {
+        return false
+      }
+      return item.downloadStatus === 'notYetAvailable'
+    },
+    itemIsUnreleased (item) {
+      if (!item) {
+        return false
+      }
+
+      let releaseDate = this.getReleaseDateMoment(item)
+      if (!releaseDate) {
+        return false
+      }
+
+      let currentDate = this.$moment()
+      return currentDate < releaseDate
     }
   }
 }
