@@ -28,6 +28,8 @@ export default {
       // header += '\n' + title.replace(/./g, '=')
       header += '\n' + this.$t('statusFilter') + ': ' + this.getStatusFilter()
       header += '\n' + this.$t('priorityFilter') + ': ' + this.getPriorityFilter()
+      header += '\n' + this.$t('movieFilter') + ': ' + this.getMovieFilter()
+      header += '\n' + this.$t('tvFilter') + ': ' + this.getTvFilter()
       header += '\n' + this.$t('sort') + ': ' + this.getSort()
       header += '\n\n'
       return header
@@ -76,6 +78,18 @@ export default {
       }
       return priorities.join(', ')
     },
+    getMovieFilter () {
+      if (this.filter.movie) {
+        return this.$t('yes')
+      }
+      return this.$t('no')
+    },
+    getTvFilter () {
+      if (this.filter.tv) {
+        return this.$t('yes')
+      }
+      return this.$t('no')
+    },
     getSort () {
       return this.$t(this.sort)
     },
@@ -113,6 +127,8 @@ export default {
         exportHeader: 'Download Liste',
         statusFilter: 'Status',
         priorityFilter: 'Priorität',
+        movieFilter: 'Filme',
+        tvFilter: 'Serien',
         sort: 'Sortierung',
         all: 'Alle',
         notYetAvailable: 'Noch nicht erhältlich',
@@ -124,13 +140,17 @@ export default {
         rating: 'Bewertung',
         title: 'Titel',
         popularity: 'Beliebtheit',
-        release: 'Veröffentlichung'
+        release: 'Veröffentlichung',
+        yes: 'Ja',
+        no: 'Nein'
       },
       en: {
         export: 'Export list',
         exportHeader: 'Download list',
         statusFilter: 'Status',
         priorityFilter: 'Priority',
+        movieFilter: 'Movies',
+        tvFilter: 'TV Series',
         sort: 'Sorting',
         all: 'Any',
         notYetAvailable: 'Not available yet',
@@ -142,7 +162,9 @@ export default {
         rating: 'Rating',
         title: 'Title',
         popularity: 'Popularity',
-        release: 'Release'
+        release: 'Release',
+        yes: 'Yes',
+        no: 'No'
       }
     }
   }
