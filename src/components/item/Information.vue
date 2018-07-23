@@ -26,9 +26,6 @@
     </div>
     <!-- ORIGINAL TITLE -->
     <div class="content" v-if="translated"><span class="label">{{ $t('item.originalTitle')}}:&nbsp;</span>{{ originalTitle }} ({{ details.original_language }})</div>
-    <!-- RELEASE -->
-    <div class="content" v-if="mediaType === 'movie'"><span class="label">{{ $t('item.release')}}:&nbsp;</span>{{ releaseDate }}</div>
-    <div class="content" v-if="mediaType === 'tv'"><span class="label">{{ $t('item.firstAirDate')}}:&nbsp;</span>{{ releaseDate }}</div>
     <!-- STATUS -->
     <!--<div class="content"><span class="label">{{ $t('item.status')}}:&nbsp;</span>{{ details.status }}</div>-->
     <!-- NETWORK -->
@@ -59,6 +56,15 @@
     </div>
     <!-- CREATED BY -->
     <div class="content" v-if="mediaType === 'tv'"><span class="label">{{ $t('item.createdby')}}:&nbsp;</span>{{ releaseDate }}</div>
+    <!-- RELEASES -->
+    <div class="content" v-if="mediaType === 'tv'"><span class="label">{{ $t('item.firstAirDate')}}:&nbsp;</span>{{ releaseDate }}</div>
+    <div class="content" v-if="mediaType === 'movie'" v-for="(r, index) in releaseDates('US')" :key="index">
+      <span class="label">US&nbsp;{{ $t('item.releaseType' + r.type)}}:&nbsp;</span>{{ formatReleaseDate(r.release_date) }}<span class="italic" v-if="r.note">&nbsp;-&nbsp;{{ r.note }}</span>
+    </div>
+    <div class="content" v-if="mediaType === 'movie'" v-for="(r, index) in releaseDates('CH')" :key="index">
+      <span class="label">CH&nbsp;{{ $t('item.releaseType' + r.type)}}:&nbsp;</span>{{ formatReleaseDate(r.release_date) }}<span class="italic" v-if="r.note">&nbsp;-&nbsp;{{ r.note }}</span>
+    </div>
+    <div class="content" v-if="mediaType === 'movie' && !releaseDates('CH') && !releaseDates('US')"><span class="label">{{ $t('item.release')}}:&nbsp;</span>{{ releaseDate }}</div>
     <!-- LINKS -->
     <div class="content" v-if="links.length > 0">
       <span class="label">{{ $t('item.infoLinks')}}:&nbsp;</span>
@@ -139,18 +145,7 @@ export default {
         (!this.isTv(this.item) && this.item.downloaded)
     },
     statusIcon () {
-      if (this.isDownloaded) {
-        return this.icon('check')
-      } else if (this.isQueued) {
-        return this.icon('download')
-      } else if (this.isHardToFind) {
-        return this.icon('spinner')
-      } else if (this.isUnreleased) {
-        return this.icon('calendar')
-      } else if (this.isNotYetAvailable) {
-        return this.icon('calendar')
-      }
-      return this.icon('clock')
+      return this.icon(this.itemStatusIconName(this.item))
     },
     links () {
       let links = []
@@ -190,6 +185,22 @@ export default {
         }
       }
       return links
+    },
+    releases () {
+      let releases = {}
+      if (this.mediaType !== 'movie' || !this.details.release_dates) {
+        return null
+      }
+      this.details.release_dates.results.forEach(r => {
+        releases[r.iso_3166_1] = r
+      })
+      return releases
+    },
+    releaseDatesCH () {
+      return this.releaseDates('CH', 'DE')
+    },
+    releaseDatesUS () {
+      return this.releaseDates('US')
     }
   },
   methods: {
@@ -198,6 +209,26 @@ export default {
     },
     setItemPriority (p) {
       this.setPriority(this.item.key, p)
+    },
+    formatReleaseDate (date) {
+      let moment = this.$moment(date)
+      if (moment) {
+        let formated = moment.format('DD.MM.YYYY')
+        return formated
+      }
+      return moment
+    },
+    releaseDates (country, fallback) {
+      let releases = this.releases
+      let result = null
+      result = releases[country]
+      if (!result && fallback) {
+        result = releases[fallback]
+      }
+      if (result) {
+        return result.release_dates
+      }
+      return null
     }
   },
   i18n: {
@@ -234,7 +265,13 @@ export default {
           hardToFind: 'Noch nicht gefunden',
           true: 'Ja',
           false: 'Nein',
-          undefined: 'Todo'
+          undefined: 'Todo',
+          releaseType1: 'Premiere',
+          releaseType2: 'Limitierter Kinostart',
+          releaseType3: 'Kinostart',
+          releaseType4: 'Digitale Veröffentlichung',
+          releaseType5: 'DVD/Blu-ray',
+          releaseType6: 'TV'
         }
       },
       en: {
@@ -269,7 +306,13 @@ export default {
           hardToFind: 'Not found yet',
           true: 'Yes',
           false: 'No',
-          undefined: 'Todo'
+          undefined: 'Todo',
+          releaseType1: 'Premiere',
+          releaseType2: 'Limited Theatrical Release',
+          releaseType3: 'Theatrical Release',
+          releaseType4: 'Digital Release',
+          releaseType5: 'Physical Release',
+          releaseType6: 'TV'
         }
       }
     }
@@ -304,5 +347,8 @@ a:hover {
 .icon.downloaded {
   opacity: 1;
   color: limegreen;
+}
+.italic {
+  font-style: italic;
 }
 </style>

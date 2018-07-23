@@ -347,7 +347,7 @@ export const store = new Vuex.Store({
     getSuggestionDetails: (context, parameters) => {
       let query = null
       context.commit('setSuggestionDetails', null)
-      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale + '&append_to_response=credits,recommendations'
+      query = 'https://api.themoviedb.org/3/' + parameters.media_type + '/' + parameters.id + '?api_key=' + context.state._settings.movieDbApiKey + '&language=' + context.state._locale + '&append_to_response=credits,recommendations,release_dates'
 
       // console.log(parameters, query)
 
