@@ -195,12 +195,6 @@ export default {
         releases[r.iso_3166_1] = r
       })
       return releases
-    },
-    releaseDatesCH () {
-      return this.releaseDates('CH', 'DE')
-    },
-    releaseDatesUS () {
-      return this.releaseDates('US')
     }
   },
   methods: {
@@ -220,6 +214,9 @@ export default {
     },
     releaseDates (country, fallback) {
       let releases = this.releases
+      if (!releases) {
+        return null
+      }
       let result = null
       result = releases[country]
       if (!result && fallback) {
