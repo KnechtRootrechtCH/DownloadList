@@ -17,7 +17,9 @@
     <div class="card-body">
       <div class="card-icons container-fluid">
         <div class="row">
-          <div class="card-title col-xs-12">{{ getTitle(item) }}</div>
+          <div class="card-title col-xs-12">
+            <span>{{ getTitle(item) }}</span>
+          </div>
         </div>
         <div class="row justify-content-between">
           <div class="col-xs-4 card-release">
@@ -34,7 +36,13 @@
           <div class='col-xs-6'>
             <router-link v-bind:to="infoUrl" v-if="!isSelected || !showPriorityIcons">
               <font-awesome-icon
+                v-if="item.media_type === 'movie'"
                 :icon="icon('info')"
+                class="card-icon info-icon"
+                v-bind:title="$t('mediaCard.tooltip.info')"/>
+                <font-awesome-icon
+                v-if="item.media_type === 'tv'"
+                :icon="icon('tv')"
                 class="card-icon info-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
@@ -236,9 +244,9 @@ export default {
   opacity: 1;
 }
 a {
-  color: inherit;
+  color: white;
 }
 a:hover {
-  color: inherit;
+  color: white;
 }
 </style>
