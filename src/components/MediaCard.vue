@@ -22,8 +22,8 @@
         <div class="row justify-content-between">
           <div class="col-xs-12 card-release">
             <span>{{ getReleaseDateFormated(item, 'YYYY') }}</span>
-            <span v-if="!itemIsDownloaded(item) && itemIsUnreleased(item)" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
-            <span v-if="!itemIsDownloaded(item) && !itemIsUnreleased(item) && item.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + item.downloadStatus)}}</span>
+            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && itemIsUnreleased(selectedItem)" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
+            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && !itemIsUnreleased(selectedItem) && selectedItem.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + selectedItem.downloadStatus)}}</span>
           </div>
         </div>
         <div class="row justify-content-between">
@@ -48,7 +48,7 @@
           <div class='col-xs-6'>
             <font-awesome-icon
               v-if="isSelected"
-              :icon="icon(itemStatusIconName(item))"
+              :icon="icon(itemStatusIconName(selectedItem))"
               class="card-icon"
               @click.stop="editMode = !editMode"
               v-bind:title="$t('mediaCard.tooltip.editPriority')"/>
