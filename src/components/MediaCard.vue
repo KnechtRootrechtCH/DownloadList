@@ -36,13 +36,7 @@
           <div class='col-xs-6'>
             <router-link v-bind:to="infoUrl" v-if="!isSelected || !showPriorityIcons">
               <font-awesome-icon
-                v-if="item.media_type === 'movie'"
                 :icon="icon('info')"
-                class="card-icon info-icon"
-                v-bind:title="$t('mediaCard.tooltip.info')"/>
-                <font-awesome-icon
-                v-if="item.media_type === 'tv'"
-                :icon="icon('tv')"
                 class="card-icon info-icon"
                 v-bind:title="$t('mediaCard.tooltip.info')"/>
             </router-link>
@@ -244,9 +238,9 @@ export default {
   opacity: 1;
 }
 a {
-  color: white;
+  color: white !important;
 }
 a:hover {
-  color: white;
+  color: white !important;
 }
 </style>
