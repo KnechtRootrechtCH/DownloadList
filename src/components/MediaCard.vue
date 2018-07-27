@@ -20,10 +20,14 @@
           <div class="card-title col-xs-12">{{ getTitle(item) }}</div>
         </div>
         <div class="row justify-content-between">
-          <div class="col-xs-12 card-release">
+          <div class="col-xs-4 card-release">
             <span>{{ getReleaseDateFormated(item, 'YYYY') }}</span>
-            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && itemIsUnreleased(selectedItem)" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.unreleased')}}</span>
-            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && !itemIsUnreleased(selectedItem) && selectedItem.downloadStatus" class="card-downloadstatus">&ndash;&nbsp;{{ $t('mediaCard.' + selectedItem.downloadStatus)}}</span>
+            <font-awesome-icon v-if="item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
+            <font-awesome-icon v-if="item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
+          </div>
+          <div class="col-xs-8 card-release">
+            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && itemIsUnreleased(selectedItem)" class="card-downloadstatus">{{ $t('mediaCard.unreleased')}}</span>
+            <span v-if="selectedItem && !itemIsDownloaded(selectedItem) && !itemIsUnreleased(selectedItem) && selectedItem.downloadStatus" class="card-downloadstatus">{{ $t('mediaCard.' + selectedItem.downloadStatus)}}</span>
           </div>
         </div>
         <div class="row justify-content-between">
@@ -209,6 +213,8 @@ export default {
 }
 .card-downloadstatus {
   margin-bottom: 4px;
+  opacity: 0.6;
+  font-style: italic;
 }
 .card-icon {
   width: 35px;
