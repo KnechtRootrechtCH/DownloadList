@@ -13,6 +13,9 @@
         />
         <router-link v-bind:to="infoUrl(item)"><a class="label">{{ getTitle(item) }}</a></router-link>
         <span>({{ getReleaseDateFormated(item, 'YYYY') }})</span>
+        <span v-for="actor in item.cast" :key="actor.cast_id">
+          {{ actor.name }}
+        </span>
         <!--
         <span class="item-status d-none d-lg-inline">
           <span>&ndash;</span>

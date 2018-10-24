@@ -123,7 +123,17 @@ export const store = new Vuex.Store({
         }
       })
     },
-    setMessages: (state, messages) => { state._messages = messages }
+    setMessages: (state, messages) => { state._messages = messages },
+    setItemCredits: (state, payload) => {
+      let cast = payload.data.cast
+      if (cast !== null) {
+        Vue.set(state._items[payload.key], 'cast', cast)
+      }
+      let crew = payload.data.crew
+      if (crew !== null) {
+        Vue.set(state._items[payload.key], 'crew', crew)
+      }
+    }
   },
   actions: {
     getMovieDbConfiguration: (context) => {
@@ -180,9 +190,17 @@ export const store = new Vuex.Store({
         context.commit('setItems', snapshot.val())
         ref.on('child_added', (snapshot) => {
           context.commit('updateItem', snapshot.val())
+          context.dispatch('getItemCredits', {
+            id: snapshot.val().id,
+            key: snapshot.val().key
+          })
         })
         ref.on('child_changed', (snapshot) => {
           context.commit('updateItem', snapshot.val())
+          context.dispatch('getItemCredits', {
+            id: snapshot.val().id,
+            key: snapshot.val().key
+          })
         })
         ref.on('child_removed', (snapshot) => {
           context.commit('removeItem', snapshot.val())
@@ -372,6 +390,19 @@ export const store = new Vuex.Store({
           if (response.status === 200) {
             context.commit('setSuggestionSeason', {
               'data': response.data
+            })
+          }
+        })
+    },
+    getItemCredits: (context, parameters) => {
+      let query = 'https://api.themoviedb.org/3/movie/' + parameters.id + '/credits?api_key=' + context.state._settings.movieDbApiKey
+      axios.get(query).then(
+        (response) => {
+          if (response.status === 200) {
+            context.commit('setItemCredits', {
+              'data': response.data,
+              'id': parameters.id,
+              'key': parameters.key
             })
           }
         })
