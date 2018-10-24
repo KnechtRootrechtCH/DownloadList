@@ -79,15 +79,6 @@
         <a v-bind:href="link.url" target="_blank">{{ link.name }}</a><span v-if="index + 1 < downloadLinks.length">,&nbsp;</span>
       </span>
     </div>
-    <!-- PRODUCTION -->
-    <!--
-    <div class="content">
-      <span class="label">{{ $t('item.productionCompanies')}}:&nbsp;</span>
-      <span v-for="(company, index) in details.production_companies" :key="company.id">
-        <span>{{company.name}}</span><span v-if="index + 1 < details.production_companies.length">,&nbsp;</span>
-      </span>
-    </div>
-    -->
   </div>
 </template>
 

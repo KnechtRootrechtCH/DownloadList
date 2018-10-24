@@ -36,13 +36,13 @@
             @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
         </span>
       </div>
-      <div v-if="settings.showCastOnList && item.credits && item.credits.cast" class="info">
+      <div v-if="settings.showCastOnList" class="info">
         <span class="info-label">{{ $t('cast') }}:&nbsp;</span>
-        <span class="info-text">{{ cast(item) }}</span>
+        <span class="info-text">{{ item.cast }}</span>
       </div>
-      <div v-if="settings.showDirectorOnList && item.media_type === 'movie' && item.credits" class="info">
+      <div v-if="settings.showDirectorOnList && item.media_type === 'movie'" class="info">
         <span class="info-label">{{ $t('director') }}:&nbsp;</span>
-        <span class="info-text">{{ director(item) }}</span>
+        <span class="info-text">{{ item.director }}</span>
       </div>
       <div v-if="settings.showGenresOnList && item.genres" class="info">
         <span class="info-label">{{ $t('genres') }}:&nbsp;</span>
@@ -109,48 +109,8 @@ export default {
   },
   methods: {
     infoUrl (item) {
-      let infoUrl = '/list/' + item.media_type + '/' + item.id
+      let infoUrl = `/list/${item.media_type}/${item.id}`
       return infoUrl
-    },
-    director (item) {
-      let credits = item.credits
-      if (!credits) {
-        return '-'
-      }
-      let crew = credits.crew
-      if (!crew) {
-        return '-'
-      }
-
-      let director = null
-      crew.forEach(c => {
-        if (c.job.toLowerCase() === this.constants.JOB.DIRECTOR) {
-          director = c
-        }
-      })
-
-      if (!director) {
-        return '-'
-      }
-      return director.name
-    },
-    cast (item) {
-      let credits = item.credits
-      if (credits === null) {
-        return '-'
-      }
-      let cast = credits.cast
-      if (!cast) {
-        return '-'
-      }
-
-      if (cast.length > this.settings.showCastOnList) {
-        cast = cast.slice(0, this.settings.showCastOnList)
-      }
-
-      let names = cast.map(x => x.name)
-
-      return names.join(', ')
     },
     genres (item) {
       let genres = item.genres

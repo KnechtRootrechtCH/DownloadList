@@ -29,6 +29,7 @@ export const store = new Vuex.Store({
     _loading: false,
 
     _items: {},
+    _itemsInitialized: false,
     _comments: [],
     _suggestionDetails: null,
     _suggestionSeasons: {},
@@ -69,6 +70,7 @@ export const store = new Vuex.Store({
     setLoading: (state, loading) => { state._loading = loading },
 
     setItems: (state, items) => { state._items = items },
+    setItemsInitialized: (state, initialized) => { state._itemsInitialized = initialized },
     removeItem: (state, item) => {
       Vue.set(state._items, item.key, null)
     },
@@ -123,10 +125,7 @@ export const store = new Vuex.Store({
         }
       })
     },
-    setMessages: (state, messages) => { state._messages = messages },
-    setItemCredits: (state, payload) => {
-      Vue.set(state._items[payload.key], 'credits', payload.data)
-    }
+    setMessages: (state, messages) => { state._messages = messages }
   },
   actions: {
     getMovieDbConfiguration: (context) => {
@@ -179,32 +178,56 @@ export const store = new Vuex.Store({
 
     loadItems: (context) => {
       let ref = firebase.database.ref('data/' + context.getters.dataUserId + '/items')
+
+      ref.on('child_added', (snapshot) => {
+        if (context.getters.itemsInitialized) {
+          context.commit('updateItem', snapshot.val())
+          context.dispatch('addItemCredits', {
+            id: snapshot.val().id,
+            key: snapshot.val().key,
+            mediaType: snapshot.val().media_type
+          })
+          // cleanup unused fields such as: production_companies, production_countries, spoken_languages, maybe more in tv shows
+        }
+      })
+      ref.on('child_changed', (snapshot) => {
+        context.commit('updateItem', snapshot.val())
+      })
+      ref.on('child_removed', (snapshot) => {
+        context.commit('removeItem', snapshot.val())
+      })
+
       ref.once('value', (snapshot) => {
-        context.commit('setItems', snapshot.val())
-        ref.on('child_added', (snapshot) => {
-          context.commit('updateItem', snapshot.val())
-          if (context.getters.settings.addCreditInfoToItems && snapshot.val().credits == null) {
-            context.dispatch('getItemCredits', {
-              id: snapshot.val().id,
-              key: snapshot.val().key,
-              mediaType: snapshot.val().media_type
-            })
-          }
-        })
-        ref.on('child_changed', (snapshot) => {
-          context.commit('updateItem', snapshot.val())
-          if (context.getters.settings.addCreditInfoToItems && snapshot.val().credits == null) {
-            context.dispatch('getItemCredits', {
-              id: snapshot.val().id,
-              key: snapshot.val().key,
-              mediaType: snapshot.val().media_type
-            })
-          }
-        })
-        ref.on('child_removed', (snapshot) => {
-          context.commit('removeItem', snapshot.val())
-        })
         context.commit('setLoading', false)
+        context.commit('setItems', snapshot.val())
+        context.commit('setItemsInitialized', true)
+
+        if (context.getters.settings.addCreditInfoToItems) {
+          let items = context.getters.items
+          let keys = Object.keys(items)
+          let max = context.getters.settings.addCreditInfoToItems
+          if (max > keys.length) {
+            max = keys.length - 1
+          }
+
+          let count = 0
+          for (let i = 0; i < keys.length; i++) {
+            let item = items[keys[i]]
+            if (count > max) {
+              break
+            }
+            if (!item.director || !item.cast) {
+              count++
+              context.dispatch('addItemCredits', {
+                id: item.id,
+                key: item.key,
+                mediaType: item.media_type
+              })
+            }
+          }
+        }
+
+        // cleanup unused fields such as: production_companies, production_countries, spoken_languages, maybe more in tv shows
       })
     },
     addItem: (context, item) => {
@@ -393,20 +416,42 @@ export const store = new Vuex.Store({
           }
         })
     },
-    getItemCredits: (context, parameters) => {
+    addItemCredits: (context, parameters) => {
       let query = 'https://api.themoviedb.org/3/' + parameters.mediaType + '/' + parameters.id + '/credits?api_key=' + context.state._settings.movieDbApiKey
       axios.get(query).then(
         (response) => {
           if (response.status === 200) {
-            context.commit('setItemCredits', {
-              'data': response.data,
-              'id': parameters.id,
-              'key': parameters.key
-            })
+            let directorString = '-'
+            let castString = '-'
+
+            let crew = response.data.crew
+            let cast = response.data.cast
+
+            if (crew) {
+              let director = null
+              crew.forEach(c => {
+                if (c.job.toLowerCase() === Constants.JOB.DIRECTOR) {
+                  director = c
+                }
+              })
+              if (director) {
+                directorString = director.name
+              }
+            }
+
+            if (cast) {
+              if (cast.length > Constants.CAST_DISPLAY_COUNT) {
+                cast = cast.slice(0, Constants.CAST_DISPLAY_COUNT)
+              }
+              let names = cast.map(x => x.name)
+              castString = names.join(', ')
+            }
+
             let item = context.state._items[parameters.key]
-            if (item !== null && item.credits !== null) {
-              firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key).set(item)
-              console.log('updated ' + item.key)
+            if (item !== null) {
+              console.log(`credits loaded for ${item.key}: title=${item.title}, director=${directorString}, cast=${castString}`)
+              firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/director').set(directorString)
+              firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/cast').set(castString)
             }
           }
         })
@@ -422,6 +467,7 @@ export const store = new Vuex.Store({
     loading: (state) => { return state._loading },
 
     items: (state) => { return state._items },
+    itemsInitialized: (state) => { return state._itemsInitialized },
     item: (state) => (key) => { return state._items !== null ? state._items[key] : null },
     itemsArray: (state) => {
       let array = []

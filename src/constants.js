@@ -7,6 +7,7 @@ export default Object.freeze({
   JOB: {
     DIRECTOR: 'director'
   },
+  CAST_DISPLAY_COUNT: 5,
   COLOR: {
     GREEN: 'green',
     BLUE: 'blue',

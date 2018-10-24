@@ -1,8 +1,14 @@
 <template>
-    <span id="export" class="export" @click="exportList">
-      <span><font-awesome-icon :icon="icon('download')"/></span>
-      <span class="label">{{ $t('export') }}</span>
-    </span>
+  <div>
+    <div id="export" class="export" @click="exportText">
+      <span><font-awesome-icon :icon="icon('word')"/></span>
+      <span class="label">{{ $t('exportFile') }}</span>
+    </div>
+    <div id="export" class="export" @click="exportCsv">
+      <span><font-awesome-icon :icon="icon('excel')"/></span>
+      <span class="label">{{ $t('exportCsv') }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -23,17 +29,6 @@ export default {
   computed: {
   },
   methods: {
-    getHeader () {
-      let header = this.$t('exportHeader').toUpperCase()
-      // header += '\n' + title.replace(/./g, '=')
-      header += '\n' + this.$t('statusFilter') + ': ' + this.getStatusFilter()
-      header += '\n' + this.$t('priorityFilter') + ': ' + this.getPriorityFilter()
-      header += '\n' + this.$t('movieFilter') + ': ' + this.getMovieFilter()
-      header += '\n' + this.$t('tvFilter') + ': ' + this.getTvFilter()
-      header += '\n' + this.$t('sort') + ': ' + this.getSort()
-      header += '\n\n'
-      return header
-    },
     getStatusFilter () {
       let s = []
       if (this.filter.downloaded && this.filter.queued && this.filter.todo && this.filter.hardToFind && this.filter.notYetAvailable) {
@@ -93,19 +88,11 @@ export default {
     getSort () {
       return this.$t(this.sort)
     },
-    getExportData () {
-      let content = ''
-      this.items.forEach(i => {
-        content += this.getTitle(i) + ' (' + this.getReleaseDateFormated(i, 'YYYY') + ')\n'
-      })
-
-      return content
-    },
-    exportList () {
+    exportCsv () {
       let date = this.$moment().format('YYYYMMDD_HHmm')
-      let fileName = 'export_' + date + '.txt'
-      let data = this.getHeader()
-      data += this.getExportData()
+      let fileName = 'export_' + date + '.csv'
+      let data = this.getCsvHeader()
+      data += this.getCsvContent()
 
       let blob = new Blob([data], {type: 'text/plain;charset=utf-8'})
       if (window.navigator.msSaveOrOpenBlob) {
@@ -119,45 +106,102 @@ export default {
         document.body.removeChild(elem)
       }
     },
-    director (item) {
-      let credits = item.credits
-      if (!credits) {
-        return '-'
-      }
-      let crew = credits.crew
-      if (!crew) {
-        return '-'
+    getCsvHeader () {
+      let cols = []
+      cols.push(this.wrap(this.$t('title')))
+      cols.push(this.wrap(this.$t('status')))
+      cols.push(this.wrap(this.$t('release')))
+      cols.push(this.wrap(this.$t('genres')))
+      cols.push(this.wrap(this.$t('director')))
+      for (let i = 0; i < this.constants.CAST_DISPLAY_COUNT; i++) {
+        cols.push(this.wrap(this.$t('actor') + ' ' + (i + 1)))
       }
 
-      let director = null
-      crew.forEach(c => {
-        if (c.job.toLowerCase() === this.constants.JOB.DIRECTOR) {
-          director = c
+      return cols.join(this.settings.csvDelimeter)
+    },
+    getCsvContent () {
+      let content = ''
+      this.items.forEach(i => {
+        content += '\n'
+        content += this.getCsvRow(i)
+      })
+
+      return content
+    },
+    getCsvRow (item) {
+      let cells = [
+        this.wrap(this.getTitle(item)),
+        this.wrap(this.status(item)),
+        this.wrap(this.getReleaseDateFormated(item, 'YYYY')),
+        this.wrap(this.genres(item)),
+        this.wrap(item.director)
+      ]
+
+      let cast = []
+      if (item.cast) {
+        cast = item.cast.split(',')
+      }
+
+      for (let i = 0; i < this.constants.CAST_DISPLAY_COUNT; i++) {
+        if (i < cast.length) {
+          cells.push(this.wrap(cast[i].trim()))
+        } else {
+          cells.push(this.wrap('-'))
+        }
+      }
+      return cells.join(this.settings.csvDelimeter)
+    },
+    exportText () {
+      let date = this.$moment().format('YYYYMMDD_HHmm')
+      let fileName = 'export_' + date + '.txt'
+      let data = this.getTextHeader()
+      data += this.getTextContent()
+
+      let blob = new Blob([data], {type: 'text/plain;charset=utf-8'})
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, fileName)
+      } else {
+        let elem = window.document.createElement('a')
+        elem.href = window.URL.createObjectURL(blob)
+        elem.download = fileName
+        document.body.appendChild(elem)
+        elem.click()
+        document.body.removeChild(elem)
+      }
+    },
+    getTextHeader () {
+      let header = this.$t('exportHeader').toUpperCase()
+      // header += '\n' + title.replace(/./g, '=')
+      header += '\n' + this.$t('statusFilter') + ': ' + this.getStatusFilter()
+      header += '\n' + this.$t('priorityFilter') + ': ' + this.getPriorityFilter()
+      header += '\n' + this.$t('movieFilter') + ': ' + this.getMovieFilter()
+      header += '\n' + this.$t('tvFilter') + ': ' + this.getTvFilter()
+      header += '\n' + this.$t('sort') + ': ' + this.getSort()
+      header += '\n\n'
+      return header
+    },
+    getTextContent () {
+      let content = ''
+      this.items.forEach(i => {
+        content += this.getTitle(i) + ' (' + this.getReleaseDateFormated(i, 'YYYY') + ')\n'
+        if (this.settings.showStatusOnList) {
+          content += this.$t('status') + ': ' + this.status(i) + '\n'
+        }
+        if (this.settings.showGenresOnList) {
+          content += this.$t('genres') + ': ' + this.genres(i) + '\n'
+        }
+        if (this.settings.showDirectorOnList) {
+          content += this.$t('director') + ': ' + i.director + '\n'
+        }
+        if (this.settings.showCastOnList) {
+          content += this.$t('cast') + ': ' + i.cast + '\n'
+        }
+        if (this.settings.showDirectorOnList || this.settings.showCastOnList || this.settings.showGenresOnList || this.settings.showStatusOnList) {
+          content += '\n'
         }
       })
 
-      if (!director) {
-        return '-'
-      }
-      return director.name
-    },
-    cast (item) {
-      let credits = item.credits
-      if (credits === null) {
-        return '-'
-      }
-      let cast = credits.cast
-      if (!cast) {
-        return '-'
-      }
-
-      if (cast.length > this.settings.showCastOnList) {
-        cast = cast.slice(0, this.settings.showCastOnList)
-      }
-
-      let names = cast.map(x => x.name)
-
-      return names.join(', ')
+      return content
     },
     genres (item) {
       let genres = item.genres
@@ -168,12 +212,24 @@ export default {
       let names = genres.map(x => x.name)
 
       return names.join(', ')
+    },
+    status (item) {
+      let status = item.downloadStatus
+      if (status) {
+        return this.$t(status)
+      } else {
+        return this.$t('todo')
+      }
+    },
+    wrap (text) {
+      return `"${text}"`
     }
   },
   i18n: {
     messages: {
       de: {
-        export: 'Liste exportieren',
+        exportFile: 'Als Text-Liste exportieren',
+        exportCsv: 'Als CSV-Tabelle exportieren',
         exportHeader: 'Download Liste',
         statusFilter: 'Status',
         priorityFilter: 'Priorität',
@@ -192,10 +248,16 @@ export default {
         popularity: 'Beliebtheit',
         release: 'Veröffentlichung',
         yes: 'Ja',
-        no: 'Nein'
+        no: 'Nein',
+        director: 'Regie',
+        cast: 'Besetzung',
+        actor: 'Schauspieler',
+        genres: 'Genres',
+        status: 'Status'
       },
       en: {
-        export: 'Export list',
+        exportFile: 'Export to text file',
+        exportCsv: 'Export to csv file',
         exportHeader: 'Download list',
         statusFilter: 'Status',
         priorityFilter: 'Priority',
@@ -214,7 +276,12 @@ export default {
         popularity: 'Popularity',
         release: 'Release',
         yes: 'Yes',
-        no: 'No'
+        no: 'No',
+        director: 'Director',
+        cast: 'Cast',
+        actor: 'Actor',
+        genres: 'Genres',
+        status: 'Status'
       }
     }
   }

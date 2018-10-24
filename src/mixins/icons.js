@@ -39,6 +39,9 @@ import flagIcon from '@fortawesome/fontawesome-free-solid/faFlag'
 import calendarIcon from '@fortawesome/fontawesome-free-solid/faCalendarAlt'
 import gridIcon from '@fortawesome/fontawesome-free-solid/faThLarge'
 import listIcon from '@fortawesome/fontawesome-free-solid/faThList'
+import fileIcon from '@fortawesome/fontawesome-free-solid/faFile'
+import wordIcon from '@fortawesome/fontawesome-free-solid/faFileWord'
+import excelIcon from '@fortawesome/fontawesome-free-solid/faFileExcel'
 
 export default {
   methods: {
@@ -82,6 +85,9 @@ export default {
         case 'calendar' : return calendarIcon
         case 'grid' : return gridIcon
         case 'list' : return listIcon
+        case 'file' : return fileIcon
+        case 'word' : return wordIcon
+        case 'excel' : return excelIcon
         default: return defaultIcon
       }
     }
