@@ -6,35 +6,60 @@
         v-bind:filter="filter"/>
     </div>
     <div v-for="item in pagedItems" :key="item.key" class="list-item">
-      <span>
-        <font-awesome-icon
-          :icon="icon(itemStatusIconName(item))"
-          v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
-        />
-        <router-link v-bind:to="infoUrl(item)"><a class="label">{{ getTitle(item) }}</a></router-link>
-        <span>({{ getReleaseDateFormated(item, 'YYYY') }})</span>
-        <span v-for="actor in item.cast" :key="actor.cast_id">
-          {{ actor.name }}
+      <div>
+        <span>
+          <font-awesome-icon v-if="item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
+          <font-awesome-icon v-if="item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
+          <router-link v-bind:to="infoUrl(item)"><a class="label">{{ getTitle(item) }}</a></router-link>
+          <span>({{ getReleaseDateFormated(item, 'YYYY') }})</span>
+          <!--
+          <span class="item-status d-none d-lg-inline">
+            <span>&ndash;</span>
+            <span v-if="item.downloaded">{{ $t('downloaded') }}</span>
+            <span v-if="!item.downloaded && itemIsUnreleased(item)">{{ $t('unreleased') }}</span>
+            <span v-if="!item.downloaded && !itemIsUnreleased(item) && item.downloadStatus">{{ $t(item.downloadStatus) }}</span>
+            <span v-if="!item.downloaded && !itemIsUnreleased(item) && !item.downloadStatus">{{ $t('todo') }}</span>
+          </span>
+          -->
         </span>
-        <!--
-        <span class="item-status d-none d-lg-inline">
-          <span>&ndash;</span>
-          <span v-if="item.downloaded">{{ $t('downloaded') }}</span>
-          <span v-if="!item.downloaded && itemIsUnreleased(item)">{{ $t('unreleased') }}</span>
-          <span v-if="!item.downloaded && !itemIsUnreleased(item) && item.downloadStatus">{{ $t(item.downloadStatus) }}</span>
-          <span v-if="!item.downloaded && !itemIsUnreleased(item) && !item.downloadStatus">{{ $t('todo') }}</span>
+        <span class="float-right d-none d-sm-inline">
+          <!--
+          <span v-if="item.downloadStatus" class="status-text">{{ $t(item.downloadStatus) }}</span>
+          <span v-if="!item.downloadStatus" class="status-text">{{ $t('todo') }}</span>
+          -->
+          <font-awesome-icon
+            v-for="p in priorities"
+            :key="p"
+            :icon="icon('star')"
+            class="priority-icon"
+            v-bind:class="[{ 'highlighted' :item.priority <= p }, icon]"
+            @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
         </span>
-        -->
-      </span>
-      <span class="float-right d-none d-sm-inline">
-        <font-awesome-icon
-          v-for="p in priorities"
-          :key="p"
-          :icon="icon('star')"
-          class="priority-icon"
-          v-bind:class="[{ 'highlighted' :item.priority <= p }, icon]"
-          @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
-      </span>
+      </div>
+      <div v-if="settings.showCastOnList && item.credits && item.credits.cast" class="info">
+        <span class="info-label">{{ $t('cast') }}:&nbsp;</span>
+        <span class="info-text">{{ cast(item) }}</span>
+      </div>
+      <div v-if="settings.showDirectorOnList && item.media_type === 'movie' && item.credits" class="info">
+        <span class="info-label">{{ $t('director') }}:&nbsp;</span>
+        <span class="info-text">{{ director(item) }}</span>
+      </div>
+      <div v-if="settings.showGenresOnList && item.genres" class="info">
+        <span class="info-label">{{ $t('genres') }}:&nbsp;</span>
+        <span class="info-text">{{ genres(item) }}</span>
+      </div>
+      <div v-if="settings.showStatusOnList" class="info">
+        <span class="info-label">{{ $t('status') }}:&nbsp;</span>
+        <span class="info-text">
+          <font-awesome-icon
+            :icon="icon(itemStatusIconName(item))"
+            v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
+          />
+        </span>
+        <span v-if="item.downloadStatus" class="info-text">{{ $t(item.downloadStatus) }}</span>
+        <span v-if="!item.downloadStatus" class="info-text">{{ $t('todo') }}</span>
+
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +111,56 @@ export default {
     infoUrl (item) {
       let infoUrl = '/list/' + item.media_type + '/' + item.id
       return infoUrl
+    },
+    director (item) {
+      let credits = item.credits
+      if (!credits) {
+        return '-'
+      }
+      let crew = credits.crew
+      if (!crew) {
+        return '-'
+      }
+
+      let director = null
+      crew.forEach(c => {
+        if (c.job.toLowerCase() === this.constants.JOB.DIRECTOR) {
+          director = c
+        }
+      })
+
+      if (!director) {
+        return '-'
+      }
+      return director.name
+    },
+    cast (item) {
+      let credits = item.credits
+      if (credits === null) {
+        return '-'
+      }
+      let cast = credits.cast
+      if (!cast) {
+        return '-'
+      }
+
+      if (cast.length > this.settings.showCastOnList) {
+        cast = cast.slice(0, this.settings.showCastOnList)
+      }
+
+      let names = cast.map(x => x.name)
+
+      return names.join(', ')
+    },
+    genres (item) {
+      let genres = item.genres
+      if (genres === null) {
+        return '-'
+      }
+
+      let names = genres.map(x => x.name)
+
+      return names.join(', ')
     }
   },
   i18n: {
@@ -104,7 +179,10 @@ export default {
         notYetAvailable: 'Noch nicht erhältlich',
         hardToFind: 'Noch nicht gefunden',
         queued: 'Wird heruntergeladen',
-        export: 'Liste exportieren'
+        export: 'Liste exportieren',
+        director: 'Regie',
+        cast: 'Besetzung',
+        genres: 'Genres'
       },
       en: {
         title: 'Title',
@@ -120,7 +198,10 @@ export default {
         notYetAvailable: 'Not available yet',
         hardToFind: 'Not found yet',
         queued: 'Queued',
-        export: 'Export list'
+        export: 'Export list',
+        director: 'Director',
+        cast: 'Cast',
+        genres: 'Genres'
       }
     }
   }
@@ -143,10 +224,20 @@ export default {
   margin-bottom: 10px;
   white-space: nowrap;
 }
-.label {
-  margin-left: 5px;
-}
 .export {
   margin-bottom: 10px;
+}
+.info {
+  font-size: 12px;
+}
+.info-label {
+  font-weight: bold
+}
+.info-text {
+  color: grey;
+}
+.status-text {
+  font-size: 12px;
+  color: grey;
 }
 </style>

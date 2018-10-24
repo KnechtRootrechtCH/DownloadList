@@ -118,6 +118,56 @@ export default {
         elem.click()
         document.body.removeChild(elem)
       }
+    },
+    director (item) {
+      let credits = item.credits
+      if (!credits) {
+        return '-'
+      }
+      let crew = credits.crew
+      if (!crew) {
+        return '-'
+      }
+
+      let director = null
+      crew.forEach(c => {
+        if (c.job.toLowerCase() === this.constants.JOB.DIRECTOR) {
+          director = c
+        }
+      })
+
+      if (!director) {
+        return '-'
+      }
+      return director.name
+    },
+    cast (item) {
+      let credits = item.credits
+      if (credits === null) {
+        return '-'
+      }
+      let cast = credits.cast
+      if (!cast) {
+        return '-'
+      }
+
+      if (cast.length > this.settings.showCastOnList) {
+        cast = cast.slice(0, this.settings.showCastOnList)
+      }
+
+      let names = cast.map(x => x.name)
+
+      return names.join(', ')
+    },
+    genres (item) {
+      let genres = item.genres
+      if (genres === null) {
+        return '-'
+      }
+
+      let names = genres.map(x => x.name)
+
+      return names.join(', ')
     }
   },
   i18n: {
