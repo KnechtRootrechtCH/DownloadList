@@ -11,7 +11,7 @@ import UtilsMixin from '../mixins/utils'
 import IconsMixin from '../mixins/icons'
 
 export default {
-  name: 'MediaList',
+  name: 'Export',
   mixins: [UtilsMixin, MetadataMixin, IconsMixin],
   props: ['items', 'sort', 'filter'],
   data () {
