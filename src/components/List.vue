@@ -36,8 +36,7 @@
               <span class="checklist-navigation-item" @click="toggleDisplayMode" v-bind:class="{ active: filterPanelActive }">
                 <span class="d-none d-xl-inline">{{$t('display') }}</span>
                 <font-awesome-icon v-if="display === 'cards'" :icon="icon('grid')" class="checklist-navigation-icon" transform="shrink-2"/>
-                <font-awesome-icon v-if="display === 'list'" :icon="icon('list')" class="checklist-navigation-icon" transform="shrink-2"/>
-                <font-awesome-icon v-if="display === 'listExtended'" :icon="icon('listExtended')" class="checklist-navigation-icon" transform="shrink-2"/>
+                <font-awesome-icon v-if="display !== 'cards'" :icon="icon('listExtended')" class="checklist-navigation-icon" transform="shrink-2"/>
               </span>
             </b-col>
           </b-row>
@@ -138,17 +137,6 @@
         v-bind:sort="sort"
         v-bind:paging="true"
         v-bind:page="page"
-        v-bind:extend="false"
-        pageSize="50">
-      </media-list>
-      <media-list
-        v-if="display === 'listExtended'"
-        v-bind:items="items"
-        v-bind:filter="filter"
-        v-bind:sort="sort"
-        v-bind:paging="true"
-        v-bind:page="page"
-        v-bind:extend="true"
         pageSize="50">
       </media-list>
     </div>
@@ -204,8 +192,6 @@ export default {
     toggleDisplayMode () {
       if (this.display === 'cards') {
         this.display = 'list'
-      } else if (this.display === 'list') {
-        this.display = 'listExtended'
       } else {
         this.display = 'cards'
       }

@@ -3,13 +3,13 @@
     <div id="export" class="export">
       <span @click="exportText">
         <font-awesome-icon :icon="icon('word')"/>
-        <span class="label">{{ $t('exportFile') }}</span>
+        <span class="label">{{ $t('exportFile') }}&nbsp;({{count}}&nbsp;{{ itemType }})</span>
       </span>
     </div>
     <div id="export" class="export">
       <span @click="exportCsv">
         <font-awesome-icon :icon="icon('excel')"/>
-        <span class="label">{{ $t('exportCsv') }}</span>
+        <span class="label">{{ $t('exportCsv') }}&nbsp;({{count}}&nbsp;{{ itemType }})</span>
       </span>
     </div>
   </div>
@@ -23,7 +23,7 @@ import IconsMixin from '../mixins/icons'
 export default {
   name: 'Export',
   mixins: [UtilsMixin, MetadataMixin, IconsMixin],
-  props: ['items', 'sort', 'filter'],
+  props: ['items', 'sort', 'filter', 'totalCount'],
   data () {
     return {
     }
@@ -31,6 +31,17 @@ export default {
   components: {
   },
   computed: {
+    count () {
+      return this.items.length
+    },
+    itemType () {
+      if (this.filter.movie && !this.filter.tv) {
+        return this.$t('movies')
+      } else if (!this.filter.movie && this.filter.tv) {
+        return this.$t('series')
+      }
+      return this.$t('items')
+    }
   },
   methods: {
     getStatusFilter () {
@@ -194,21 +205,11 @@ export default {
       let content = ''
       this.items.forEach(i => {
         content += this.getTitle(i) + ' (' + this.getReleaseDateFormated(i, 'YYYY') + ')\n'
-        if (this.settings.showStatusOnList) {
-          content += this.$t('status') + ': ' + this.status(i) + '\n'
-        }
-        if (this.settings.showGenresOnList) {
-          content += this.$t('genres') + ': ' + this.genres(i) + '\n'
-        }
-        if (this.settings.showDirectorOnList) {
-          content += this.$t('director') + ': ' + i.director + '\n'
-        }
-        if (this.settings.showCastOnList) {
-          content += this.$t('cast') + ': ' + i.cast + '\n'
-        }
-        if (this.settings.showDirectorOnList || this.settings.showCastOnList || this.settings.showGenresOnList || this.settings.showStatusOnList) {
-          content += '\n'
-        }
+        content += this.$t('status') + ': ' + this.status(i) + '\n'
+        content += this.$t('genres') + ': ' + this.genres(i) + '\n'
+        content += this.$t('director') + ': ' + i.director + '\n'
+        content += this.$t('cast') + ': ' + i.cast + '\n'
+        content += '\n'
       })
 
       return content
@@ -261,7 +262,10 @@ export default {
         cast: 'Besetzung',
         actor: 'Schauspieler',
         genres: 'Genres',
-        status: 'Status'
+        status: 'Status',
+        movies: 'Filme',
+        series: 'Serien',
+        items: 'Downloads'
       },
       en: {
         exportFile: 'Export to text file',
@@ -289,7 +293,10 @@ export default {
         cast: 'Cast',
         actor: 'Actor',
         genres: 'Genres',
-        status: 'Status'
+        status: 'Status',
+        movies: 'Movies',
+        series: 'TV Shows',
+        items: 'Items'
       }
     }
   }

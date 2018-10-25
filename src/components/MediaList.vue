@@ -5,48 +5,61 @@
         v-bind:sort="sort"
         v-bind:filter="filter"/>
     </div>
-    <div v-for="item in pagedItems" :key="item.key" class="list-item">
+    <div v-for="item in pagedItems" :key="item.key" class="list-item" @click=click(item)>
       <div>
         <span>
-          <font-awesome-icon
-            :icon="icon(itemStatusIconName(item))"
-            v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
-          />
-          <router-link v-bind:to="infoUrl(item)"><a class="label">{{ getTitle(item) }}</a></router-link>
+          <router-link v-bind:to="infoUrl(item)" class="list-item-link">
+            <a class="label">{{ getTitle(item) }}</a>
+          </router-link>
           <span>({{ getReleaseDateFormated(item, 'YYYY') }})</span>
         </span>
         <span class="float-right d-none d-sm-inline">
           <font-awesome-icon
-            v-for="p in priorities"
-            :key="p"
-            :icon="icon('star')"
-            class="priority-icon"
-            v-bind:class="[{ 'highlighted' :item.priority <= p }, icon]"
-            @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
+            v-if="settings.showStatusIconOnList"
+            :icon="icon(itemStatusIconName(item))"
+            v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
+          />
+          <span v-if="settings.showPriorityIconsOnList">
+            &nbsp;
+            <font-awesome-icon
+              v-for="p in priorities"
+              :key="p"
+              :icon="icon('star')"
+              class="priority-icon"
+              v-bind:class="[{ 'highlighted' :item.priority <= p }, icon]"
+              @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
+            </span>
         </span>
       </div>
-      <div v-if="extend && settings.showCastOnList" class="info">
-        <span class="info-label">{{ $t('cast') }}:&nbsp;</span>
-        <span class="info-text">{{ item.cast }}</span>
-      </div>
-      <div v-if="extend && settings.showDirectorOnList && item.media_type === 'movie'" class="info">
-        <span class="info-label">{{ $t('director') }}:&nbsp;</span>
-        <span class="info-text">{{ item.director }}</span>
-      </div>
-      <div v-if="extend && settings.showGenresOnList && item.genres" class="info">
-        <span class="info-label">{{ $t('genres') }}:&nbsp;</span>
-        <span class="info-text">{{ genres(item) }}</span>
-      </div>
-      <div v-if="extend && settings.showStatusOnList" class="info">
+      <div v-if="settings.showStatusOnList" class="info">
         <span class="info-label">{{ $t('status') }}:&nbsp;</span>
         <span v-if="item.downloadStatus" class="info-text">{{ $t(item.downloadStatus) }}</span>
         <span v-if="!item.downloadStatus" class="info-text">{{ $t('todo') }}</span>
-      <div v-if="extend && settings.showTypeOnList && item.genres" class="info">
+        <!--
+        <font-awesome-icon
+          v-if="settings.showStatusIconOnList"
+          :icon="icon(itemStatusIconName(item))"
+          v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
+        />
+        -->
+      </div>
+      <div v-if="settings.showTypeOnList && item.genres" class="info">
         <span class="info-label">{{ $t('type') }}:&nbsp;</span>
-        <font-awesome-icon v-if="extend && item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
-        <font-awesome-icon v-if="extend && item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
+        <font-awesome-icon v-if="item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
+        <font-awesome-icon v-if="item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
         <span class="info-text">{{ $t(item.media_type) }}</span>
       </div>
+      <div v-if="settings.showGenresOnList && item.genres" class="info">
+        <span class="info-label">{{ $t('genre') }}:&nbsp;</span>
+        <span class="info-text">{{ genres(item) }}</span>
+      </div>
+      <div v-if="settings.showDirectorOnList && item.media_type === 'movie'" class="info">
+        <span class="info-label">{{ $t('director') }}:&nbsp;</span>
+        <span class="info-text">{{ item.director }}</span>
+      </div>
+      <div v-if="settings.showCastOnList" class="info">
+        <span class="info-label">{{ $t('cast') }}:&nbsp;</span>
+        <span class="info-text">{{ item.cast }}</span>
       </div>
     </div>
   </div>
@@ -62,7 +75,7 @@ import IconsMixin from '../mixins/icons'
 export default {
   name: 'MediaList',
   mixins: [UtilsMixin, MetadataMixin, IconsMixin],
-  props: ['items', 'sort', 'filter', 'paging', 'page', 'pageSize', 'extend'],
+  props: ['items', 'sort', 'filter', 'paging', 'page', 'pageSize'],
   data () {
     return {
     }
@@ -96,6 +109,9 @@ export default {
     }
   },
   methods: {
+    click (item) {
+      this.routeTo(this.infoUrl(item))
+    },
     infoUrl (item) {
       let infoUrl = `/list/${item.media_type}/${item.id}`
       return infoUrl
@@ -130,7 +146,7 @@ export default {
         export: 'Liste exportieren',
         director: 'Regie',
         cast: 'Besetzung',
-        genres: 'Genres'
+        genre: 'Genre'
       },
       en: {
         title: 'Title',
@@ -149,7 +165,7 @@ export default {
         export: 'Export list',
         director: 'Director',
         cast: 'Cast',
-        genres: 'Genres'
+        genre: 'Genre'
       }
     }
   }
@@ -159,7 +175,7 @@ export default {
 <style scoped>
 .media-list {
   margin: 10px;
-  padding: 10px;
+  padding: 5px;
   overflow: hidden;
 }
 .priority-icon {
@@ -169,11 +185,15 @@ export default {
   opacity: 1;
 }
 .list-item {
-  margin-bottom: 10px;
+  padding: 5px;
   white-space: nowrap;
+  cursor: pointer;
+}
+.list-item:hover {
+  background-color: rgb(52, 58, 64);
 }
 .export {
-  margin-bottom: 10px;
+  margin: 0 0 10px 5px;
 }
 .info {
   font-size: 12px;
@@ -183,9 +203,7 @@ export default {
 }
 .info-text {
   color: grey;
-}
-.status-text {
-  font-size: 12px;
-  color: grey;
+  white-space: normal;
+  text-overflow: ellipsis;
 }
 </style>
