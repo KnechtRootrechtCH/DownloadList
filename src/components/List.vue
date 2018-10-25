@@ -131,7 +131,7 @@
         detailsRouterPrefix="list">
       </media-grid>
       <media-list
-        v-if="display === 'list'"
+        v-if="display !== 'cards'"
         v-bind:items="items"
         v-bind:filter="filter"
         v-bind:sort="sort"
