@@ -1,12 +1,16 @@
 <template>
   <div>
-    <div id="export" class="export" @click="exportText">
-      <span><font-awesome-icon :icon="icon('word')"/></span>
-      <span class="label">{{ $t('exportFile') }}</span>
+    <div id="export" class="export">
+      <span @click="exportText">
+        <font-awesome-icon :icon="icon('word')"/>
+        <span class="label">{{ $t('exportFile') }}</span>
+      </span>
     </div>
-    <div id="export" class="export" @click="exportCsv">
-      <span><font-awesome-icon :icon="icon('excel')"/></span>
-      <span class="label">{{ $t('exportCsv') }}</span>
+    <div id="export" class="export">
+      <span @click="exportCsv">
+        <font-awesome-icon :icon="icon('excel')"/>
+        <span class="label">{{ $t('exportCsv') }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -133,9 +137,15 @@ export default {
         this.wrap(this.getTitle(item)),
         this.wrap(this.status(item)),
         this.wrap(this.getReleaseDateFormated(item, 'YYYY')),
-        this.wrap(this.genres(item)),
-        this.wrap(item.director)
+        this.wrap(this.genres(item))
       ]
+
+      let director = item.director
+      if (director) {
+        cells.push(this.wrap(director))
+      } else {
+        this.wrap('-')
+      }
 
       let cast = []
       if (item.cast) {
@@ -205,12 +215,10 @@ export default {
     },
     genres (item) {
       let genres = item.genres
-      if (genres === null) {
+      if (!genres) {
         return '-'
       }
-
       let names = genres.map(x => x.name)
-
       return names.join(', ')
     },
     status (item) {
@@ -289,13 +297,14 @@ export default {
 </script>
 
 <style scoped>
-.export {
+.export span {
+  color: lightgrey;
   cursor: pointer;
+}
+.export span:hover {
   color: skyblue;
 }
-.export:hover {
-  color: silver;
-}
+
 .label {
   margin-left: 5px;
 }

@@ -187,7 +187,10 @@ export const store = new Vuex.Store({
             key: snapshot.val().key,
             mediaType: snapshot.val().media_type
           })
-          // cleanup unused fields such as: production_companies, production_countries, spoken_languages, maybe more in tv shows
+          context.commit('updateItem', snapshot.val())
+          context.dispatch('sanitizeItem', {
+            key: snapshot.val().key
+          })
         }
       })
       ref.on('child_changed', (snapshot) => {
@@ -226,8 +229,6 @@ export const store = new Vuex.Store({
             }
           }
         }
-
-        // cleanup unused fields such as: production_companies, production_countries, spoken_languages, maybe more in tv shows
       })
     },
     addItem: (context, item) => {
@@ -421,8 +422,8 @@ export const store = new Vuex.Store({
       axios.get(query).then(
         (response) => {
           if (response.status === 200) {
-            let directorString = '-'
-            let castString = '-'
+            let directorString = ''
+            let castString = ''
 
             let crew = response.data.crew
             let cast = response.data.cast
@@ -448,13 +449,47 @@ export const store = new Vuex.Store({
             }
 
             let item = context.state._items[parameters.key]
-            if (item !== null) {
-              console.log(`credits loaded for ${item.key}: title=${item.title}, director=${directorString}, cast=${castString}`)
+            if (item) {
+              // console.log(`credits loaded for ${item.key}: title=${item.title}, director=${directorString}, cast=${castString}`)
               firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/director').set(directorString)
               firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/cast').set(castString)
             }
           }
         })
+    },
+    sanitizeItems: (context) => {
+      for (let key in context.getters.items) {
+        context.dispatch('sanitizeItem', {
+          key: key
+        })
+      }
+    },
+    sanitizeItem: (context, parameters) => {
+      let item = context.getters.items[parameters.key]
+      if (!item) {
+        return
+      }
+      if (item.production_companies) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/production_companies').remove()
+      }
+      if (item.production_countries) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/production_countries').remove()
+      }
+      if (item.spoken_languages) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/spoken_languages').remove()
+      }
+      if (item.networks) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/networks').remove()
+      }
+      if (item.languages) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/languages').remove()
+      }
+      if (item.origin_country) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/origin_country').remove()
+      }
+      if (item.origin_country) {
+        firebase.database.ref('data/' + context.getters.dataUserId + '/items/' + item.key + '/origin_country').remove()
+      }
     }
   },
   getters: {

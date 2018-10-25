@@ -8,25 +8,14 @@
     <div v-for="item in pagedItems" :key="item.key" class="list-item">
       <div>
         <span>
-          <font-awesome-icon v-if="item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
-          <font-awesome-icon v-if="item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
+          <font-awesome-icon
+            :icon="icon(itemStatusIconName(item))"
+            v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
+          />
           <router-link v-bind:to="infoUrl(item)"><a class="label">{{ getTitle(item) }}</a></router-link>
           <span>({{ getReleaseDateFormated(item, 'YYYY') }})</span>
-          <!--
-          <span class="item-status d-none d-lg-inline">
-            <span>&ndash;</span>
-            <span v-if="item.downloaded">{{ $t('downloaded') }}</span>
-            <span v-if="!item.downloaded && itemIsUnreleased(item)">{{ $t('unreleased') }}</span>
-            <span v-if="!item.downloaded && !itemIsUnreleased(item) && item.downloadStatus">{{ $t(item.downloadStatus) }}</span>
-            <span v-if="!item.downloaded && !itemIsUnreleased(item) && !item.downloadStatus">{{ $t('todo') }}</span>
-          </span>
-          -->
         </span>
         <span class="float-right d-none d-sm-inline">
-          <!--
-          <span v-if="item.downloadStatus" class="status-text">{{ $t(item.downloadStatus) }}</span>
-          <span v-if="!item.downloadStatus" class="status-text">{{ $t('todo') }}</span>
-          -->
           <font-awesome-icon
             v-for="p in priorities"
             :key="p"
@@ -36,29 +25,28 @@
             @click.stop="setItemPriority(item, p)" @mouseover="hoverPriority = p" @mouseout="hoverPriority = settings.priority.min + 1"/>
         </span>
       </div>
-      <div v-if="settings.showCastOnList" class="info">
+      <div v-if="extend && settings.showCastOnList" class="info">
         <span class="info-label">{{ $t('cast') }}:&nbsp;</span>
         <span class="info-text">{{ item.cast }}</span>
       </div>
-      <div v-if="settings.showDirectorOnList && item.media_type === 'movie'" class="info">
+      <div v-if="extend && settings.showDirectorOnList && item.media_type === 'movie'" class="info">
         <span class="info-label">{{ $t('director') }}:&nbsp;</span>
         <span class="info-text">{{ item.director }}</span>
       </div>
-      <div v-if="settings.showGenresOnList && item.genres" class="info">
+      <div v-if="extend && settings.showGenresOnList && item.genres" class="info">
         <span class="info-label">{{ $t('genres') }}:&nbsp;</span>
         <span class="info-text">{{ genres(item) }}</span>
       </div>
-      <div v-if="settings.showStatusOnList" class="info">
+      <div v-if="extend && settings.showStatusOnList" class="info">
         <span class="info-label">{{ $t('status') }}:&nbsp;</span>
-        <span class="info-text">
-          <font-awesome-icon
-            :icon="icon(itemStatusIconName(item))"
-            v-bind:class="{ 'green': itemIsDownloaded(item), 'skyblue' : itemIsQueued(item), 'orange': itemIsUnreleased(item), 'yellow': itemIsNotYetAvailable(item) || itemIsHardToFind(item) }"
-          />
-        </span>
         <span v-if="item.downloadStatus" class="info-text">{{ $t(item.downloadStatus) }}</span>
         <span v-if="!item.downloadStatus" class="info-text">{{ $t('todo') }}</span>
-
+      <div v-if="extend && settings.showTypeOnList && item.genres" class="info">
+        <span class="info-label">{{ $t('type') }}:&nbsp;</span>
+        <font-awesome-icon v-if="extend && item.media_type === 'movie'" :icon="icon('movie')" style="color: skyblue"/>
+        <font-awesome-icon v-if="extend && item.media_type === 'tv'" :icon="icon('tv')" style="color: orange"/>
+        <span class="info-text">{{ $t(item.media_type) }}</span>
+      </div>
       </div>
     </div>
   </div>
@@ -74,7 +62,7 @@ import IconsMixin from '../mixins/icons'
 export default {
   name: 'MediaList',
   mixins: [UtilsMixin, MetadataMixin, IconsMixin],
-  props: ['items', 'sort', 'filter', 'paging', 'page', 'pageSize'],
+  props: ['items', 'sort', 'filter', 'paging', 'page', 'pageSize', 'extend'],
   data () {
     return {
     }
